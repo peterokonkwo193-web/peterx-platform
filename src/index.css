@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #C4A47C;
+  --color-on-primary: #0A0F1A;
+  --color-primary-fixed: #E2C29A;
+  --color-primary-fixed-dim: #A68761;
+  
+  --color-secondary: #94A3B8;
+  --color-on-secondary: #0A0F1A;
+  
+  --color-background: #0A0F1A;
+  --color-on-background: #F8FAFC;
+  
+  --color-surface: #131B2A;
+  --color-on-surface: #F8FAFC;
+  --color-surface-variant: #1B263B;
+  --color-on-surface-variant: #94A3B8;
+  
+  --color-outline: #2D3A54;
+  --color-outline-variant: #4B5A77;
+  
+  --color-error: #EF4444;
+  --color-on-error: #FFFFFF;
+  --color-success: #10B981;
+  
+  --font-h1: "Inter", sans-serif;
+  --font-display: "Inter", sans-serif;
+  --font-h2: "Inter", sans-serif;
+  --font-body-lg: "Inter", sans-serif;
+  --font-body-md: "Inter", sans-serif;
+  --font-label-caps: "Inter", sans-serif;
+
+  --spacing-margin-page: 48px;
+  --spacing-stack-xs: 4px;
+  --spacing-stack-sm: 12px;
+  --spacing-stack-md: 24px;
+  --spacing-stack-lg: 48px;
+  --spacing-unit: 8px;
+  --spacing-gutter: 24px;
+  --spacing-container-max: 1440px;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-background antialiased overflow-x-hidden;
+    background-color: #0A0F1A;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-variant rounded-full hover:bg-outline-variant transition-colors;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-white/20;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply backdrop-blur-md bg-surface border border-outline;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .glass-card {
+    @apply bg-surface border border-outline transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    @apply border-outline-variant;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #FCD535 0%, #FFF4C2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .input-glow:focus-within {
+    @apply border-primary ring-1 ring-primary;
+  }
+}
+
+/* Institutional Utilities */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.neon-glow-primary {
+  box-shadow: 0 0 20px rgba(252, 213, 53, 0.3);
+}
+
+.neon-glow-success {
+  box-shadow: 0 0 20px rgba(14, 203, 129, 0.3);
+}
+
+/* Material Symbols configuration */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
