@@ -42,28 +42,32 @@
 }
 
 @layer base {
-  body {
-    @apply bg-background text-on-background antialiased overflow-x-hidden;
+  html, body {
+    @apply bg-background text-on-background antialiased overflow-x-hidden w-full m-0 p-0;
     background-color: #0A0F1A;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent horizontal scroll on mobile */
+  #root {
+    @apply overflow-x-hidden w-full;
   }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-surface-variant rounded-full hover:bg-outline-variant transition-colors;
+    @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-white/10 rounded-full hover:bg-white/20;
+    width: 3px;
   }
 }
 

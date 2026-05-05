@@ -12,6 +12,7 @@ import { useSupabaseData } from '../hooks/useSupabaseData';
 import { useLivePrices } from '../hooks/useLivePrices';
 import { useMarketData } from '../hooks/useMarketData';
 import { useCurrency } from '../context/CurrencyContext';
+import { getInvestments } from '../lib/db';
 import { cn } from '../utils/cn';
 
 // Helper functions and sub-components
@@ -63,6 +64,7 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChartCoin, setSelectedChartCoin] = useState(null);
   const [chartData, setChartData] = useState([]);
+  const [investments, setInvestments] = useState([]);
   const [isVerificationOpen, setIsVerificationOpen] = useState(false);
   const [isTransferOpen, setIsTransferOpen] = useState(false);
 
@@ -78,6 +80,16 @@ const Dashboard = () => {
       setChartData(generateMockOHLC(selectedChartCoin.current_price * currency.rate));
     }
   }, [selectedChartCoin, currency.rate]);
+
+  useEffect(() => {
+    const fetchInv = async () => {
+      if (profile) {
+        const data = await getInvestments(profile.id);
+        setInvestments(data || []);
+      }
+    };
+    fetchInv();
+  }, [profile]);
 
   useEffect(() => {
     if (chartData.length === 0) return;
@@ -154,6 +166,7 @@ const Dashboard = () => {
   }
 
   const portfolioValue = calculatePortfolioValue();
+  const totalInvested = investments.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
 
   return (
     <DashboardLayout>
@@ -178,8 +191,8 @@ const Dashboard = () => {
         </header>
 
         {/* TOP ROW: PORTFOLIO & NEWS */}
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="md:col-span-12 lg:col-span-8">
             <WidgetErrorBoundary>
               <Card className="h-[400px] p-8 relative overflow-hidden group/card shadow-2xl" glass>
                 <div className="absolute top-0 right-0 p-8 flex flex-col items-end z-20">
@@ -218,7 +231,7 @@ const Dashboard = () => {
 
                 <div className="grid grid-cols-4 gap-6 mt-8 pt-8 border-t border-white/5 relative z-20">
                    <StatMini label="Spot Balance" val={formatPrice(profile?.usd_balance * currency.rate || 0)} />
-                   <StatMini label="Staked Assets" val={formatPrice(4201.50 * currency.rate)} color="text-secondary" />
+                   <StatMini label="Invested Funds" val={formatPrice(totalInvested * currency.rate)} color="text-secondary" />
                    <StatMini label="Unrealized PNL" val={`+${formatPrice(842.00 * currency.rate)}`} color="text-success" />
                    <div className="flex flex-col gap-2 relative z-10">
                       <Button 
@@ -239,7 +252,7 @@ const Dashboard = () => {
             </WidgetErrorBoundary>
           </div>
 
-          <div className="col-span-12 lg:col-span-4">
+          <div className="md:col-span-12 lg:col-span-4">
             <WidgetErrorBoundary>
               <Card className="h-[400px] flex flex-col p-0 overflow-hidden shadow-2xl" glass>
                 <div className="p-6 border-b border-white/5 bg-white/[0.02]">
@@ -263,8 +276,8 @@ const Dashboard = () => {
         </div>
 
         {/* MIDDLE ROW: CHART & ORDER BOOK */}
-        <div className="grid grid-cols-12 gap-6">
-           <div className="col-span-12 xl:col-span-9">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+           <div className="md:col-span-12 xl:col-span-9">
               <WidgetErrorBoundary>
                 <AnimatePresence mode="wait">
                   {selectedChartCoin && (
@@ -311,7 +324,7 @@ const Dashboard = () => {
               </WidgetErrorBoundary>
            </div>
 
-           <div className="col-span-12 xl:col-span-3">
+           <div className="md:col-span-12 xl:col-span-3">
               <WidgetErrorBoundary>
                  <Card className="h-[650px] flex flex-col p-0 overflow-hidden shadow-2xl" glass>
                     <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
@@ -359,8 +372,8 @@ const Dashboard = () => {
         </div>
 
         {/* BOTTOM ROW: MARKET TABLE & ACTIVITY */}
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 xl:col-span-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="md:col-span-12 xl:col-span-8">
             <WidgetErrorBoundary>
               <Card className="p-0 overflow-hidden shadow-2xl" glass>
                 <div className="p-8 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -417,7 +430,7 @@ const Dashboard = () => {
             </WidgetErrorBoundary>
           </div>
 
-          <div className="col-span-12 xl:col-span-4 space-y-6">
+          <div className="md:col-span-12 xl:col-span-4 space-y-6">
              <Card className="h-[600px] flex flex-col p-0 overflow-hidden shadow-2xl" glass>
                 <div className="p-6 border-b border-white/5 bg-white/[0.02]">
                    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white">Recent Executions</h2>

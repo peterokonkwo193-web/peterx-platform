@@ -167,3 +167,30 @@ export const claimStakingRewards = async (positionId, amount) => {
   if (error) throw error;
   return data;
 };
+// Investment System
+export const createInvestment = async (investmentData) => {
+  const { data, error } = await supabase
+    .from('investments')
+    .insert([investmentData]);
+  if (error) throw error;
+  return data;
+};
+
+export const getInvestments = async (userId) => {
+  const { data, error } = await supabase
+    .from('investments')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+};
+
+export const updateInvestmentStatus = async (investmentId, status) => {
+  const { data, error } = await supabase
+    .from('investments')
+    .update({ status, updated_at: new Date() })
+    .eq('id', investmentId);
+  if (error) throw error;
+  return data;
+};

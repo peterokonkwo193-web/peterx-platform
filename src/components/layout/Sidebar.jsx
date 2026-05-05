@@ -35,6 +35,7 @@ const Sidebar = () => {
       items: [
         { name: 'Vault', path: '/wallet', icon: 'account_balance_wallet' },
         { name: 'Protocol Staking', path: '/staking', icon: 'token' },
+        { name: 'Investment Plans', path: '/investments', icon: 'monitoring' },
         { name: 'Liquidity Pool', path: '/liquidity', icon: 'water_drop' },
       ]
     },

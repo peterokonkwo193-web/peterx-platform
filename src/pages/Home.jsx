@@ -297,20 +297,10 @@ const Home = () => {
 
       <footer className="bg-surface/20 py-20 px-12 border-t border-outline/30 mt-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
-          <div className="space-y-6">
-            <span className="text-xl font-black tracking-tight text-white">EQUITY CITADEL ASSOCIATES</span>
-            <p className="text-xs text-zinc-500 font-medium leading-relaxed">Redefining institutional digital asset infrastructure. Secure. Fast. Infinite.</p>
-            <div className="flex gap-4">
-               {['facebook', 'public', 'alternate_email'].map(icon => (
-                  <div key={icon} className="w-8 h-8 rounded-lg bg-surface border border-outline flex items-center justify-center cursor-pointer hover:bg-primary hover:text-black transition-all">
-                     <span className="material-symbols-outlined text-sm">{icon}</span>
-                  </div>
-               ))}
-            </div>
+          <div className="md:col-span-4 flex flex-col items-center md:items-start space-y-4">
+            <span className="text-xl font-black tracking-tight text-white uppercase">EQUITY CITADEL ASSOCIATES</span>
+            <p className="text-xs text-zinc-500 font-medium leading-relaxed max-w-sm">Redefining institutional digital asset infrastructure. Secure. Fast. Infinite.</p>
           </div>
-          <FooterColumn title="Protocol" links={['Exchange Terminal', 'Spot Trading', 'Futures Engine', 'Institutional Staking']} />
-          <FooterColumn title="Security" links={['Audit Reports', 'Cold Storage', 'Insurance Fund', 'Compliance']} />
-          <FooterColumn title="Support" links={['VIP Desk', 'API Documentation', 'Broker Program', 'Status Board']} />
         </div>
         <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-outline/30 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
           <p>© 2024 Equity Citadel Associates. All rights reserved.</p>

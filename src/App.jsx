@@ -15,6 +15,7 @@ const Settings = lazy(() => import('./pages/Settings'));
 const Login = lazy(() => import('./pages/Login'));
 const Staking = lazy(() => import('./pages/Staking'));
 const Admin = lazy(() => import('./pages/Admin'));
+const Investments = lazy(() => import('./pages/Investments'));
 
 const LoadingScreen = () => (
   <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
@@ -41,6 +42,7 @@ function App() {
               <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/staking" element={<ProtectedRoute><Staking /></ProtectedRoute>} />
+              <Route path="/investments" element={<ProtectedRoute><Investments /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             </Routes>
           </Suspense>
