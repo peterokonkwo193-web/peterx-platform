@@ -17,6 +17,7 @@ const Admin = () => {
   const [auditLogs, setAuditLogs] = useState([]);
   const [processingId, setProcessingId] = useState(null);
   const [verifyAmount, setVerifyAmount] = useState({});
+  const [treasuryMetrics, setTreasuryMetrics] = useState({ totalBalance: 0, avgBalance: 0 });
 
   useEffect(() => {
     if (!authLoading) {
@@ -77,6 +78,13 @@ const Admin = () => {
         
       if (error) throw error;
       setUsers(data || []);
+      
+      // Calculate Treasury Metrics
+      const total = data.reduce((sum, u) => sum + (parseFloat(u.usd_balance) || 0), 0);
+      setTreasuryMetrics({
+        totalBalance: total,
+        avgBalance: data.length > 0 ? total / data.length : 0
+      });
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -128,6 +136,13 @@ const Admin = () => {
               <div>
                 <span className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Total Users</span>
                 <span className="block text-xl font-black text-white">{users.length}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 bg-[#1e2329] px-6 py-3 rounded-xl border border-white/5 shadow-inner">
+              <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
+              <div>
+                <span className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Protocol TVL</span>
+                <span className="block text-xl font-black text-white">{formatPrice(treasuryMetrics.totalBalance)}</span>
               </div>
             </div>
             <div className="flex items-center gap-4 bg-[#1e2329] px-6 py-3 rounded-xl border border-white/5">
