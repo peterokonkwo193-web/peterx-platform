@@ -57,6 +57,13 @@ export const useSupabaseData = () => {
           setFuturesPositions(futures || []);
           setStakingPositions(staking || []);
           setTransactions(txs || []);
+          
+          // Force refresh if profile is missing but user exists
+          if (!p && currentUser) {
+            console.log("Profile missing, attempting second handshake...");
+            const retryP = await getProfile(currentUser.id).catch(() => null);
+            if (retryP) setProfile(retryP);
+          }
         }
       } catch (err) {
         console.error('Error fetching initial data:', err);
