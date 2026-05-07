@@ -17,6 +17,7 @@ const Admin = () => {
   const [auditLogs, setAuditLogs] = useState([]);
   const [processingId, setProcessingId] = useState(null);
   const [verifyAmount, setVerifyAmount] = useState({});
+  const [loading, setLoading] = useState(true);
   const [treasuryMetrics, setTreasuryMetrics] = useState({ totalBalance: 0, avgBalance: 0 });
 
   useEffect(() => {
