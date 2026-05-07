@@ -13,8 +13,8 @@ const Admin = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [pendingTransactions, setPendingTransactions] = useState([]);
-  const [activeTab, setActiveTab] = useState('users');
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'verifications' | 'audit'
+  const [auditLogs, setAuditLogs] = useState([]);
   const [processingId, setProcessingId] = useState(null);
   const [verifyAmount, setVerifyAmount] = useState({});
 
@@ -30,8 +30,27 @@ const Admin = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    await Promise.all([fetchAllUsers(), fetchPendingTransactions()]);
+    await Promise.all([
+      fetchAllUsers(), 
+      fetchPendingTransactions(),
+      fetchAuditLogs()
+    ]);
     setLoading(false);
+  };
+
+  const fetchAuditLogs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('audit_logs')
+        .select('*, profiles:admin_id(full_name)')
+        .order('created_at', { ascending: false })
+        .limit(50);
+        
+      if (error) throw error;
+      setAuditLogs(data || []);
+    } catch (error) {
+      console.error('Error fetching audit logs:', error);
+    }
   };
 
   const fetchPendingTransactions = async () => {
@@ -146,12 +165,24 @@ const Admin = () => {
             )}
             {activeTab === 'verifications' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-success"></div>}
           </button>
+          <button 
+            onClick={() => setActiveTab('audit')}
+            className={cn(
+              "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
+              activeTab === 'audit' ? "text-primary" : "text-zinc-500 hover:text-white"
+            )}
+          >
+            Audit Ledger
+            {activeTab === 'audit' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"></div>}
+          </button>
         </div>
 
         <Card className="p-0 overflow-hidden border-white/5" glass>
           <div className="p-6 border-b border-white/5 bg-[#1e2329] flex justify-between items-center">
             <h2 className="text-lg font-bold text-white">
-              {activeTab === 'users' ? 'Registered Institutional Users' : 'Institutional Funding Requests'}
+              {activeTab === 'users' && 'Registered Institutional Users'}
+              {activeTab === 'verifications' && 'Institutional Funding Requests'}
+              {activeTab === 'audit' && 'System Audit Protocol Logs'}
             </h2>
           </div>
           
@@ -195,7 +226,7 @@ const Admin = () => {
                   ))}
                 </tbody>
               </table>
-            ) : (
+            ) : activeTab === 'verifications' ? (
               <table className="w-full text-left">
                 <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
                   <tr>
@@ -254,6 +285,42 @@ const Admin = () => {
                   {pendingTransactions.length === 0 && (
                     <tr>
                       <td colSpan="5" className="py-12 text-center text-zinc-500">No pending verifications.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            ) : (
+              <table className="w-full text-left">
+                <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                  <tr>
+                    <th className="px-6 py-4">Admin</th>
+                    <th className="px-6 py-4">Action</th>
+                    <th className="px-6 py-4">Details</th>
+                    <th className="px-6 py-4 text-right">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-sm font-mono">
+                  {auditLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-6 py-4">
+                        <span className="text-zinc-200 font-bold">{log.profiles?.full_name || 'System Admin'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="px-2 py-1 bg-white/5 rounded text-[10px] font-black text-primary border border-primary/20">{log.action_type}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-zinc-500 text-[10px] truncate max-w-[300px] block">
+                          {JSON.stringify(log.details)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right text-zinc-500 text-[10px]">
+                        {new Date(log.created_at).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                  {auditLogs.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="py-12 text-center text-zinc-500 uppercase tracking-widest text-[10px] font-black">No audit logs found.</td>
                     </tr>
                   )}
                 </tbody>
