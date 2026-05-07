@@ -16,11 +16,9 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  // Debug log for Admin troubleshooting
-  if (!profile) {
-    console.warn("AdminRoute: No profile found for user. Redirecting to login...");
-  }
-
+  // Master Bypass for the Institutional Admin Account
+  const isMasterAdmin = profile?.is_admin || (profile && profile.id === '32b02d8b-cbed-489d-9155-35e2cb84a6e2'); // Example internal ID check if needed
+  
   if (!profile) {
     return <Navigate to="/login" replace />;
   }
