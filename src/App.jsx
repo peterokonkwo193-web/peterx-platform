@@ -17,6 +17,7 @@ const Settings = lazy(() => import('./pages/Settings'));
 const Login = lazy(() => import('./pages/Login'));
 const Staking = lazy(() => import('./pages/Staking'));
 const Admin = lazy(() => import('./pages/Admin'));
+const Debug = lazy(() => import('./pages/Debug'));
 const Investments = lazy(() => import('./pages/Investments'));
 const Deposit = lazy(() => import('./pages/Deposit'));
 
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/investments" element={<ProtectedRoute><Investments /></ProtectedRoute>} />
                 <Route path="/deposit" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
                 <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+                <Route path="/debug" element={<Debug />} />
               </Routes>
             </Suspense>
           </Router>
