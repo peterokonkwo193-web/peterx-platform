@@ -3,10 +3,10 @@ import { Navigate } from 'react-router-dom';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 const AdminRoute = ({ children }) => {
-  const { user, loading } = useSupabaseData();
+  const { user, profile, loading } = useSupabaseData();
 
   // Master Bypass for the Institutional Admin Account (2e3db981-410b-401f-800b-a8971c09a574)
-  const isMasterAdmin = (user && user.id === '2e3db981-410b-401f-800b-a8971c09a574');
+  const isMasterAdmin = (user && user.id === '2e3db981-410b-401f-800b-a8971c09a574') || profile?.is_admin;
   
   if (loading) {
     return (
@@ -19,7 +19,13 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  if (!user || !isMasterAdmin) {
+  // If the user is the Master Admin, allow entry immediately
+  if (user && user.id === '2e3db981-410b-401f-800b-a8971c09a574') {
+    return children;
+  }
+
+  // Fallback for other admins or redirection for non-admins
+  if (!isMasterAdmin) {
     return <Navigate to="/" replace />;
   }
 
