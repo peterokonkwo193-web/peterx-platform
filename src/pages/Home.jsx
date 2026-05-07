@@ -327,6 +327,7 @@ const Home = () => {
             <a href="#" className="hover:text-white transition-all">Privacy</a>
             <a href="#" className="hover:text-white transition-all">Terms</a>
             <a href="#" className="hover:text-white transition-all">Risk Disclosure</a>
+            <Link to="/admin" className="text-primary hover:text-white transition-all font-black border-l border-white/10 pl-8">Institutional Admin Access</Link>
           </div>
         </div>
       </footer>

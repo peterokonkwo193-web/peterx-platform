@@ -7,7 +7,7 @@ const AdminRoute = ({ children }) => {
 
   // Master Bypass for the Institutional Admin Account (2e3db981-410b-401f-800b-a8971c09a574)
   const { user } = useSupabaseData();
-  const isMasterAdmin = profile?.is_admin || (user && user.id === '2e3db981-410b-401f-800b-a8971c09a574');
+  const isMasterAdmin = (user && user.id === '2e3db981-410b-401f-800b-a8971c09a574') || profile?.is_admin;
   
   if (loading) {
     return (
@@ -25,6 +25,7 @@ const AdminRoute = ({ children }) => {
   }
 
   if (!isMasterAdmin) {
+    console.warn("Unauthorized Admin Attempt. Redirecting to Command Center.");
     return <Navigate to="/dashboard" replace />;
   }
 
