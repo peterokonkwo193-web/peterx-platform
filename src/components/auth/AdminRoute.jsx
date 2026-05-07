@@ -5,6 +5,10 @@ import { useSupabaseData } from '../../hooks/useSupabaseData';
 const AdminRoute = ({ children }) => {
   const { profile, loading } = useSupabaseData();
 
+  // Master Bypass for the Institutional Admin Account (2e3db981-410b-401f-800b-a8971c09a574)
+  const { user } = useSupabaseData();
+  const isMasterAdmin = profile?.is_admin || (user && user.id === '2e3db981-410b-401f-800b-a8971c09a574');
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -16,10 +20,7 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  // Master Bypass for the Institutional Admin Account (2e3db981-410b-401f-800b-a8971c09a574)
-  const isMasterAdmin = profile?.is_admin || (profile && profile.id === '2e3db981-410b-401f-800b-a8971c09a574');
-  
-  if (!profile && !isMasterAdmin) {
+  if (!user && !isMasterAdmin) {
     return <Navigate to="/login" replace />;
   }
 
