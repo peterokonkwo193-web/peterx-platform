@@ -184,10 +184,11 @@ const Settings = () => {
 
   useEffect(() => {
     if (user) {
-      getAlerts(user.id).then(setAlerts);
+      getAlerts(user.id).then(setAlerts).finally(() => setLoading(false));
+    } else if (!dataLoading) {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, dataLoading]);
 
   const handleAddAlert = async (e) => {
     e.preventDefault();
@@ -225,11 +226,48 @@ const Settings = () => {
     setIs2FAEnabled(!is2FAEnabled);
   };
 
-  if (dataLoading || loading) {
+  if (dataLoading || (loading && !user)) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-[60vh]">
-          <div className="w-12 h-12 border-4 border-primary/20 border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(252,213,53,0.1)]"></div>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-12">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-primary/20 border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(252,213,53,0.1)]"></div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 animate-pulse">Initializing Protocol...</p>
+          </div>
+          
+          {/* Emergency Diagnostic (Always visible during hangs) */}
+          <div className="w-full max-w-2xl">
+            <Card className="p-8 border-rose-500/20 bg-rose-500/5 shadow-2xl" glass>
+              <div className="flex items-center gap-4 mb-6">
+                <span className="material-symbols-outlined text-rose-500">error</span>
+                <h2 className="text-sm font-black uppercase tracking-[0.3em] text-white">Institutional Auth Handshake Status</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-[11px]">
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-zinc-500 uppercase font-bold block mb-1">Session Presence</span>
+                    <span className={cn(
+                      "px-3 py-1.5 rounded-lg border font-black uppercase inline-block",
+                      user ? "bg-success/20 text-success border-success/30" : "bg-error/20 text-error border-error/30"
+                    )}>
+                      {user ? 'ACTIVE_SESSION' : 'NO_SESSION_DETECTED'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-zinc-500 uppercase font-bold block mb-1">Internal Protocol ID</span>
+                    <span className="text-white bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 block truncate">{user?.id || 'PENDING...'}</span>
+                  </div>
+                </div>
+                <div className="p-4 bg-black/20 rounded-xl border border-white/5 space-y-2">
+                  <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Technical Guidance</span>
+                  <p className="text-zinc-400 leading-relaxed italic text-[10px]">
+                    "If 'NO_SESSION_DETECTED' is shown, your browser has not saved your login. Please return to the login page and sign in again."
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       </DashboardLayout>
     );
