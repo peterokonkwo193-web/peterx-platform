@@ -20,7 +20,6 @@ const AdminRoute = ({ children }) => {
   }
 
   if (!user || !isMasterAdmin) {
-    console.warn("Unauthorized Admin Attempt Blocked.");
     return <Navigate to="/" replace />;
   }
 
