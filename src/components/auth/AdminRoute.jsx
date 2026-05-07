@@ -13,7 +13,11 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  if (!profile || !profile.is_admin) {
+  if (!profile) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!profile.is_admin) {
     return <Navigate to="/dashboard" replace />;
   }
 

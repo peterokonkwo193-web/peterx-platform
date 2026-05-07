@@ -145,6 +145,9 @@ const Navbar = ({ className }) => {
               {/* Dropdown Menu (Simplified) */}
               <div className="absolute top-full right-0 mt-2 w-48 bg-zinc-900 border border-white/10 rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-2xl z-[60]">
                 <Link to="/dashboard" className="block px-4 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5">Dashboard</Link>
+                {profile?.is_admin && (
+                  <Link to="/admin" className="block px-4 py-2 text-xs text-primary font-bold hover:bg-primary/5">Admin Terminal</Link>
+                )}
                 <Link to="/settings" className="block px-4 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5">Settings</Link>
                 <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-xs text-rose-400 hover:bg-rose-500/10">Logout</button>
               </div>
