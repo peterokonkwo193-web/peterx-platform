@@ -10,7 +10,7 @@ import { cn } from '../../utils/cn';
 
 const Navbar = ({ className }) => {
   const { user, profile } = useSupabaseData();
-  const { currency, setCurrency, currencies } = useCurrency();
+  const { currency, setCurrency, currencies, formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [isAvatarSelectorOpen, setIsAvatarSelectorOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);

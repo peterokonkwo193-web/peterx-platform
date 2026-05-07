@@ -2,10 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { cn } from '../../utils/cn';
 
-function cn(...inputs) {
-  return twMerge(clsx(inputs));
-}
+
 
 const Card = ({ 
   children, 

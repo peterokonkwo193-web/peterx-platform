@@ -1,3 +1,7 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const CurrencyContext = createContext();
+
 export const CURRENCIES = [
   // North America
   { code: 'USD', symbol: '$', name: 'US Dollar', rate: 1 },
@@ -81,17 +85,17 @@ export const CURRENCIES = [
   { code: 'MNT', symbol: '₮', name: 'Mongolian Tögrög', rate: 3380 },
   { code: 'MVR', symbol: 'Rf', name: 'Maldivian Rufiyaa', rate: 15.4 },
   { code: 'NPR', symbol: '₨', name: 'Nepalese Rupee', rate: 133 },
+
   // Middle East
   { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham', rate: 3.67 },
   { code: 'SAR', symbol: '﷼', name: 'Saudi Riyal', rate: 3.75 },
   { code: 'ILS', symbol: '₪', name: 'Israeli Shekel', rate: 3.71 },
   { code: 'QAR', symbol: '﷼', name: 'Qatari Rial', rate: 3.64 },
   { code: 'KWD', symbol: 'د.ك', name: 'Kuwaiti Dinar', rate: 0.31 },
-  { code: 'BHD', symbol: '.د.ب', name: 'Bahraini Dinar', rate: 0.38 },
+  { code: 'BHD', symbol: '.د.ب', name: 'Bahraini Dinar', rate: 0.377 },
   { code: 'OMR', symbol: '﷼', name: 'Omani Rial', rate: 0.38 },
   { code: 'JOD', symbol: 'د.ا', name: 'Jordanian Dinar', rate: 0.71 },
   { code: 'EGP', symbol: 'E£', name: 'Egyptian Pound', rate: 47.4 },
-  { code: 'BHD', symbol: '.د.ب', name: 'Bahraini Dinar', rate: 0.377 },
   { code: 'IQD', symbol: 'ع.د', name: 'Iraqi Dinar', rate: 1310 },
   { code: 'IRR', symbol: '﷼', name: 'Iranian Rial', rate: 42000 },
   { code: 'LBP', symbol: 'ل.ل', name: 'Lebanese Pound', rate: 89500 },
@@ -149,27 +153,39 @@ export const CURRENCIES = [
 
 export const CurrencyProvider = ({ children }) => {
   const [currency, setCurrency] = useState(() => {
-    const saved = localStorage.getItem('Equity Citadel_currency');
+    const saved = localStorage.getItem('equity_citadel_currency');
     return CURRENCIES.find(c => c.code === saved) || CURRENCIES[0];
   });
 
   useEffect(() => {
-    localStorage.setItem('Equity Citadel_currency', currency.code);
+    localStorage.setItem('equity_citadel_currency', currency.code);
   }, [currency]);
 
   const formatPrice = (priceInUsd) => {
     const converted = priceInUsd * currency.rate;
     
     // Handle very small numbers (like BTC rates)
-    const minDigits = currency.code === 'BTC' || currency.code === 'ETH' ? 8 : 2;
-    const maxDigits = currency.code === 'BTC' || currency.code === 'ETH' ? 8 : 2;
+    const isCrypto = currency.code === 'BTC' || currency.code === 'ETH' || currency.code === 'BNB' || currency.code === 'SOL';
+    const minDigits = isCrypto ? 8 : 2;
+    const maxDigits = isCrypto ? 8 : 2;
 
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: (currency.code === 'BTC' || currency.code === 'ETH') ? 'USD' : currency.code,
+    // Standard currencies
+    if (!isCrypto && ['USD', 'EUR', 'GBP', 'JPY', 'CNY', 'INR', 'CAD', 'AUD'].includes(currency.code)) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency.code,
+        minimumFractionDigits: minDigits,
+        maximumFractionDigits: maxDigits,
+      }).format(converted);
+    }
+
+    // Others or crypto: format as decimal and add symbol manually
+    const formatted = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: minDigits,
       maximumFractionDigits: maxDigits,
-    }).format(converted).replace('USD', currency.symbol);
+    }).format(converted);
+
+    return `${currency.symbol}${formatted}`;
   };
 
   return (

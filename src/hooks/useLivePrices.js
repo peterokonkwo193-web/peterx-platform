@@ -50,7 +50,7 @@ export const useLivePrices = (realUpdateInterval = 30000) => {
     }, 1000);
 
     return () => clearInterval(tickTimer);
-  }, [loading]);
+  }, [prices !== null]);
 
   return { prices, loading };
 };

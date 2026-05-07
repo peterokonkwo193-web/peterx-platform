@@ -4,10 +4,12 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import Card from '../components/common/Card';
 import { supabase } from '../lib/supabase';
 import { useSupabaseData } from '../hooks/useSupabaseData';
+import { useCurrency } from '../context/CurrencyContext';
 import { cn } from '../utils/cn';
 
 const Admin = () => {
   const { profile, loading: authLoading } = useSupabaseData();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [pendingTransactions, setPendingTransactions] = useState([]);
@@ -184,7 +186,7 @@ const Admin = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right font-medium text-white">
-                        ${parseFloat(u.usd_balance || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {formatPrice(u.usd_balance || 0)}
                       </td>
                       <td className="px-6 py-4 text-right text-zinc-500">
                         {new Date(u.created_at).toLocaleDateString()}

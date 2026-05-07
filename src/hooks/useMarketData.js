@@ -53,7 +53,7 @@ export const useMarketData = (realInterval = 60000) => {
     }, 1000);
 
     return () => clearInterval(tickTimer);
-  }, [loading]);
+  }, [marketData.length]);
 
   return { marketData, loading, error };
 };

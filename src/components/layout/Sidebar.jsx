@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+
 import { signOut } from '../../lib/auth';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 import { cn } from '../../utils/cn';

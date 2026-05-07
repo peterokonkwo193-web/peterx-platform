@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import { supabase } from '../../lib/supabase';
+import { useCurrency } from '../../context/CurrencyContext';
+import { cn } from '../../utils/cn';
 
-function cn(...inputs) {
-  return inputs.filter(Boolean).join(' ');
-}
+
 
 const ASSETS = [
   { id: 'usdt', symbol: 'USDT', name: 'Tether USD', icon: 'payments', color: 'text-success' },
@@ -18,6 +18,7 @@ const ASSETS = [
 ];
 
 const TransferModal = ({ profile, isOpen, onClose, onComplete }) => {
+  const { formatPrice } = useCurrency();
   const [type, setType] = useState('send'); // send, receive
   const [selectedAsset, setSelectedAsset] = useState(ASSETS[0]);
   const [amount, setAmount] = useState('');
@@ -157,7 +158,7 @@ const TransferModal = ({ profile, isOpen, onClose, onComplete }) => {
                        </div>
                        <div className="flex justify-between text-[10px] uppercase tracking-widest font-black px-1">
                           <span className="text-zinc-600">Max Liquidity</span>
-                          <span className="text-primary">${profile?.usd_balance?.toLocaleString() || '0'}</span>
+                          <span className="text-primary">{formatPrice(profile?.usd_balance || 0)}</span>
                        </div>
                     </div>
                     {status === 'error' && (

@@ -5,6 +5,8 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import { useSupabaseData } from '../hooks/useSupabaseData';
 import { getAlerts, createAlert, deleteAlert } from '../lib/db';
+import { useCurrency } from '../context/CurrencyContext';
+import { cn } from '../utils/cn';
 
 const LANGUAGES = [
   { label: 'English (United States)', value: 'en-US' },
@@ -40,42 +42,6 @@ const LANGUAGES = [
   { label: 'Hausa', value: 'ha' },
   { label: 'Yoruba', value: 'yo' },
   { label: 'Igbo', value: 'ig' }
-];
-
-const CURRENCIES = [
-  { label: 'USD - US Dollar', value: 'USD' },
-  { label: 'EUR - Euro', value: 'EUR' },
-  { label: 'GBP - British Pound', value: 'GBP' },
-  { label: 'NGN - Nigerian Naira', value: 'NGN' },
-  { label: 'JPY - Japanese Yen', value: 'JPY' },
-  { label: 'CAD - Canadian Dollar', value: 'CAD' },
-  { label: 'AUD - Australian Dollar', value: 'AUD' },
-  { label: 'ZAR - South African Rand', value: 'ZAR' },
-  { label: 'CHF - Swiss Franc', value: 'CHF' },
-  { label: 'HKD - Hong Kong Dollar', value: 'HKD' },
-  { label: 'SGD - Singapore Dollar', value: 'SGD' },
-  { label: 'INR - Indian Rupee', value: 'INR' },
-  { label: 'CNY - Chinese Yuan', value: 'CNY' },
-  { label: 'BRL - Brazilian Real', value: 'BRL' },
-  { label: 'RUB - Russian Ruble', value: 'RUB' },
-  { label: 'KRW - South Korean Won', value: 'KRW' },
-  { label: 'MXN - Mexican Peso', value: 'MXN' },
-  { label: 'SAR - Saudi Riyal', value: 'SAR' },
-  { label: 'AED - UAE Dirham', value: 'AED' },
-  { label: 'TRY - Turkish Lira', value: 'TRY' },
-  { label: 'EGP - Egyptian Pound', value: 'EGP' },
-  { label: 'GHS - Ghanaian Cedi', value: 'GHS' },
-  { label: 'KES - Kenyan Shilling', value: 'KES' },
-  { label: 'PHP - Philippine Peso', value: 'PHP' },
-  { label: 'IDR - Indonesian Rupiah', value: 'IDR' },
-  { label: 'THB - Thai Baht', value: 'THB' },
-  { label: 'MYR - Malaysian Ringgit', value: 'MYR' },
-  { label: 'VND - Vietnamese Dong', value: 'VND' },
-  { label: 'ILS - Israeli Shekel', value: 'ILS' },
-  { label: 'PLN - Polish Zloty', value: 'PLN' },
-  { label: 'UAH - Ukrainian Hryvnia', value: 'UAH' },
-  { label: 'SEK - Swedish Krona', value: 'SEK' },
-  { label: 'NOK - Norwegian Krone', value: 'NOK' }
 ];
 
 const SearchableSelect = ({ label, options, value, onChange, placeholder }) => {
@@ -189,6 +155,7 @@ const SecurityItem = ({ icon, title, desc, action }) => (
 
 const Settings = () => {
   const { user, profile, loading: dataLoading, error: supabaseError } = useSupabaseData();
+  const { currency, setCurrency, currencies, formatPrice } = useCurrency();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newAlert, setNewAlert] = useState({ symbol: 'BTC', price: '', condition: 'Above' });
@@ -202,7 +169,6 @@ const Settings = () => {
   };
 
   const [selectedLanguage, setSelectedLanguage] = useState('en-US');
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
 
   const handleSavePreferences = () => {
     setSaveSuccess(true);
@@ -515,7 +481,7 @@ const Settings = () => {
                           </div>
                           <div className="flex flex-col">
                              <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Price Point</span>
-                             <span className="font-mono text-primary font-bold text-sm tracking-tighter">${parseFloat(alert.target_price).toLocaleString()}</span>
+                             <span className="font-mono text-primary font-bold text-sm tracking-tighter">{formatPrice(alert.target_price)}</span>
                           </div>
                         </div>
                         <button onClick={() => handleDeleteAlert(alert.id)} className="w-10 h-10 rounded-xl flex items-center justify-center text-zinc-600 hover:text-rose-500 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100 border border-transparent hover:border-rose-500/20">
@@ -547,9 +513,9 @@ const Settings = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <SearchableSelect 
                       label="Base Fiat Currency"
-                      options={CURRENCIES}
-                      value={selectedCurrency}
-                      onChange={setSelectedCurrency}
+                      options={currencies.map(c => ({ label: `${c.code} - ${c.name}`, value: c.code }))}
+                      value={currency.code}
+                      onChange={setCurrency}
                       placeholder="Select Currency"
                     />
                     <SearchableSelect 
@@ -686,10 +652,6 @@ const Settings = () => {
     </DashboardLayout>
   );
 };
-
-function cn(...inputs) {
-  return inputs.filter(Boolean).join(' ');
-}
 
 export default Settings;
 

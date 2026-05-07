@@ -12,7 +12,7 @@ const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete, refreshDa
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   
-  const isInsufficient = profile?.usd_balance < plan.range;
+  const isInsufficient = profile && parseFloat(profile.usd_balance || 0) < parseFloat(plan.range || 0);
 
   if (!isOpen) return null;
 
@@ -21,6 +21,7 @@ const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete, refreshDa
     setError(null);
 
     try {
+      if (!profile) throw new Error('Institutional profile not loaded. Please wait.');
       if (isInsufficient) {
         throw new Error('Insufficient Balance');
       }

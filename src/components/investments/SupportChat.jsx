@@ -21,12 +21,18 @@ const SupportChat = ({ isOpen, onClose, initialPlan }) => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      const welcome = initialPlan 
-        ? `Welcome to Protocol Support. I see you're interested in the ${initialPlan.name}. This strategy requires a $${initialPlan.range.toLocaleString()} minimum for a ${initialPlan.roi}% ROI. How can I assist with your allocation?`
-        : "Welcome to Equity Citadel Institutional Support. I can assist with Investment Protocols, Deposit Procedures, and Account Verification. How can I help you today?";
-      
-      setMessages([{ role: 'assistant', content: welcome }]);
+    if (isOpen) {
+      if (messages.length === 0 || (initialPlan && !messages.some(m => m.content.includes(initialPlan.name)))) {
+        const welcome = initialPlan 
+          ? `Welcome to Protocol Support. I see you're interested in the ${initialPlan.name}. This strategy requires a $${initialPlan.range.toLocaleString()} minimum for a ${initialPlan.roi}% ROI. How can I assist with your allocation?`
+          : "Welcome to Equity Citadel Institutional Support. I can assist with Investment Protocols, Deposit Procedures, and Account Verification. How can I help you today?";
+        
+        // If it's a new plan, we can either clear or append. Let's clear for clarity.
+        setMessages([{ role: 'assistant', content: welcome }]);
+      }
+    } else {
+      // Optional: Clear messages on close if we want a fresh start each time
+      // setMessages([]); 
     }
   }, [isOpen, initialPlan]);
 
@@ -36,16 +42,18 @@ const SupportChat = ({ isOpen, onClose, initialPlan }) => {
     }
   }, [messages, isTyping]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    const userMsg = { role: 'user', content: input };
+  const handleSend = (overrideMsg = null) => {
+    const msgText = overrideMsg || input;
+    if (!msgText.trim()) return;
+
+    const userMsg = { role: 'user', content: msgText };
     setMessages(prev => [...prev, userMsg]);
-    setInput('');
+    if (!overrideMsg) setInput('');
     setIsTyping(true);
 
     setTimeout(() => {
       let response = "";
-      const t = input.toLowerCase();
+      const t = msgText.toLowerCase();
 
       if (t.includes('deposit') || t.includes('pay') || t.includes('fund') || t.includes('how to invest')) {
         response = SUPPORT_KNOWLEDGE.deposit;
@@ -136,7 +144,7 @@ const SupportChat = ({ isOpen, onClose, initialPlan }) => {
                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                   />
                   <button 
-                    onClick={handleSend} 
+                    onClick={() => handleSend()} 
                     className="bg-primary px-5 rounded-xl text-black font-black uppercase text-[10px] tracking-widest hover:bg-primary-fixed transition-colors shadow-lg shadow-primary/20"
                   >
                     Send
@@ -149,7 +157,7 @@ const SupportChat = ({ isOpen, onClose, initialPlan }) => {
                  {['How to Deposit?', 'Silver ROI?', 'Platinum Min?'].map(action => (
                    <button 
                      key={action}
-                     onClick={() => { setInput(action); }}
+                     onClick={() => handleSend(action)}
                      className="px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold text-zinc-500 hover:text-primary hover:border-primary/30 transition-all uppercase tracking-widest"
                    >
                      {action}

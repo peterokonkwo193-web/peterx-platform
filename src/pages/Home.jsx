@@ -44,10 +44,10 @@ const Home = () => {
 
     // Initial activities
     setActivities([
-      { id: 1, text: 'New Investment: $1,250,000.00 into BTC Vault' },
+      { id: 1, text: `New Investment: ${formatPrice(1250000)} into BTC Vault` },
       { id: 2, text: 'Tier 4 Verification: Approved' },
-      { id: 3, text: 'Institutional Withdrawal: $450,000.00 from ETH Pool' },
-      { id: 4, text: 'New Investment: $8,400,000.00 into SOL Vault' }
+      { id: 3, text: `Institutional Withdrawal: ${formatPrice(450000)} from ETH Pool` },
+      { id: 4, text: `New Investment: ${formatPrice(8400000)} into SOL Vault` }
     ]);
 
     return () => clearInterval(interval);
@@ -88,7 +88,7 @@ const Home = () => {
             <div key={idx} className="flex items-center gap-3">
               <span className="font-bold text-xs text-zinc-300 uppercase">{id.slice(0, 4)}</span>
               <span className={cn("text-xs font-mono", p.usd_24h_change >= 0 ? "text-success" : "text-error")}>
-                ${parseFloat(p.usd).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                {formatPrice(p.usd)}
               </span>
               <span className={cn("text-[10px]", p.usd_24h_change >= 0 ? "text-success/80" : "text-error/80")}>
                 {p.usd_24h_change >= 0 ? '+' : ''}{parseFloat(p.usd_24h_change).toFixed(2)}%
@@ -100,7 +100,7 @@ const Home = () => {
              <div key={`dup-${idx}`} className="flex items-center gap-3">
               <span className="font-bold text-xs text-zinc-300 uppercase">{id.slice(0, 4)}</span>
               <span className={cn("text-xs font-mono", p.usd_24h_change >= 0 ? "text-success" : "text-error")}>
-                ${parseFloat(p.usd).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                {formatPrice(p.usd)}
               </span>
               <span className={cn("text-[10px]", p.usd_24h_change >= 0 ? "text-success/80" : "text-error/80")}>
                 {p.usd_24h_change >= 0 ? '+' : ''}{parseFloat(p.usd_24h_change).toFixed(2)}%
