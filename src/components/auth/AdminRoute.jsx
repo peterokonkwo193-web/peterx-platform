@@ -5,8 +5,8 @@ import { useSupabaseData } from '../../hooks/useSupabaseData';
 const AdminRoute = ({ children }) => {
   const { user, profile, loading } = useSupabaseData();
 
-  // Master Bypass for the Institutional Admin Account (2e3db981-410b-401f-800b-a8971c09a574)
-  const isMasterAdmin = (user && user.id === '2e3db981-410b-401f-800b-a8971c09a574') || profile?.is_admin;
+  // Master Bypass for the Institutional Admin Account (8d24918f-b493-4549-951e-1f85b0b97fe5)
+  const isMasterAdmin = (user && user.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') || profile?.is_admin;
   
   if (loading) {
     return (
@@ -20,7 +20,7 @@ const AdminRoute = ({ children }) => {
   }
 
   // If the user is the Master Admin, allow entry immediately
-  if (user && user.id === '2e3db981-410b-401f-800b-a8971c09a574') {
+  if (user && user.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') {
     return children;
   }
 

@@ -145,7 +145,7 @@ const Navbar = ({ className }) => {
               {/* Dropdown Menu (Simplified) */}
               <div className="absolute top-full right-0 mt-2 w-48 bg-zinc-900 border border-white/10 rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-2xl z-[60]">
                 <Link to="/dashboard" className="block px-4 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5">Dashboard</Link>
-                {(profile?.is_admin || user?.id === '2e3db981-410b-401f-800b-a8971c09a574') && (
+                {(profile?.is_admin || user?.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') && (
                   <Link to="/admin" className="block px-4 py-2 text-xs text-primary font-bold hover:bg-primary/5">Admin Terminal</Link>
                 )}
                 <Link to="/settings" className="block px-4 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5">Settings</Link>
@@ -220,7 +220,7 @@ const Navbar = ({ className }) => {
                   <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-4 px-4 text-xs font-bold text-zinc-200 bg-white/5 rounded-xl flex items-center gap-3">
                     <span className="material-symbols-outlined text-sm">dashboard</span> Dashboard
                   </Link>
-                  {profile?.is_admin && (
+                  {(profile?.is_admin || user?.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') && (
                     <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-4 px-4 text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">
                       <span className="material-symbols-outlined text-sm">admin_panel_settings</span> Admin Terminal
                     </Link>
