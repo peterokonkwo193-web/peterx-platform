@@ -220,6 +220,11 @@ const Navbar = ({ className }) => {
                   <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-4 px-4 text-xs font-bold text-zinc-200 bg-white/5 rounded-xl flex items-center gap-3">
                     <span className="material-symbols-outlined text-sm">dashboard</span> Dashboard
                   </Link>
+                  {profile?.is_admin && (
+                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-4 px-4 text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">
+                      <span className="material-symbols-outlined text-sm">admin_panel_settings</span> Admin Terminal
+                    </Link>
+                  )}
                   <Link to="/wallet" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-4 px-4 text-xs font-bold text-zinc-200 bg-white/5 rounded-xl flex items-center gap-3">
                     <span className="material-symbols-outlined text-sm">account_balance_wallet</span> Vault
                   </Link>
