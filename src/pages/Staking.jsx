@@ -24,7 +24,7 @@ const Staking = () => {
   const [executing, setExecuting] = useState(false);
 
   const calculateTotalTVL = () => {
-    return (stakingPositions?.reduce((acc, pos) => acc + (parseFloat(pos.amount) || 0), 0) || 0) * 45000 * currency.rate; // Mock TVL calc
+    return (stakingPositions?.reduce((acc, pos) => acc + (parseFloat(pos.amount) || 0), 0) || 0) * 45000; // Mock TVL calc (USD)
   };
 
   const handleStake = async () => {
@@ -80,7 +80,7 @@ const Staking = () => {
                <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Mainnet Governance Active</span>
             </div>
             <h1 className="text-4xl font-black text-white tracking-tighter mb-2">Institutional Staking</h1>
-            <p className="text-sm text-zinc-500 font-medium">Secure your assets in the Equity Citadel Associates protocol and earn high-fidelity yields.</p>
+            <p className="text-sm text-zinc-500 font-medium">Secure your assets in the Equity Citadel protocol and earn high-fidelity yields.</p>
           </div>
           <Card className="px-8 py-4 border border-primary/20 shadow-2xl" glass>
              <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-1">Protocol Total Value Locked</span>
@@ -93,12 +93,12 @@ const Staking = () => {
            <Card className="p-6 border border-white/5 shadow-xl relative overflow-hidden" glass>
               <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-3xl"></div>
               <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Total Staked Value</span>
-              <p className="text-3xl font-black text-white tracking-tighter">{formatPrice(stakingPositions?.reduce((a,b) => a + parseFloat(b.amount), 0) * currency.rate || 0)}</p>
+              <p className="text-3xl font-black text-white tracking-tighter">{formatPrice(stakingPositions?.reduce((a,b) => a + parseFloat(b.amount), 0) || 0)}</p>
            </Card>
            <Card className="p-6 border border-white/5 shadow-xl" glass>
               <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Accumulated Yield</span>
               <div className="flex items-end gap-2">
-                 <p className="text-3xl font-black text-success tracking-tighter font-mono">+{formatPrice(124.50 * currency.rate)}</p>
+                 <p className="text-3xl font-black text-success tracking-tighter font-mono">+{formatPrice(124.50)}</p>
                  <span className="text-[10px] font-black text-success/60 mb-1.5 animate-pulse">TICKING</span>
               </div>
            </Card>
@@ -167,7 +167,7 @@ const Staking = () => {
                                 <span className="text-primary font-black uppercase tracking-tighter">ACCUMULATING</span>
                              </div>
                           </td>
-                          <td className="px-8 py-5 text-right text-success font-black">+{formatPrice(0.42 * currency.rate)}</td>
+                          <td className="px-8 py-5 text-right text-success font-black">+{formatPrice(0.42)}</td>
                        </tr>
                     ))}
                     {(!stakingPositions || stakingPositions.length === 0) && (
@@ -233,7 +233,7 @@ const Staking = () => {
                         <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-3 text-[10px] font-bold">
                            <div className="flex justify-between items-center">
                               <span className="text-zinc-600 uppercase">Estimated Daily Yield</span>
-                              <span className="text-primary font-mono">{formatPrice(((parseFloat(amount || 0) * (selectedPool.apr / 100)) / 365) * currency.rate)}</span>
+                              <span className="text-primary font-mono">{formatPrice(((parseFloat(amount || 0) * (selectedPool.apr / 100)) / 365))}</span>
                            </div>
                            <div className="flex justify-between items-center">
                               <span className="text-zinc-600 uppercase">Protocol Unlock Date</span>

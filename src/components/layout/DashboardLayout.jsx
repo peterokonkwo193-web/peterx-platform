@@ -2,7 +2,6 @@ import React from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import MobileNav from './MobileNav';
-import AIAssistant from '../common/AIAssistant';
 
 const DashboardLayout = ({ children }) => {
   return (
@@ -17,7 +16,6 @@ const DashboardLayout = ({ children }) => {
         </main>
       </div>
       <MobileNav />
-      <AIAssistant />
     </div>
   );
 };

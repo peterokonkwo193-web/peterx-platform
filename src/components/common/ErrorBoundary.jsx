@@ -11,7 +11,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Equity Citadel Associates Protocol Error:', error, errorInfo);
+    console.error('Equity Citadel Protocol Error:', error, errorInfo);
     this.setState({ errorInfo });
   }
 

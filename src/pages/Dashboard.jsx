@@ -77,9 +77,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (selectedChartCoin) {
-      setChartData(generateMockOHLC(selectedChartCoin.current_price * currency.rate));
+      setChartData(generateMockOHLC(selectedChartCoin.current_price));
     }
-  }, [selectedChartCoin, currency.rate]);
+  }, [selectedChartCoin]);
 
   useEffect(() => {
     const fetchInv = async () => {
@@ -124,7 +124,7 @@ const Dashboard = () => {
       const price = prices[cgId]?.usd || 0;
       return acc + (parseFloat(asset.amount) * price);
     }, 0);
-    return (parseFloat(profile?.usd_balance || 0) + assetValue) * currency.rate;
+    return parseFloat(profile?.usd_balance || 0) + assetValue;
   };
 
   const filteredMarketData = useMemo(() => {
@@ -211,7 +211,7 @@ const Dashboard = () => {
                     </h2>
                     <div className="flex items-center gap-3 mt-3">
                        <div className="px-2 py-0.5 bg-success/20 rounded text-[10px] font-bold text-success font-mono">+12.4%</div>
-                       <span className="text-xs text-zinc-500 font-bold tracking-wide uppercase">PNL Today: <span className="text-success font-black">{formatPrice(1242.10 * currency.rate)}</span></span>
+                       <span className="text-xs text-zinc-500 font-bold tracking-wide uppercase">PNL Today: <span className="text-success font-black">{formatPrice(1242.10)}</span></span>
                     </div>
                   </div>
                 </div>
@@ -230,9 +230,9 @@ const Dashboard = () => {
                 </div>
 
                 <div className="grid grid-cols-4 gap-6 mt-8 pt-8 border-t border-white/5 relative z-20">
-                   <StatMini label="Spot Balance" val={formatPrice(profile?.usd_balance * currency.rate || 0)} />
-                   <StatMini label="Invested Funds" val={formatPrice(totalInvested * currency.rate)} color="text-secondary" />
-                   <StatMini label="Unrealized PNL" val={`+${formatPrice(842.00 * currency.rate)}`} color="text-success" />
+                   <StatMini label="Spot Balance" val={formatPrice(profile?.usd_balance || 0)} />
+                   <StatMini label="Invested Funds" val={formatPrice(totalInvested)} color="text-secondary" />
+                   <StatMini label="Unrealized PNL" val={`+${formatPrice(842.00)}`} color="text-success" />
                    <div className="flex flex-col gap-2 relative z-10">
                       <Button 
                         variant="primary" 
@@ -267,7 +267,7 @@ const Dashboard = () => {
                 <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
                    <NewsItem title="SEC hints at new crypto framework for institutional traders" time="2m ago" source="Reuters" />
                    <NewsItem title="Bitcoin hash rate hits new all-time high amid network upgrades" time="14m ago" source="Bloomberg" />
-                   <NewsItem title="Ethereum L2 adoption spikes 40% in Q1 according to Equity Citadel Associates analysis" time="45m ago" source="X-Analytics" />
+                   <NewsItem title="Ethereum L2 adoption spikes 40% in Q1 according to Equity Citadel analysis" time="45m ago" source="X-Analytics" />
                    <NewsItem title="Institutional inflows into Solana ETFs reach record levels" time="1h ago" source="Financial Times" />
                 </div>
               </Card>
@@ -307,14 +307,14 @@ const Dashboard = () => {
                           <div className="text-right">
                             <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest block mb-1">Mark Price</span>
                             <span className="text-4xl font-mono font-black block text-primary tracking-tighter drop-shadow-[0_0_10px_rgba(252,213,53,0.3)]">
-                              {formatPrice(selectedChartCoin.current_price * currency.rate)}
+                              {formatPrice(selectedChartCoin.current_price)}
                             </span>
                           </div>
                         </div>
                         <div className="flex-1 bg-zinc-950/80 rounded-2xl overflow-hidden border border-white/10 shadow-inner relative group">
                           <CandlestickChart data={chartData} />
                           <div className="absolute bottom-8 right-8 pointer-events-none opacity-5 group-hover:opacity-10 transition-opacity">
-                             <h1 className="text-4xl font-black italic tracking-tighter">EQUITY CITADEL ASSOCIATES TERMINAL</h1>
+                             <h1 className="text-4xl font-black italic tracking-tighter">EQUITY CITADEL TERMINAL</h1>
                           </div>
                         </div>
                       </Card>
@@ -345,6 +345,7 @@ const Dashboard = () => {
                              <div key={`ask-${i}`} className="flex justify-between px-3 py-1.5 relative hover:bg-error/10 cursor-pointer rounded-md transition-all group/order">
                                 <div className="absolute right-0 top-0 bottom-0 bg-error/5 rounded-md transition-all group-hover/order:bg-error/10" style={{ width: `${Math.random() * 80}%` }}></div>
                                 <span className="text-error font-bold relative z-10">{(selectedChartCoin?.current_price * currency.rate + (i * 0.5 * currency.rate)).toFixed(2)}</span>
+                                <span className="text-error font-bold relative z-10">{(selectedChartCoin?.current_price + (i * 0.5)).toFixed(2)}</span>
                                 <span className="text-zinc-400 font-medium relative z-10">{(Math.random() * 2).toFixed(4)}</span>
                                 <span className="text-zinc-600 font-bold relative z-10">{(Math.random() * 50).toFixed(2)}K</span>
                              </div>
@@ -352,14 +353,14 @@ const Dashboard = () => {
                        </div>
                        <div className="bg-white/5 my-2 py-3 px-6 flex justify-between items-center border-y border-white/10 backdrop-blur-md">
                           <span className="text-[10px] font-black text-zinc-500 uppercase">Spread</span>
-                          <span className="text-xl font-black text-white tracking-tighter">{formatPrice(selectedChartCoin?.current_price * currency.rate || 0)}</span>
+                          <span className="text-xl font-black text-white tracking-tighter">{formatPrice(selectedChartCoin?.current_price || 0)}</span>
                           <span className="text-[10px] font-mono text-zinc-500">0.02%</span>
                        </div>
                        <div className="h-1/2 overflow-hidden flex flex-col px-2 gap-0.5">
                           {[...Array(12)].map((_, i) => (
                              <div key={`bid-${i}`} className="flex justify-between px-3 py-1.5 relative hover:bg-success/10 cursor-pointer rounded-md transition-all group/order">
                                 <div className="absolute right-0 top-0 bottom-0 bg-success/5 rounded-md transition-all group-hover/order:bg-success/10" style={{ width: `${Math.random() * 80}%` }}></div>
-                                <span className="text-success font-bold relative z-10">{(selectedChartCoin?.current_price * currency.rate - (i * 0.5 * currency.rate)).toFixed(2)}</span>
+                                <span className="text-success font-bold relative z-10">{(selectedChartCoin?.current_price - (i * 0.5)).toFixed(2)}</span>
                                 <span className="text-zinc-400 font-medium relative z-10">{(Math.random() * 2).toFixed(4)}</span>
                                 <span className="text-zinc-600 font-bold relative z-10">{(Math.random() * 50).toFixed(2)}K</span>
                              </div>
@@ -413,7 +414,7 @@ const Dashboard = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="px-8 py-4 font-bold text-white">{formatPrice(coin.current_price * currency.rate)}</td>
+                          <td className="px-8 py-4 font-bold text-white">{formatPrice(coin.current_price)}</td>
                           <td className={cn("px-8 py-4 font-bold", coin.price_change_percentage_24h < 0 ? "text-error" : "text-success")}>
                             {coin.price_change_percentage_24h > 0 ? '+' : ''}{coin.price_change_percentage_24h?.toFixed(2)}%
                           </td>

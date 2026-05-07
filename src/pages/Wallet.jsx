@@ -42,13 +42,14 @@ const getNetworkForCoin = (symbol) => {
 };
 
 const Wallet = () => {
-  const { user, profile, portfolio, loading: dataLoading, error: supabaseError } = useSupabaseData();
+  const { user, profile, portfolio, transactions: txData, refreshData, loading: dataLoading, error: supabaseError } = useSupabaseData();
   const { marketData } = useMarketData();
   const { currency, formatPrice } = useCurrency();
-  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [step, setStep] = useState(1); // 1: Input, 2: Verification, 3: Success
+  const [error, setError] = useState(null);
+  const [syncTime, setSyncTime] = useState(0);
 
   // Build dynamic coins list
   const dynamicCoins = React.useMemo(() => {
@@ -79,8 +80,8 @@ const Wallet = () => {
 
   useEffect(() => {
     if (user) {
-      getTransactions(user.id).then(setTransactions);
       setLoading(false);
+      setSyncTime(Math.floor(Math.random() * 999));
     }
   }, [user]);
 
@@ -102,6 +103,7 @@ const Wallet = () => {
     }
 
     setProcessing(true);
+    setError(null);
     const numAmount = parseFloat(amount || 0);
 
     try {
@@ -116,14 +118,9 @@ const Wallet = () => {
           await updatePortfolio(user.id, selectedCoin, currentAssetAmount - numAmount, asset?.average_price || 0);
         }
       } else if (actionModal === 'Deposit') {
-        const depositAmt = numAmount;
-        if (selectedCoin === 'USD') {
-          await updateProfileBalance(user.id, parseFloat(profile?.usd_balance || 0) + depositAmt);
-        } else {
-          const asset = portfolio.find(p => p.symbol === selectedCoin);
-          const currentAssetAmount = asset ? parseFloat(asset.amount) : 0;
-          await updatePortfolio(user.id, selectedCoin, currentAssetAmount + depositAmt, asset?.average_price || 0);
-        }
+        // [SECURITY UPDATE] Never trust frontend deposit requests.
+        // Balance is NOT updated here. It will be updated by the backend/admin 
+        // after verifying the actual payment on the blockchain/payment gateway.
       }
 
       await createTransaction({
@@ -132,14 +129,14 @@ const Wallet = () => {
         type: actionModal,
         amount: numAmount,
         value: 0,
-        status: 'Completed'
+        status: actionModal === 'Deposit' ? 'Pending Verification' : 'Completed',
+        client_tx_id: `${actionModal.toLowerCase()}_${user.id}_${Date.now()}`
       });
 
-      const updatedTx = await getTransactions(user.id);
-      setTransactions(updatedTx);
+      if (refreshData) await refreshData();
       setStep(3);
-    } catch (error) {
-      alert(error.message);
+    } catch (err) {
+      setError(err.message);
       setStep(1);
     } finally {
       setProcessing(false);
@@ -164,13 +161,13 @@ const Wallet = () => {
       <div className="space-y-16 relative max-w-7xl mx-auto pb-20">
         
         {/* TOP TICKER: THE ALIVE FEELING */}
-        <div className="flex bg-zinc-950 border-y border-white/5 h-10 items-center overflow-hidden -mx-12 mb-10">
-           <div className="flex gap-12 animate-marquee whitespace-nowrap px-12 items-center">
+        <div className="flex bg-zinc-950 border-y border-white/5 h-10 items-center overflow-hidden md:-mx-12 mb-10">
+           <div className="flex gap-12 animate-marquee whitespace-nowrap px-6 md:px-12 items-center">
               {[...Array(5)].map((_, i) => (
                  <React.Fragment key={i}>
                     <div className="flex items-center gap-3">
                        <span className="w-1.5 h-1.5 bg-success rounded-full"></span>
-                       <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Protocol Sync: 0.{Math.floor(Math.random() * 999)}ms</span>
+                       <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Protocol Sync: 0.{syncTime}ms</span>
                     </div>
                     <div className="flex items-center gap-3">
                        <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
@@ -185,7 +182,7 @@ const Wallet = () => {
         </div>
 
         {/* HERO SECTION: THE BOLD BALANCE */}
-        <header className="relative py-28 px-16 rounded-[60px] bg-zinc-950 border border-white/10 overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.8)]">
+        <header className="relative py-16 md:py-28 px-6 md:px-16 rounded-[32px] md:rounded-[60px] bg-zinc-950 border border-white/10 overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.8)]">
            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 blur-[180px] -z-10 animate-pulse transition-all duration-[3000ms]"></div>
            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-success/10 blur-[120px] -z-10"></div>
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 pointer-events-none"></div>
@@ -202,9 +199,9 @@ const Wallet = () => {
                     </div>
                  </div>
                  <div>
-                    <h1 className="text-[120px] font-black text-white tracking-tighter leading-none mb-6 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                       {formatPrice((profile?.usd_balance || 0) * currency.rate).split('.')[0]}
-                       <span className="text-5xl text-zinc-700 ml-1">.{formatPrice((profile?.usd_balance || 0) * currency.rate).split('.')[1] || '00'}</span>
+                    <h1 className="text-[48px] sm:text-[80px] md:text-[120px] font-black text-white tracking-tighter leading-none mb-6 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                       {formatPrice(profile?.usd_balance || 0).split('.')[0]}
+                       <span className="text-2xl md:text-5xl text-zinc-700 ml-1">.{formatPrice(profile?.usd_balance || 0).split('.')[1] || '00'}</span>
                     </h1>
                     <div className="flex items-center gap-8">
                        <div className="flex flex-col">
@@ -224,7 +221,7 @@ const Wallet = () => {
                  <motion.div 
                     whileHover={{ scale: 1.05, y: -5 }}
                     onClick={() => setActionModal('Deposit')} 
-                    className="group cursor-pointer p-10 rounded-[48px] bg-white/[0.03] border border-white/5 hover:border-success/60 hover:bg-success/[0.08] transition-all duration-700 shadow-3xl flex flex-col items-center text-center relative overflow-hidden"
+                    className="group cursor-pointer p-6 md:p-10 rounded-[32px] md:rounded-[48px] bg-white/[0.03] border border-white/5 hover:border-success/60 hover:bg-success/[0.08] transition-all duration-700 shadow-3xl flex flex-col items-center text-center relative overflow-hidden"
                  >
                     <div className="absolute inset-0 bg-gradient-to-br from-success/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="w-20 h-20 rounded-3xl bg-success text-black flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-[0_20px_50px_rgba(14,203,129,0.4)] relative z-10">
@@ -237,7 +234,7 @@ const Wallet = () => {
                  <motion.div 
                     whileHover={{ scale: 1.05, y: -5 }}
                     onClick={() => setActionModal('Transfer')} 
-                    className="group cursor-pointer p-10 rounded-[48px] bg-white/[0.03] border border-white/5 hover:border-primary/60 hover:bg-primary/[0.08] transition-all duration-700 shadow-3xl flex flex-col items-center text-center relative overflow-hidden"
+                    className="group cursor-pointer p-6 md:p-10 rounded-[32px] md:rounded-[48px] bg-white/[0.03] border border-white/5 hover:border-primary/60 hover:bg-primary/[0.08] transition-all duration-700 shadow-3xl flex flex-col items-center text-center relative overflow-hidden"
                  >
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="w-20 h-20 rounded-3xl bg-primary text-black flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-[0_20px_50px_rgba(252,213,53,0.4)] relative z-10">
@@ -250,7 +247,7 @@ const Wallet = () => {
                  <motion.div 
                     whileHover={{ scale: 1.05, y: -5 }}
                     onClick={() => setActionModal('Withdraw')} 
-                    className="group cursor-pointer p-10 rounded-[48px] bg-white/[0.03] border border-white/5 hover:border-error/60 hover:bg-error/[0.08] transition-all duration-700 shadow-3xl flex flex-col items-center text-center relative overflow-hidden lg:col-span-1 md:col-span-2"
+                    className="group cursor-pointer p-6 md:p-10 rounded-[32px] md:rounded-[48px] bg-white/[0.03] border border-white/5 hover:border-error/60 hover:bg-error/[0.08] transition-all duration-700 shadow-3xl flex flex-col items-center text-center relative overflow-hidden lg:col-span-1 md:col-span-2"
                  >
                     <div className="absolute inset-0 bg-gradient-to-br from-error/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="w-20 h-20 rounded-3xl bg-white/10 text-white flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-white/20 relative z-10">
@@ -359,7 +356,7 @@ const Wallet = () => {
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-white/5 font-mono text-[11px]">
-                    {transactions.map((tx) => (
+                    {(txData || []).map((tx) => (
                        <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors group">
                           <td className="px-10 py-6 flex items-center gap-4">
                              <span className={cn(
@@ -388,7 +385,7 @@ const Wallet = () => {
                           </td>
                        </tr>
                     ))}
-                    {transactions.length === 0 && (
+                    {(txData || []).length === 0 && (
                        <tr><td colSpan="4" className="py-24 text-center text-zinc-800 italic font-black uppercase tracking-[0.5em] text-[10px]">No Protocol Audit Logs Found</td></tr>
                     )}
                  </tbody>
@@ -451,7 +448,7 @@ const Wallet = () => {
                                       type="text"
                                       value={address}
                                       onChange={(e) => setAddress(e.target.value)}
-                                      placeholder={actionModal === 'Withdraw' ? "Enter withdrawal address" : "Enter Equity Citadel Associates Pay ID"}
+                                      placeholder={actionModal === 'Withdraw' ? "Enter withdrawal address" : "Enter Equity Citadel Pay ID"}
                                       className="w-full bg-[#2b3139] border border-transparent rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#FCD535] hover:bg-[#323942] transition-colors"
                                    />
                                 </div>
@@ -539,6 +536,13 @@ const Wallet = () => {
                                 </div>
                              )}
 
+                              {error && (
+                                 <div className="p-4 rounded-xl bg-error/10 border border-error/20 flex items-center gap-3 mb-4">
+                                    <span className="material-symbols-outlined text-error text-[18px]">error</span>
+                                    <p className="text-[10px] text-error font-black uppercase tracking-widest">{error}</p>
+                                 </div>
+                              )}
+
                              {/* Actions */}
                              {(actionModal === 'Withdraw' || actionModal === 'Transfer') && (
                                 <button 
@@ -590,7 +594,10 @@ const Wallet = () => {
                              </div>
                              <div className="space-y-2">
                                 <h3 className="text-2xl font-medium">Request Submitted</h3>
-                                <p className="text-sm text-zinc-400 max-w-[250px] mx-auto">Your {actionModal.toLowerCase()} request has been successfully submitted and is processing.</p>
+                                <p className="text-sm text-zinc-400 max-w-[250px] mx-auto">
+                                    Your {actionModal.toLowerCase()} request has been submitted. 
+                                    {actionModal === 'Deposit' && " It is currently pending verification from our institutional node."}
+                                 </p>
                              </div>
                              <div className="pt-4">
                                 <button onClick={() => setActionModal(null)} className="w-full bg-[#2b3139] text-white font-medium py-3 rounded-lg hover:bg-[#323942] transition-colors">Complete</button>

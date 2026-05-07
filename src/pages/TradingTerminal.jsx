@@ -39,7 +39,7 @@ const TradingTerminal = () => {
   // Generate Mock Chart Data
   useEffect(() => {
     if (selectedAsset) {
-      const basePrice = selectedAsset.current_price * currency.rate;
+      const basePrice = selectedAsset.current_price;
       const data = [];
       let time = Math.floor(Date.now() / 1000) - (50 * 60);
 
@@ -54,7 +54,7 @@ const TradingTerminal = () => {
       }
       setChartData(data);
     }
-  }, [selectedAsset, currency.rate]);
+  }, [selectedAsset]);
 
   // Live Ticking
   useEffect(() => {
@@ -74,7 +74,7 @@ const TradingTerminal = () => {
     return () => clearInterval(interval);
   }, [chartData.length]);
 
-  const currentPrice = (selectedAsset?.current_price || 0) * currency.rate;
+  const currentPrice = selectedAsset?.current_price || 0;
   
   const calculateLiquidation = () => {
     if (tradingMode !== 'futures') return 0;
@@ -145,27 +145,27 @@ const TradingTerminal = () => {
     <DashboardLayout>
       <div className="flex flex-col h-[calc(100vh-100px)] -mt-6">
         {/* Terminal Header */}
-        <header className="h-16 px-12 border-b border-white/5 flex items-center justify-between bg-zinc-950/80 backdrop-blur-xl -mx-12 z-20">
-          <div className="flex items-center gap-8">
+        <header className="h-auto md:h-16 py-4 md:py-0 px-4 md:px-12 border-b border-white/5 flex flex-col md:flex-row items-center justify-between bg-zinc-950/80 backdrop-blur-xl md:-mx-12 z-20 gap-4 md:gap-0">
+          <div className="flex items-center justify-between w-full md:w-auto gap-4 md:gap-8">
             <div className="flex items-center gap-3">
               <img src={selectedAsset?.image} className="w-6 h-6 rounded-full" alt="" />
-              <h2 className="text-lg font-black text-white tracking-tighter uppercase">{selectedAsset?.symbol}/USDT</h2>
+              <h2 className="text-sm md:text-lg font-black text-white tracking-tighter uppercase">{selectedAsset?.symbol}/USDT</h2>
             </div>
-            <div className="flex gap-6 text-[10px] font-black uppercase tracking-widest border-l border-white/10 pl-8">
+            <div className="flex gap-4 md:gap-6 text-[9px] md:text-[10px] font-black uppercase tracking-widest border-l border-white/10 pl-4 md:pl-8">
                <button onClick={() => setTradingMode('spot')} className={cn("pb-1 border-b-2 transition-all", tradingMode === 'spot' ? "border-primary text-primary" : "border-transparent text-zinc-500")}>Spot</button>
                <button onClick={() => setTradingMode('futures')} className={cn("pb-1 border-b-2 transition-all", tradingMode === 'futures' ? "border-primary text-primary" : "border-transparent text-zinc-500")}>Futures</button>
             </div>
           </div>
-          <div className="flex gap-10 items-center">
+          <div className="flex justify-between w-full md:w-auto gap-6 md:gap-10 items-center">
              <div className="text-right">
-                <span className="text-[9px] text-zinc-600 font-black uppercase block">Mark Price</span>
-                <span className={cn("text-lg font-black font-mono", selectedAsset?.price_change_percentage_24h >= 0 ? "text-success" : "text-error")}>
+                <span className="text-[8px] md:text-[9px] text-zinc-600 font-black uppercase block">Mark Price</span>
+                <span className={cn("text-sm md:text-lg font-black font-mono", selectedAsset?.price_change_percentage_24h >= 0 ? "text-success" : "text-error")}>
                   {formatPrice(currentPrice)}
                 </span>
              </div>
-             <div className="text-right border-l border-white/10 pl-10">
-                <span className="text-[9px] text-zinc-600 font-black uppercase block">24h Change</span>
-                <span className={cn("text-sm font-black font-mono", selectedAsset?.price_change_percentage_24h >= 0 ? "text-success" : "text-error")}>
+             <div className="text-right border-l border-white/10 pl-6 md:pl-10">
+                <span className="text-[8px] md:text-[9px] text-zinc-600 font-black uppercase block">24h Change</span>
+                <span className={cn("text-xs md:text-sm font-black font-mono", selectedAsset?.price_change_percentage_24h >= 0 ? "text-success" : "text-error")}>
                   {selectedAsset?.price_change_percentage_24h?.toFixed(2)}%
                 </span>
              </div>
@@ -240,11 +240,11 @@ const TradingTerminal = () => {
                                      <span className={cn("px-2 py-0.5 rounded text-[9px] font-black uppercase", pos.type === 'Long' ? "bg-success/20 text-success" : "bg-error/20 text-error")}>{pos.type}</span>
                                   </td>
                                   <td className="py-4 text-center text-zinc-400 font-black">{pos.leverage}x</td>
-                                  <td className="py-4 text-right text-zinc-300">{(pos.entry_price * currency.rate).toFixed(2)}</td>
-                                  <td className="py-4 text-right text-zinc-300">{(selectedAsset?.current_price * currency.rate).toFixed(2)}</td>
-                                  <td className="py-4 text-right text-error font-bold">{(pos.liquidation_price * currency.rate).toFixed(2)}</td>
+                                  <td className="py-4 text-right text-zinc-300">{formatPrice(pos.entry_price)}</td>
+                                  <td className="py-4 text-right text-zinc-300">{formatPrice(currentPrice)}</td>
+                                  <td className="py-4 text-right text-error font-bold">{formatPrice(pos.liquidation_price)}</td>
                                   <td className={cn("py-4 text-right font-black", pnlUsd >= 0 ? "text-success" : "text-error")}>
-                                     {pnlUsd >= 0 ? '+' : ''}{formatPrice(pnlUsd * currency.rate)} ({pnlPercent.toFixed(2)}%)
+                                     {pnlUsd >= 0 ? '+' : ''}{formatPrice(pnlUsd)} ({pnlPercent.toFixed(2)}%)
                                   </td>
                                   <td className="py-4 text-right">
                                      <button className="text-[10px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">Close</button>
@@ -334,7 +334,7 @@ const TradingTerminal = () => {
              </div>
 
              <div className="text-[9px] text-zinc-600 font-black uppercase tracking-widest text-center leading-relaxed">
-                Equity Citadel Associates Institutional Protocol Fee: <span className="text-zinc-400">0.01% Maker / 0.02% Taker</span>
+                Equity Citadel Institutional Protocol Fee: <span className="text-zinc-400">0.01% Maker / 0.02% Taker</span>
              </div>
           </section>
         </main>

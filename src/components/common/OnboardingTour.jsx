@@ -12,7 +12,7 @@ const OnboardingTour = ({ profile }) => {
   const TOUR_STEPS = [
     {
       target: 'header-welcome',
-      title: `Hi ${firstName}! Welcome to Equity Citadel Associates`,
+      title: `Hi ${firstName}! Welcome to Equity Citadel`,
       content: isExpert 
         ? "We've optimized your terminal for advanced institutional-grade trading. Let's verify your layout."
         : "Welcome to the future of finance! We'll help you navigate your first digital asset trades.",
@@ -49,7 +49,7 @@ const OnboardingTour = ({ profile }) => {
   ];
 
   useEffect(() => {
-    const hasSeenTour = localStorage.getItem(`Equity Citadel Associates_tour_completed_${profile?.id}`);
+    const hasSeenTour = localStorage.getItem(`Equity Citadel_tour_completed_${profile?.id}`);
     if (!hasSeenTour && profile) {
       setTimeout(() => {
         setIsVisible(true);
@@ -68,7 +68,7 @@ const OnboardingTour = ({ profile }) => {
 
   const handleComplete = () => {
     setIsVisible(false);
-    localStorage.setItem(`Equity Citadel Associates_tour_completed_${profile?.id}`, 'true');
+    localStorage.setItem(`Equity Citadel_tour_completed_${profile?.id}`, 'true');
   };
 
   if (!isVisible || currentStep === -1) return null;

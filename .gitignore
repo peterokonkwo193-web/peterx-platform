@@ -25,3 +25,5 @@ peterx ui/
 *.njsproj
 *.sln
 *.sw?
+
+.vercel

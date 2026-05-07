@@ -4,13 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
 import Navbar from '../components/layout/Navbar';
+import DesktopBar from '../components/layout/DesktopBar';
+import InvestmentPlans from '../components/landing/InvestmentPlans';
+import { useSupport } from '../context/SupportContext';
 import { useLivePrices } from '../hooks/useLivePrices';
+import { useCurrency } from '../context/CurrencyContext';
 import CandlestickChart from '../components/CandlestickChart';
 import { cn } from '../utils/cn';
 
 const Home = () => {
   const { prices } = useLivePrices();
+  const { formatPrice } = useCurrency();
   const [activities, setActivities] = useState([]);
+  const { openSupport } = useSupport();
 
   // Generate live activities
   useEffect(() => {
@@ -19,7 +25,7 @@ const Home = () => {
     
     const interval = setInterval(() => {
       const isVerification = Math.random() > 0.8;
-      const amount = (Math.random() * 5000000 + 10000).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+      const amount = formatPrice(Math.random() * 5000000 + 10000);
       const asset = assets[Math.floor(Math.random() * assets.length)];
       
       let text = '';
@@ -72,10 +78,11 @@ const Home = () => {
 
   return (
     <div className="relative min-h-screen bg-background text-on-background overflow-x-hidden font-body-md">
-      <Navbar />
+      <DesktopBar />
+      <Navbar className="!top-8" />
       
       {/* LIVE MARKET TICKER */}
-      <div className="fixed top-20 w-full bg-surface/80 backdrop-blur-md border-b border-white/5 py-2 z-40 overflow-hidden flex whitespace-nowrap">
+      <div className="fixed top-28 w-full bg-surface/80 backdrop-blur-md border-b border-white/5 py-2 z-40 overflow-hidden flex whitespace-nowrap">
         <div className="animate-marquee flex gap-12 items-center px-4">
           {prices && Object.entries(prices).map(([id, p], idx) => (
             <div key={idx} className="flex items-center gap-3">
@@ -103,42 +110,49 @@ const Home = () => {
         </div>
       </div>
 
-      <main className="relative pt-28">
+      <main className="relative pt-24 md:pt-40">
         {/* HERO SECTION */}
         <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/5 blur-[120px] rounded-full -z-10 animate-pulse"></div>
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] md:w-[800px] h-[300px] md:h-[500px] bg-primary/5 blur-[120px] rounded-full -z-10 animate-pulse"></div>
           
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="max-w-5xl space-y-8"
+            className="max-w-5xl space-y-6 md:space-y-8"
           >
             <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-surface/50 border border-white/10 backdrop-blur-md mb-4 shadow-xl">
                <span className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_10px_var(--color-primary)]"></span>
                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Institutional Protocol Active</span>
             </div>
             
-            <h1 className="text-[60px] md:text-[90px] font-black leading-[1.05] tracking-tight text-white">
+            <h1 className="text-[40px] sm:text-[60px] md:text-[90px] font-black leading-[1.1] md:leading-[1.05] tracking-tight text-white">
                Trade with the <span className="text-primary italic">Elite.</span><br/>
                Profit with <span className="text-zinc-400">Precision.</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto font-medium leading-relaxed">
-              Equity Citadel Associates is the world's premier institutional-grade broker. Access deep liquidity, extreme leverage, and zero-latency execution. Engineered for professional profitability.
+            <p className="text-base md:text-xl text-zinc-400 max-w-3xl mx-auto font-medium leading-relaxed">
+              Equity Citadel is the world's premier institutional-grade broker. Access deep liquidity, extreme leverage, and zero-latency execution. Engineered for professional profitability.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
               <Link to="/signup">
                 <Button size="lg" className="px-12 py-6 text-sm font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(196,164,124,0.3)] hover:scale-105 transition-all bg-primary text-black hover:bg-primary-fixed">
-                   Secure Your Seat
+                   Register
                 </Button>
               </Link>
-              <Link to="/trade">
+              <a href="#plans">
                 <Button size="lg" variant="outline" className="px-12 py-6 text-sm font-black uppercase tracking-[0.2em] border-outline hover:bg-surface-variant transition-all">
-                   Explore Terminal
+                   View Plans
                 </Button>
-              </Link>
+              </a>
+              <Button 
+                onClick={() => openSupport()}
+                size="lg" variant="outline" className="px-12 py-6 text-sm font-black uppercase tracking-[0.2em] border-primary/30 text-primary hover:bg-primary/10 transition-all flex items-center gap-3"
+              >
+                 <span className="material-symbols-outlined text-sm">contact_support</span>
+                 Contact Support
+              </Button>
             </div>
           </motion.div>
 
@@ -185,6 +199,11 @@ const Home = () => {
                  />
               </div>
            </div>
+        </section>
+
+        {/* INVESTMENT PLANS: THE CAPITAL ALLOCATION */}
+        <section id="plans">
+           <InvestmentPlans onSupport={openSupport} />
         </section>
 
         {/* PROFIT ENGINE: LIVE CHART PREVIEW */}
@@ -283,7 +302,7 @@ const Home = () => {
            <Card className="max-w-4xl mx-auto p-16 md:p-24 rounded-[40px] border border-outline/50 relative overflow-hidden shadow-2xl bg-surface/50 backdrop-blur-xl">
               <div className="relative z-10 space-y-8">
                  <h2 className="text-[48px] md:text-[64px] font-black text-white tracking-tight leading-none">The Future of Finance is <span className="text-primary italic">Here.</span></h2>
-                 <p className="text-lg md:text-xl text-zinc-400 font-medium max-w-2xl mx-auto">Join the elite institutions who have already upgraded their infrastructure to Equity Citadel Associates.</p>
+                 <p className="text-lg md:text-xl text-zinc-400 font-medium max-w-2xl mx-auto">Join the elite institutions who have already upgraded their infrastructure to Equity Citadel.</p>
                  <div className="pt-8">
                     <Link to="/signup">
                        <Button size="lg" className="px-14 py-6 text-sm font-black uppercase tracking-[0.2em] shadow-2xl bg-primary text-black hover:bg-primary-fixed">Create Elite Account</Button>
@@ -298,12 +317,12 @@ const Home = () => {
       <footer className="bg-surface/20 py-20 px-12 border-t border-outline/30 mt-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
           <div className="md:col-span-4 flex flex-col items-center md:items-start space-y-4">
-            <span className="text-xl font-black tracking-tight text-white uppercase">EQUITY CITADEL ASSOCIATES</span>
+            <span className="text-xl font-black tracking-tight text-white uppercase">EQUITY CITADEL</span>
             <p className="text-xs text-zinc-500 font-medium leading-relaxed max-w-sm">Redefining institutional digital asset infrastructure. Secure. Fast. Infinite.</p>
           </div>
         </div>
         <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-outline/30 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-          <p>© 2024 Equity Citadel Associates. All rights reserved.</p>
+          <p>© 2024 Equity Citadel. All rights reserved.</p>
           <div className="flex gap-8">
             <a href="#" className="hover:text-white transition-all">Privacy</a>
             <a href="#" className="hover:text-white transition-all">Terms</a>
@@ -331,7 +350,7 @@ const StepCard = ({ number, title, desc, icon }) => (
      <div className="w-12 h-12 rounded-xl bg-surface border border-outline flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-black transition-all">
         <span className="material-symbols-outlined">{icon}</span>
      </div>
-     <span className="text-4xl font-black text-white/5 absolute top-8 right-8">{number}</span>
+     <span className="text-4xl font-black text-white absolute top-8 right-8">{number}</span>
      <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{title}</h3>
      <p className="text-sm text-zinc-400 font-medium leading-relaxed">{desc}</p>
   </motion.div>

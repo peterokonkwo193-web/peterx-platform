@@ -7,7 +7,7 @@ import { cn } from '../../utils/cn';
 const AIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Welcome to Equity Citadel Associates Intelligence. I am your institutional trading co-pilot. How can I assist your market analysis today?' }
+    { role: 'assistant', content: 'Welcome to Equity Citadel Intelligence. I am your institutional trading co-pilot. How can I assist your market analysis today?' }
   ]);
   const [input, setInput] = useState('');
 
@@ -43,7 +43,7 @@ const AIAssistant = () => {
                   <span className="material-symbols-outlined text-white text-sm">auto_awesome</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-xs uppercase tracking-widest text-primary-fixed">Equity Citadel Associates AI</h3>
+                  <h3 className="font-bold text-xs uppercase tracking-widest text-primary-fixed">Equity Citadel AI</h3>
                   <span className="text-[10px] text-zinc-500 uppercase">Institutional Assistant</span>
                 </div>
               </div>

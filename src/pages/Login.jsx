@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
 import { signIn, signUp, signInWithOAuth, resetPassword } from '../lib/auth';
+import { useSupport } from '../context/SupportContext';
 import { cn } from '../utils/cn';
 
 const Login = ({ isSignUp = false }) => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [experienceLevel, setExperienceLevel] = useState('Beginner');
@@ -14,6 +15,7 @@ const Login = ({ isSignUp = false }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const { openSupport } = useSupport();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,25 +25,25 @@ const Login = ({ isSignUp = false }) => {
 
     try {
       if (isForgotPassword) {
-        await resetPassword(email);
+        await resetPassword(identifier);
         setSuccess('Password reset link sent! Check your inbox.');
         setIsForgotPassword(false);
       } else if (isSignUp) {
         if (!fullName) {
           throw new Error('Please enter your full name.');
         }
-        await signUp(email, password, fullName, experienceLevel);
-        setSuccess('Signup successful! You can now log in.');
-        navigate('/login');
+        await signUp(identifier, password, fullName, experienceLevel);
+        setSuccess('Signup successful! Redirecting to login...');
+        setTimeout(() => navigate('/login'), 2000);
       } else {
-        await signIn(email, password);
-        navigate('/dashboard');
+        await signIn(identifier, password);
+        navigate('/investments');
       }
     } catch (err) {
       // Friendly error mapping
       let message = err.message;
-      if (message === 'Invalid login credentials') message = 'Invalid email or password.';
-      if (message === 'User already registered') message = 'An account with this email already exists.';
+      if (message === 'Invalid login credentials') message = 'Invalid credentials. Please try again.';
+      if (message === 'User already registered') message = 'An account with this identifier already exists.';
       setError(message);
     } finally {
       setLoading(false);
@@ -54,11 +56,20 @@ const Login = ({ isSignUp = false }) => {
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px]"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px]"></div>
       
+      {/* Support Button (Connected to Global) */}
+      <button 
+        onClick={() => openSupport()}
+        className="fixed top-8 right-8 z-50 flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full hover:bg-primary/10 hover:border-primary/30 transition-all group"
+      >
+        <span className="material-symbols-outlined text-primary text-sm group-hover:animate-pulse">contact_support</span>
+        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-primary transition-colors">Support</span>
+      </button>
+      
       <main className="w-full max-w-[1200px] grid lg:grid-cols-2 gap-stack-lg px-6 py-stack-lg z-10">
         {/* Brand Side */}
         <div className="hidden lg:flex flex-col justify-center space-y-stack-md">
           <div className="mb-stack-lg">
-            <span className="font-display text-display text-on-surface tracking-tighter">Equity Citadel Associates</span>
+            <span className="font-display text-display text-on-surface tracking-tighter">Equity Citadel</span>
             <p className="font-label-caps text-label-caps text-secondary mt-stack-xs tracking-[0.2em]">INSTITUTIONAL GRADE TRADING</p>
           </div>
           <div className="space-y-stack-md">
@@ -127,14 +138,14 @@ const Login = ({ isSignUp = false }) => {
               )}
 
               <div className="space-y-2">
-                <label className="font-label-caps text-label-caps text-on-primary-container block uppercase tracking-widest text-[10px]">Email Address</label>
+                <label className="font-label-caps text-label-caps text-on-primary-container block uppercase tracking-widest text-[10px]">Email or Phone Number</label>
                 <div className="relative group input-glow bg-surface-container-low border border-outline-variant rounded-xl transition-all duration-300">
                   <input 
                     className="w-full bg-transparent border-none text-on-surface font-body-md py-3 px-4 focus:ring-0 placeholder:text-outline/30" 
-                    placeholder="name@company.com" 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email or +1234567890" 
+                    type="text" 
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     required
                   />
                 </div>

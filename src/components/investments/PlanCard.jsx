@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import { cn } from '../../utils/cn';
+import { useCurrency } from '../../context/CurrencyContext';
 
-const PlanCard = ({ plan, onInvest, isRecommended = false }) => {
+const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
+  const { formatPrice } = useCurrency();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -27,8 +30,23 @@ const PlanCard = ({ plan, onInvest, isRecommended = false }) => {
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 blur-[80px] group-hover:bg-primary/30 transition-all duration-700 animate-pulse"></div>
         )}
 
+        {/* Support Link */}
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onSupport(plan);
+          }}
+          className="absolute top-4 right-4 z-30 flex items-center gap-1.5 text-zinc-500 hover:text-primary transition-all duration-300 group/support"
+          title="Contact Support"
+        >
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-0 group-hover/support:opacity-100 transition-opacity">Support</span>
+          <div className="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover/support:border-primary/50 group-hover/support:bg-primary/10">
+            <span className="material-symbols-outlined text-[14px]">contact_support</span>
+          </div>
+        </button>
+
         {isRecommended && (
-          <div className="absolute top-4 right-4 z-20">
+          <div className="absolute top-14 right-4 z-20">
             <div className="bg-primary text-black text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-2xl flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[10px] animate-spin-slow">star</span>
               Tier 1 Recommended
@@ -68,10 +86,10 @@ const PlanCard = ({ plan, onInvest, isRecommended = false }) => {
             <div className="relative">
               <span className="text-[9px] text-zinc-600 uppercase font-black tracking-[0.3em] block mb-1">Capital Requirement</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-black text-white tracking-tighter">
-                  ${plan.range.toLocaleString()}
+                <span className="text-3xl font-black text-white tracking-tighter">
+                  {formatPrice(plan.range)}
                 </span>
-                <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Minimum</span>
+                <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest ml-1">Minimum</span>
               </div>
             </div>
 

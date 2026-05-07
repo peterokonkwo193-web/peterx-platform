@@ -168,10 +168,15 @@ export const claimStakingRewards = async (positionId, amount) => {
   return data;
 };
 // Investment System
-export const createInvestment = async (investmentData) => {
-  const { data, error } = await supabase
-    .from('investments')
-    .insert([investmentData]);
+export const executeInvestment = async (investmentData) => {
+  const { data, error } = await supabase.rpc('execute_investment', {
+    p_plan_name: investmentData.plan_name,
+    p_amount: investmentData.amount,
+    p_duration_days: investmentData.duration_days,
+    p_expected_profit: investmentData.expected_profit,
+    p_end_date: investmentData.end_date,
+    p_client_tx_id: investmentData.client_tx_id
+  });
   if (error) throw error;
   return data;
 };

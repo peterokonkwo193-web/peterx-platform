@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
 import Card from '../common/Card';
-import { updateProfileBalance, createInvestment, createTransaction } from '../../lib/db';
+import { executeInvestment } from '../../lib/db';
 import { useCurrency } from '../../context/CurrencyContext';
 
-const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete }) => {
+const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete, refreshData }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { formatPrice } = useCurrency();
+  const navigate = useNavigate();
+  
+  const isInsufficient = profile?.usd_balance < plan.range;
 
   if (!isOpen) return null;
 
@@ -17,8 +21,8 @@ const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete }) => {
     setError(null);
 
     try {
-      if (profile.usd_balance < plan.range) {
-        throw new Error('Insufficient institutional liquidity.');
+      if (isInsufficient) {
+        throw new Error('Insufficient Balance');
       }
 
       const endDate = new Date();
@@ -31,28 +35,19 @@ const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete }) => {
         duration_days: plan.duration,
         expected_profit: (plan.range * plan.roi) / 100,
         end_date: endDate.toISOString(),
+        client_tx_id: `inv_${profile.id}_${Date.now()}`
       };
 
-      // 1. Create Investment
-      await createInvestment(investmentData);
+      // 1. Execute Investment Transactionally via RPC
+      await executeInvestment(investmentData);
 
-      // 2. Deduct Balance
-      await updateProfileBalance(profile.id, profile.usd_balance - plan.range);
-
-      // 3. Log Transaction
-      await createTransaction({
-        user_id: profile.id,
-        asset: 'USD',
-        type: 'Investment',
-        amount: plan.range,
-        value: plan.range,
-        status: 'Completed'
-      });
+      // 2. Refresh data immediately to sync UI
+      if (refreshData) await refreshData();
 
       onComplete();
       onClose();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Institutional protocol execution failed. Please check liquidity.');
     } finally {
       setLoading(false);
     }
@@ -99,9 +94,23 @@ const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete }) => {
             </div>
 
             {error && (
-              <div className="p-4 rounded-xl bg-error/10 border border-error/20 flex items-center gap-3">
-                <span className="material-symbols-outlined text-error text-[18px]">error</span>
-                <p className="text-[10px] text-error font-black uppercase tracking-widest">{error}</p>
+              <div className="p-4 rounded-xl bg-error/10 border border-error/20 flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-error text-[18px]">error</span>
+                  <p className="text-[10px] text-error font-black uppercase tracking-widest">{error}</p>
+                </div>
+                {error === 'Insufficient Balance' && (
+                  <Button 
+                    variant="primary" 
+                    className="w-full py-2 text-[10px] font-black uppercase tracking-widest bg-error text-white hover:bg-error/90 border-error/20"
+                    onClick={() => {
+                      onClose();
+                      navigate('/wallet');
+                    }}
+                  >
+                    Deposit Funds Now
+                  </Button>
+                )}
               </div>
             )}
 
@@ -109,14 +118,27 @@ const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete }) => {
               <Button variant="outline" className="flex-1 py-4 font-black uppercase tracking-widest" onClick={onClose}>
                 Abort
               </Button>
-              <Button 
-                variant="primary" 
-                className="flex-1 py-4 font-black uppercase tracking-widest"
-                onClick={handleConfirm}
-                disabled={loading}
-              >
-                {loading ? 'Processing...' : 'Execute Investment'}
-              </Button>
+              {isInsufficient ? (
+                <Button 
+                  variant="primary" 
+                  className="flex-1 py-4 font-black uppercase tracking-widest bg-zinc-800 text-white hover:bg-zinc-700"
+                  onClick={() => {
+                    onClose();
+                    navigate('/wallet');
+                  }}
+                >
+                  Deposit Funds
+                </Button>
+              ) : (
+                <Button 
+                  variant="primary" 
+                  className="flex-1 py-4 font-black uppercase tracking-widest"
+                  onClick={handleConfirm}
+                  disabled={loading}
+                >
+                  {loading ? 'Processing...' : 'Execute Investment'}
+                </Button>
+              )}
             </div>
           </div>
         </Card>

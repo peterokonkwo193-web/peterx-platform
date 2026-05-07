@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import PlanCard from '../components/investments/PlanCard';
 import InvestmentModal from '../components/investments/InvestmentModal';
 import InvestmentDashboard from '../components/investments/InvestmentDashboard';
-import InvestmentAIAssistant from '../components/investments/InvestmentAIAssistant';
+import { useSupport } from '../context/SupportContext';
 import { useSupabaseData } from '../hooks/useSupabaseData';
 import { getInvestments } from '../lib/db';
 import { cn } from '../utils/cn';
@@ -50,11 +51,12 @@ const INVESTMENT_PLANS = [
 ];
 
 const Investments = () => {
-  const { profile, loading: supabaseLoading } = useSupabaseData();
+  const { profile, refreshData, loading: supabaseLoading } = useSupabaseData();
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openSupport } = useSupport();
 
   const fetchInvestments = async () => {
     if (!profile) return;
@@ -72,15 +74,14 @@ const Investments = () => {
     fetchInvestments();
   }, [profile]);
 
+  const navigate = useNavigate();
   const handleInvestClick = (plan) => {
-    setSelectedPlan(plan);
-    setIsModalOpen(true);
+    navigate('/deposit');
   };
 
   const handleComplete = () => {
     fetchInvestments();
-    // Refresh page data if needed or rely on local state
-    window.location.reload();
+    if (refreshData) refreshData();
   };
 
   return (
@@ -138,6 +139,7 @@ const Investments = () => {
               key={plan.id} 
               plan={plan} 
               onInvest={handleInvestClick}
+              onSupport={openSupport}
               isRecommended={plan.recommended}
             />
           ))}
@@ -184,11 +186,10 @@ const Investments = () => {
             plan={selectedPlan}
             profile={profile}
             onComplete={handleComplete}
+            refreshData={refreshData}
           />
         )}
       </AnimatePresence>
-
-      <InvestmentAIAssistant />
     </DashboardLayout>
   );
 };

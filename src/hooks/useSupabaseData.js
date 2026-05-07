@@ -7,10 +7,33 @@ export const useSupabaseData = () => {
   const [profile, setProfile] = useState(null);
   const [portfolio, setPortfolio] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [futuresPositions, setFuturesPositions] = useState([]);
   const [stakingPositions, setStakingPositions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const refreshData = async () => {
+    if (!user) return;
+    try {
+      const [p, port, watch, futures, staking, txs] = await Promise.all([
+        getProfile(user.id).catch(() => null),
+        getPortfolio(user.id).catch(() => []),
+        getWatchlist(user.id).catch(() => []),
+        supabase.from('futures_positions').select('*').eq('user_id', user.id).eq('is_open', true).then(res => res.data || []),
+        supabase.from('staking_positions').select('*').eq('user_id', user.id).then(res => res.data || []),
+        supabase.from('transactions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50).then(res => res.data || [])
+      ]);
+      setProfile(p);
+      setPortfolio(port || []);
+      setWatchlist(watch || []);
+      setFuturesPositions(futures || []);
+      setStakingPositions(staking || []);
+      setTransactions(txs || []);
+    } catch (err) {
+      console.error('Error refreshing data:', err);
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -20,18 +43,20 @@ export const useSupabaseData = () => {
         setUser(currentUser);
 
         if (currentUser) {
-          const [p, port, watch, futures, staking] = await Promise.all([
+          const [p, port, watch, futures, staking, txs] = await Promise.all([
             getProfile(currentUser.id).catch(() => null),
             getPortfolio(currentUser.id).catch(() => []),
             getWatchlist(currentUser.id).catch(() => []),
             supabase.from('futures_positions').select('*').eq('user_id', currentUser.id).eq('is_open', true).then(res => res.data || []),
-            supabase.from('staking_positions').select('*').eq('user_id', currentUser.id).then(res => res.data || [])
+            supabase.from('staking_positions').select('*').eq('user_id', currentUser.id).then(res => res.data || []),
+            supabase.from('transactions').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(50).then(res => res.data || [])
           ]);
           setProfile(p);
           setPortfolio(port || []);
           setWatchlist(watch || []);
           setFuturesPositions(futures || []);
           setStakingPositions(staking || []);
+          setTransactions(txs || []);
         }
       } catch (err) {
         console.error('Error fetching initial data:', err);
@@ -96,6 +121,13 @@ export const useSupabaseData = () => {
       })
       .subscribe();
 
+    const transactionsSub = supabase
+      .channel(`transactions-changes-${user.id}-${timestamp}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: `user_id=eq.${user.id}` }, () => {
+        supabase.from('transactions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50).then(res => setTransactions(res.data || []));
+      })
+      .subscribe();
+
     return () => {
       // Properly remove channels to completely deregister them from the Supabase client
       supabase.removeChannel(profileSub);
@@ -103,6 +135,7 @@ export const useSupabaseData = () => {
       supabase.removeChannel(watchlistSub);
       supabase.removeChannel(futuresSub);
       supabase.removeChannel(stakingSub);
+      supabase.removeChannel(transactionsSub);
     };
   }, [user]);
 
@@ -124,7 +157,7 @@ export const useSupabaseData = () => {
           
           // Try native notification first
           if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            new Notification('Equity Citadel Associates Admin Alert', { body: msg, icon: '/vite.svg' });
+            new Notification('Equity Citadel Admin Alert', { body: msg, icon: '/vite.svg' });
           } else {
             // Fallback to browser alert
             alert(msg);
@@ -138,5 +171,5 @@ export const useSupabaseData = () => {
     };
   }, [profile?.is_admin]);
 
-  return { user, profile, portfolio: portfolio || [], watchlist: watchlist || [], futuresPositions, stakingPositions, loading, error };
+  return { user, profile, portfolio: portfolio || [], watchlist: watchlist || [], futuresPositions, stakingPositions, transactions, refreshData, loading, error };
 };
