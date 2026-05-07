@@ -16,14 +16,14 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  // Master Bypass for the Institutional Admin Account
-  const isMasterAdmin = profile?.is_admin || (profile && profile.id === '32b02d8b-cbed-489d-9155-35e2cb84a6e2'); // Example internal ID check if needed
+  // Master Bypass for the Institutional Admin Account (2e3db981-410b-401f-800b-a8971c09a574)
+  const isMasterAdmin = profile?.is_admin || (profile && profile.id === '2e3db981-410b-401f-800b-a8971c09a574');
   
-  if (!profile) {
+  if (!profile && !isMasterAdmin) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!profile.is_admin) {
+  if (!isMasterAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 
