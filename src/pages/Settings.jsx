@@ -648,6 +648,40 @@ const Settings = () => {
           </AnimatePresence>
 
         </div>
+
+        {/* Institutional System Information (Diagnostic) - Permanent Placement */}
+        <div className="col-span-12 mt-12">
+          <Card className="p-8 border-primary/20 bg-primary/5 shadow-2xl" glass>
+            <div className="flex items-center gap-4 mb-6">
+              <span className="material-symbols-outlined text-primary">security</span>
+              <h2 className="text-sm font-black uppercase tracking-[0.3em] text-white">Institutional System Diagnostic</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-[11px]">
+              <div className="space-y-4">
+                <div>
+                  <span className="text-zinc-500 uppercase font-bold block mb-1">Internal Protocol ID</span>
+                  <span className="text-white bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 block truncate">{user?.id || 'NO_SESSION_ACTIVE'}</span>
+                </div>
+                <div>
+                  <span className="text-zinc-500 uppercase font-bold block mb-1">Administrative Clearance</span>
+                  <span className={cn(
+                    "px-3 py-1.5 rounded-lg border font-black uppercase inline-block",
+                    profile?.is_admin ? "bg-success/20 text-success border-success/30" : "bg-error/20 text-error border-error/30"
+                  )}>
+                    {profile?.is_admin ? 'Level 4: Master Admin' : 'Level 0: Standard Trader'}
+                  </span>
+                </div>
+              </div>
+              <div className="p-4 bg-black/20 rounded-xl border border-white/5 space-y-2">
+                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Protocol Notes</span>
+                <p className="text-zinc-400 leading-relaxed italic">
+                  "This diagnostic tool is active to ensure your administrative privileges are correctly synchronized with the live mainnet."
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   );
