@@ -190,86 +190,26 @@ const Dashboard = () => {
            </div>
         </header>
 
-        {/* TOP ROW: PORTFOLIO & NEWS */}
+        {/* TOP ROW: TRADING TERMINAL FOCUS */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          <div className="md:col-span-12 lg:col-span-8">
+          <div className="md:col-span-12">
             <WidgetErrorBoundary>
-              <Card className="h-[400px] p-8 relative overflow-hidden group/card shadow-2xl" glass>
-                <div className="absolute top-0 right-0 p-8 flex flex-col items-end z-20">
-                    <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest block mb-1.5">Network Status</span>
-                    <div className="px-4 py-1.5 bg-success/10 border border-success/30 rounded-full text-[10px] text-success font-black uppercase tracking-tighter flex items-center gap-2">
-                       <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
-                       Verified Tier 4 Elite
+              <Card className="p-8 border border-primary/20 bg-primary/5 rounded-[32px] overflow-hidden" glass>
+                 <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="space-y-2">
+                       <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Elite Execution Mode</span>
+                       <h2 className="text-4xl font-black text-white tracking-tighter">Institutional Trading Protocol</h2>
+                       <p className="text-xs text-zinc-500 font-medium max-w-md">Access deep liquidity pools and execute high-frequency strategies with zero-latency precision.</p>
                     </div>
-                </div>
-
-                <div className="flex justify-between items-start mb-8 relative z-20">
-                  <div>
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-1 block">Institutional Global Liquidity</span>
-                    <h2 className="text-6xl font-black mt-1 tracking-tighter text-white">
-                      {formatPrice(portfolioValue)}
-                    </h2>
-                    <div className="flex items-center gap-3 mt-3">
-                       <div className="px-2 py-0.5 bg-success/20 rounded text-[10px] font-bold text-success font-mono">+12.4%</div>
-                       <span className="text-xs text-zinc-500 font-bold tracking-wide uppercase">PNL Today: <span className="text-success font-black">{formatPrice(1242.10)}</span></span>
+                    <div className="flex gap-4">
+                       <Link to="/markets" className="contents">
+                          <Button variant="primary" className="px-8 py-4 text-xs font-black uppercase tracking-widest shadow-xl">Explore Markets</Button>
+                       </Link>
+                       <Link to="/staking" className="contents">
+                          <Button variant="outline" className="px-8 py-4 text-xs font-black uppercase tracking-widest border-white/10">Beacon Staking</Button>
+                       </Link>
                     </div>
-                  </div>
-                </div>
-                
-                <div className="h-44 w-full mt-2 relative z-10">
-                   <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                      <path d="M0 80 Q 20 75, 40 50 T 60 40 T 80 20 T 100 10" fill="none" stroke="var(--primary)" strokeWidth="3" className="drop-shadow-[0_0_8px_rgba(252,213,53,0.5)]" />
-                      <path d="M0 80 Q 20 75, 40 50 T 60 40 T 80 20 T 100 10 L 100 100 L 0 100 Z" fill="url(#pnlGradient)" />
-                      <defs>
-                        <linearGradient id="pnlGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.15" />
-                          <stop offset="100%" stopColor="transparent" />
-                        </linearGradient>
-                      </defs>
-                   </svg>
-                </div>
-
-                <div className="grid grid-cols-4 gap-6 mt-8 pt-8 border-t border-white/5 relative z-20">
-                   <StatMini label="Spot Balance" val={formatPrice(profile?.usd_balance || 0)} />
-                   <StatMini label="Invested Funds" val={formatPrice(totalInvested)} color="text-secondary" />
-                   <StatMini label="Unrealized PNL" val={`+${formatPrice(842.00)}`} color="text-success" />
-                   <div className="flex flex-col gap-2 relative z-10">
-                      <Button 
-                        variant="primary" 
-                        size="sm" 
-                        className="py-2 px-4 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 transition-transform"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsTransferOpen(true);
-                        }}
-                      >
-                        Transfer Assets
-                      </Button>
-                      <StatMini label="Margin Usage" val="0.00%" color="text-zinc-600" />
-                   </div>
-                </div>
-              </Card>
-            </WidgetErrorBoundary>
-          </div>
-
-          <div className="md:col-span-12 lg:col-span-4">
-            <WidgetErrorBoundary>
-              <Card className="h-[400px] flex flex-col p-0 overflow-hidden shadow-2xl" glass>
-                <div className="p-6 border-b border-white/5 bg-white/[0.02]">
-                   <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                         <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                         <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white">Intelligence Stream</h2>
-                      </div>
-                      <span className="text-[9px] font-bold text-zinc-500 font-mono">LIVE FEED</span>
-                   </div>
-                </div>
-                <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
-                   <NewsItem title="SEC hints at new crypto framework for institutional traders" time="2m ago" source="Reuters" />
-                   <NewsItem title="Bitcoin hash rate hits new all-time high amid network upgrades" time="14m ago" source="Bloomberg" />
-                   <NewsItem title="Ethereum L2 adoption spikes 40% in Q1 according to Equity Citadel analysis" time="45m ago" source="X-Analytics" />
-                   <NewsItem title="Institutional inflows into Solana ETFs reach record levels" time="1h ago" source="Financial Times" />
-                </div>
+                 </div>
               </Card>
             </WidgetErrorBoundary>
           </div>

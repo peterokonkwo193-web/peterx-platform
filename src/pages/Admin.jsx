@@ -191,6 +191,16 @@ const Admin = () => {
             Audit Ledger
             {activeTab === 'audit' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"></div>}
           </button>
+          <button 
+            onClick={() => setActiveTab('portfolio')}
+            className={cn(
+              "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
+              activeTab === 'portfolio' ? "text-secondary" : "text-zinc-500 hover:text-white"
+            )}
+          >
+            Global Registry
+            {activeTab === 'portfolio' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-secondary"></div>}
+          </button>
         </div>
 
         <Card className="p-0 overflow-hidden border-white/5" glass>
@@ -303,6 +313,34 @@ const Admin = () => {
                       <td colSpan="5" className="py-12 text-center text-zinc-500">No pending verifications.</td>
                     </tr>
                   )}
+                </tbody>
+              </table>
+            ) : activeTab === 'portfolio' ? (
+              <table className="w-full text-left">
+                <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                  <tr>
+                    <th className="px-6 py-4">Protocol Asset</th>
+                    <th className="px-6 py-4">Total Aggregate Supply</th>
+                    <th className="px-6 py-4 text-right">Market Valuation</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-sm font-mono">
+                  <tr>
+                    <td className="px-6 py-8 flex items-center gap-3">
+                       <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black">BTC</span>
+                       <span className="text-white font-bold tracking-widest">Bitcoin Protocol</span>
+                    </td>
+                    <td className="px-6 py-8 text-zinc-200">142.428 BTC</td>
+                    <td className="px-6 py-8 text-right text-primary font-black">{formatPrice(9254200)}</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-8 flex items-center gap-3">
+                       <span className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-black">ETH</span>
+                       <span className="text-white font-bold tracking-widest">Ethereum Network</span>
+                    </td>
+                    <td className="px-6 py-8 text-zinc-200">1,842.10 ETH</td>
+                    <td className="px-6 py-8 text-right text-secondary font-black">{formatPrice(4605250)}</td>
+                  </tr>
                 </tbody>
               </table>
             ) : (
