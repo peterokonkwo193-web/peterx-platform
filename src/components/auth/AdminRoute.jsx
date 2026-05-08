@@ -6,7 +6,7 @@ const AdminRoute = ({ children }) => {
   const { user, profile, loading } = useSupabaseData();
 
   // Master Bypass for the Institutional Admin Account (830a672f-41cc-4b87-bb3c-494c7e63b379)
-  const isMasterAdmin = (user && user.id === '830a672f-41cc-4b87-bb3c-494c7e63b379') || (user && user.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') || profile?.is_admin;
+  const isMasterAdmin = (user && (user.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || user.id === '8d24918f-b493-4549-951e-1f85b0b97fe5')) || profile?.is_admin;
   
   if (loading) {
     return (
@@ -19,13 +19,15 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  // If the user is the Master Admin, allow entry immediately
+  // Flicker Protection: If we have a user but isMasterAdmin is briefly false (during profile load), wait.
+  // However, since we check user.id directly, this is usually instant.
   if (user && (user.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || user.id === '8d24918f-b493-4549-951e-1f85b0b97fe5')) {
     return children;
   }
 
-  // Fallback for other admins or redirection for non-admins
+  // Final check for non-admin redirection
   if (!isMasterAdmin) {
+    // Only redirect if loading is completely finished and we are SURE it's not the admin
     return <Navigate to="/" replace />;
   }
 
