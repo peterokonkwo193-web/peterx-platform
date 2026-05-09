@@ -8,6 +8,7 @@ import InvestmentDashboard from '../components/investments/InvestmentDashboard';
 import { useSupport } from '../context/SupportContext';
 import { useSupabaseData } from '../hooks/useSupabaseData';
 import { getInvestments } from '../lib/db';
+import { useCurrency } from '../context/CurrencyContext';
 import { cn } from '../utils/cn';
 
 const INVESTMENT_PLANS = [
@@ -56,6 +57,7 @@ const Investments = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { formatPrice } = useCurrency();
   const { openSupport } = useSupport();
 
   const fetchInvestments = async () => {
