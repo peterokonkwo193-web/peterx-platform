@@ -19,7 +19,7 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
     >
       <Card 
         className={cn(
-          "p-10 flex flex-col h-full transition-all duration-700 group relative overflow-hidden border-0 shadow-2xl",
+          "p-6 md:p-10 flex flex-col h-full transition-all duration-700 group relative overflow-hidden border-0 shadow-2xl",
           isRecommended 
             ? "bg-gradient-to-br from-primary/10 via-white/[0.02] to-transparent ring-1 ring-primary/30" 
             : "bg-white/[0.02] hover:bg-white/[0.05] ring-1 ring-white/5 hover:ring-white/20"
@@ -56,15 +56,15 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
         )}
 
         <div className="mb-12 mt-4 relative z-10">
-          <div className="flex items-center gap-6 mb-10">
+          <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-10">
             <div className={cn(
-              "w-20 h-20 rounded-[28px] flex items-center justify-center border transition-all duration-700 shadow-[0_20px_50px_rgba(0,0,0,0.5)]",
+              "w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-[28px] flex items-center justify-center border transition-all duration-700 shadow-[0_20px_50px_rgba(0,0,0,0.5)]",
               isRecommended 
                 ? "bg-primary/20 border-primary/40 shadow-primary/10 rotate-6 group-hover:rotate-0" 
                 : "bg-zinc-900 border-white/5 group-hover:border-white/20"
             )}>
               <span className={cn(
-                "material-symbols-outlined text-4xl transition-transform duration-700 group-hover:scale-110", 
+                "material-symbols-outlined text-3xl md:text-4xl transition-transform duration-700 group-hover:scale-110", 
                 isRecommended ? "text-primary drop-shadow-[0_0_15px_rgba(252,213,53,0.5)]" : "text-zinc-700 group-hover:text-white"
               )}>
                 {plan.icon || 'hub'}
@@ -94,14 +94,14 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 md:p-5 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col gap-2 shadow-inner group-hover:border-white/10 transition-all">
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
+              <div className="p-4 md:p-5 bg-white/[0.02] border border-white/5 rounded-xl md:rounded-2xl flex flex-col gap-1 md:gap-2 shadow-inner group-hover:border-white/10 transition-all">
                 <span className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em]">Duration</span>
-                <span className="text-base font-black text-white uppercase tracking-tighter">{plan.duration} Days</span>
+                <span className="text-sm font-black text-white uppercase tracking-tighter">{plan.duration} Days</span>
               </div>
-              <div className="p-4 md:p-5 bg-success/5 border border-success/10 rounded-2xl flex flex-col gap-2 shadow-inner group-hover:border-success/20 transition-all">
+              <div className="p-4 md:p-5 bg-success/5 border border-success/10 rounded-xl md:rounded-2xl flex flex-col gap-1 md:gap-2 shadow-inner group-hover:border-success/20 transition-all">
                 <span className="text-[9px] text-success/60 font-black uppercase tracking-[0.3em]">Profit</span>
-                <span className="text-base font-black text-success uppercase tracking-tighter">+{plan.roi}%</span>
+                <span className="text-sm font-black text-success uppercase tracking-tighter">+{plan.roi}%</span>
               </div>
             </div>
           </div>

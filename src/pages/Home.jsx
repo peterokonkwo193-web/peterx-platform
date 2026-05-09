@@ -246,14 +246,14 @@ const Home = () => {
         </section>
 
         {/* NETWORK ACTIVITY */}
-        <section className="py-32 px-6 relative overflow-hidden">
+        <section className="py-24 md:py-32 px-6 relative overflow-hidden">
            <div className="max-w-7xl mx-auto">
-              <div className="flex items-center justify-between mb-16">
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 md:mb-16 gap-6">
                  <div>
-                    <h3 className="text-3xl font-black text-white tracking-tighter uppercase">Protocol Live Feed</h3>
-                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Real-time institutional activity logs</p>
+                    <h3 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase">Protocol Live Feed</h3>
+                    <p className="text-[9px] md:text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Real-time institutional activity logs</p>
                  </div>
-                 <div className="flex items-center gap-2 px-4 py-2 bg-success/5 border border-success/20 rounded-full">
+                 <div className="flex items-center gap-2 px-4 py-2 bg-success/5 border border-success/20 rounded-full w-fit">
                     <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse shadow-[0_0_10px_var(--color-success)]"></span>
                     <span className="text-[9px] uppercase tracking-widest font-black text-success">Synchronized</span>
                  </div>

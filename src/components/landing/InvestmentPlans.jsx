@@ -53,13 +53,13 @@ const InvestmentPlans = ({ onSupport }) => {
   const { formatPrice } = useCurrency();
 
   return (
-    <section className="py-48 px-6 relative overflow-hidden bg-[#0a0a0a]">
-      {/* Background Decor */}
-      <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-primary/5 blur-[150px] -z-10 rounded-full animate-pulse"></div>
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 blur-[120px] -z-10 rounded-full"></div>
+    <section className="py-20 md:py-48 px-4 md:px-6 relative overflow-hidden bg-[#0a0a0a]">
+      {/* Background Decor - Reduced on mobile */}
+      <div className="hidden md:block absolute top-1/2 left-0 w-[600px] h-[600px] bg-primary/5 blur-[150px] -z-10 rounded-full animate-pulse"></div>
+      <div className="hidden md:block absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 blur-[120px] -z-10 rounded-full"></div>
 
       <div className="max-w-[1400px] mx-auto">
-        <div className="text-center mb-32 space-y-6">
+        <div className="text-center mb-16 md:mb-32 space-y-4 md:space-y-6">
           <motion.span 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -73,7 +73,7 @@ const InvestmentPlans = ({ onSupport }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-[56px] md:text-[84px] font-black text-white tracking-tighter leading-[0.9] uppercase"
+            className="text-4xl md:text-[84px] font-black text-white tracking-tighter leading-tight md:leading-[0.9] uppercase"
           >
             Investment <span className="text-primary italic">Yield</span> Strategies
           </motion.h2>
@@ -82,7 +82,7 @@ const InvestmentPlans = ({ onSupport }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-zinc-500 max-w-3xl mx-auto font-medium text-xl leading-relaxed"
+            className="text-zinc-500 max-w-3xl mx-auto font-medium text-base md:text-xl leading-relaxed"
           >
             Invest your funds into expert-managed strategies with guaranteed security and fast payouts.
           </motion.p>
@@ -100,7 +100,7 @@ const InvestmentPlans = ({ onSupport }) => {
             >
               <Card 
                 className={cn(
-                  "h-full p-10 flex flex-col items-center text-center relative overflow-hidden transition-all duration-700 hover:scale-[1.05] border shadow-2xl",
+                  "h-full p-6 md:p-10 flex flex-col items-center text-center relative overflow-hidden transition-all duration-700 hover:scale-[1.05] border shadow-2xl",
                   plan.recommended ? "border-primary/40 bg-primary/5" : "border-white/5 bg-white/[0.02]"
                 )} 
                 glass
@@ -129,8 +129,8 @@ const InvestmentPlans = ({ onSupport }) => {
                   </div>
                 )}
 
-                <div className="relative z-10 w-24 h-24 rounded-[32px] bg-white/[0.03] flex items-center justify-center mb-10 border border-white/5 group-hover:border-primary/40 transition-all group-hover:bg-primary/5 group-hover:scale-110 group-hover:rotate-3">
-                  <span className="material-symbols-outlined text-5xl text-zinc-600 group-hover:text-primary transition-colors">
+                <div className="relative z-10 w-16 h-16 md:w-24 md:h-24 rounded-2xl md:rounded-[32px] bg-white/[0.03] flex items-center justify-center mb-6 md:mb-10 border border-white/5 group-hover:border-primary/40 transition-all group-hover:bg-primary/5 group-hover:scale-110 group-hover:rotate-3">
+                  <span className="material-symbols-outlined text-3xl md:text-5xl text-zinc-600 group-hover:text-primary transition-colors">
                     {plan.icon}
                   </span>
                 </div>
@@ -139,12 +139,12 @@ const InvestmentPlans = ({ onSupport }) => {
                   {plan.name}
                 </h3>
                 
-                <div className="relative z-10 flex flex-col items-center mb-10">
+                <div className="relative z-10 flex flex-col items-center mb-6 md:mb-10">
                   <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-2">Projected Profit</span>
-                  <span className="text-5xl font-black text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
+                  <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
                 </div>
 
-                <div className="relative z-10 w-full p-8 bg-black/40 border border-white/5 rounded-[32px] mb-10 space-y-5 backdrop-blur-xl">
+                <div className="relative z-10 w-full p-6 md:p-8 bg-black/40 border border-white/5 rounded-2xl md:rounded-[32px] mb-6 md:mb-10 space-y-4 md:space-y-5 backdrop-blur-xl">
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Duration</span>
                     <span className="text-sm text-white font-black uppercase tracking-widest">{plan.duration} Days</span>

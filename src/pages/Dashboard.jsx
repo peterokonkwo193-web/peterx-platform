@@ -111,10 +111,10 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-[1600px] mx-auto py-12 md:py-20 px-4 md:px-8 space-y-12">
+      <div className="max-w-[1600px] mx-auto py-8 md:py-20 px-4 md:px-8 space-y-8 md:space-y-12">
         
         {/* DASHBOARD HEADER */}
-        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
+        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 md:gap-10">
            <div className="space-y-4">
               <div className="flex items-center gap-4">
                  <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Live Status</div>
@@ -126,8 +126,8 @@ const Dashboard = () => {
               <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">My <span className="text-primary italic">Dashboard</span></h1>
            </div>
            
-           <div className="flex flex-wrap gap-6 w-full lg:w-auto">
-              <div className="flex-1 lg:flex-none p-6 md:p-8 citadel-card bg-primary/5 border-primary/10 min-w-[280px] relative overflow-hidden group">
+           <div className="flex flex-wrap gap-4 md:gap-6 w-full lg:w-auto">
+              <div className="flex-1 lg:flex-none p-6 md:p-8 citadel-card bg-primary/5 border-primary/10 min-w-[250px] md:min-w-[320px] relative overflow-hidden group">
                  <div className="absolute right-0 top-0 w-32 h-32 bg-primary/10 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
                  <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-3">Total Balance</span>
                  <div className="flex items-baseline gap-4 relative z-10">
@@ -159,18 +159,18 @@ const Dashboard = () => {
         </header>
 
         {/* MARKET DATA */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10">
            
            {/* MARKET CHARTS */}
-           <div className="md:col-span-12 xl:col-span-9 space-y-10">
-              <Card className="p-6 md:p-10 h-auto md:h-[650px] citadel-card flex flex-col relative overflow-hidden" glass glow>
-                 <div className="flex flex-col md:flex-row justify-between items-center mb-10 relative z-10 gap-6">
-                    <div className="flex items-center gap-6">
-                       <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/10 p-2 shadow-2xl">
+           <div className="md:col-span-12 xl:col-span-9 space-y-8 md:space-y-10">
+              <Card className="p-5 md:p-10 h-auto md:h-[650px] citadel-card flex flex-col relative overflow-hidden" glass glow>
+                 <div className="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-10 relative z-10 gap-6">
+                    <div className="flex items-center gap-4 md:gap-6">
+                       <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-zinc-900 border border-white/10 p-2 shadow-2xl">
                           <img src={selectedChartCoin?.image} alt="" className="w-full h-full object-contain" />
                        </div>
                        <div>
-                          <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">{selectedChartCoin?.symbol.toUpperCase()}<span className="text-zinc-700 ml-1">/USDT</span></h2>
+                          <h2 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase leading-none">{selectedChartCoin?.symbol.toUpperCase()}<span className="text-zinc-700 ml-1">/USDT</span></h2>
                           <div className="flex items-center gap-2 mt-2">
                              <span className="text-[10px] text-zinc-600 font-black uppercase tracking-widest">{selectedChartCoin?.name}</span>
                              <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
@@ -178,8 +178,8 @@ const Dashboard = () => {
                           </div>
                        </div>
                     </div>
-                    <div className="text-right">
-                       <p className="text-4xl font-black text-white tracking-tighter leading-none mb-2">{formatPrice(selectedChartCoin?.current_price)}</p>
+                    <div className="text-center md:text-right w-full md:w-auto">
+                       <p className="text-3xl md:text-4xl font-black text-white tracking-tighter leading-none mb-2">{formatPrice(selectedChartCoin?.current_price)}</p>
                        <div className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border", selectedChartCoin?.price_change_percentage_24h < 0 ? "bg-error/10 text-error border-error/10" : "bg-success/10 text-success border-success/10")}>
                           {selectedChartCoin?.price_change_percentage_24h > 0 ? '+' : ''}{selectedChartCoin?.price_change_percentage_24h?.toFixed(2)}% <span className="text-zinc-600 ml-1">24H</span>
                        </div>

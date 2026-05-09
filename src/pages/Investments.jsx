@@ -89,7 +89,7 @@ const Investments = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-[1600px] mx-auto py-12 md:py-24 px-8 space-y-16">
+      <div className="max-w-[1600px] mx-auto py-8 md:py-24 px-4 md:px-8 space-y-12 md:space-y-16">
         
         {/* INSTITUTIONAL HUD */}
         <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 px-4 md:px-0">
@@ -156,7 +156,7 @@ const Investments = () => {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="pt-24 border-t border-white/5"
+          className="pt-16 md:pt-24 border-t border-white/5"
         >
            <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                <div className="space-y-2">
