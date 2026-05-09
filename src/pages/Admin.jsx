@@ -19,6 +19,7 @@ const Admin = () => {
   const [processingId, setProcessingId] = useState(null);
   const [verifyAmount, setVerifyAmount] = useState({});
   const [loading, setLoading] = useState(true);
+  const [profitAmount, setProfitAmount] = useState({});
   const [treasuryMetrics, setTreasuryMetrics] = useState({ totalBalance: 0, avgBalance: 0 });
 
   useEffect(() => {
@@ -130,6 +131,55 @@ const Admin = () => {
     }
   };
 
+  const handleAddProfit = async (userId) => {
+    const amount = parseFloat(profitAmount[userId] || 0);
+    if (!amount || amount <= 0) return alert('Enter a valid profit amount');
+    
+    setProcessingId(userId);
+    try {
+      // 1. Get current balance
+      const { data: user, error: fetchError } = await supabase
+        .from('profiles')
+        .select('usd_balance')
+        .eq('id', userId)
+        .single();
+        
+      if (fetchError) throw fetchError;
+      
+      const newBalance = (user.usd_balance || 0) + amount;
+      
+      // 2. Update balance
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ usd_balance: newBalance })
+        .eq('id', userId);
+        
+      if (updateError) throw updateError;
+      
+      // 3. Log transaction
+      const { error: txError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: userId,
+          asset: 'USD',
+          type: 'Profit',
+          amount: amount,
+          value: amount,
+          status: 'Completed'
+        });
+        
+      if (txError) throw txError;
+      
+      await fetchAllUsers();
+      setProfitAmount({ ...profitAmount, [userId]: '' });
+      alert(`Added ${formatPrice(amount)} profit to user.`);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <DashboardLayout>
@@ -177,11 +227,11 @@ const Admin = () => {
         {/* Tab Navigation */}
         <div className="flex items-center gap-8 border-b border-white/5 overflow-x-auto custom-scrollbar whitespace-nowrap">
           {[
-            { id: 'users', label: 'User Directory', color: 'primary' },
-            { id: 'verifications', label: 'Funding Requests', color: 'success', count: pendingTransactions.length },
-            { id: 'payouts', label: 'Payout Signatures', color: 'error', count: pendingPayouts.length },
-            { id: 'portfolio', label: 'Global Registry', color: 'zinc-400' },
-            { id: 'audit', label: 'Audit Ledger', color: 'primary' },
+            { id: 'users', label: 'Users', color: 'primary' },
+            { id: 'verifications', label: 'Deposits', color: 'success', count: pendingTransactions.length },
+            { id: 'payouts', label: 'Withdrawals', color: 'error', count: pendingPayouts.length },
+            { id: 'portfolio', label: 'Portfolio Registry', color: 'zinc-400' },
+            { id: 'audit', label: 'Logs', color: 'primary' },
           ].map(tab => (
             <button 
               key={tab.id}
@@ -205,9 +255,10 @@ const Admin = () => {
               <table className="w-full text-left">
                 <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
                   <tr>
-                    <th className="px-6 py-4">Institutional User</th>
-                    <th className="px-6 py-4">Internal ID</th>
-                    <th className="px-6 py-4">Mark Price Balance</th>
+                    <th className="px-6 py-4">User</th>
+                    <th className="px-6 py-4">Account ID</th>
+                    <th className="px-6 py-4">Balance</th>
+                    <th className="px-6 py-4 text-center">Add Profit</th>
                     <th className="px-6 py-4 text-right">Registered</th>
                   </tr>
                 </thead>
@@ -227,6 +278,24 @@ const Admin = () => {
                       </td>
                       <td className="px-6 py-4 text-zinc-500">{u.id.slice(0, 8)}...</td>
                       <td className="px-6 py-4 text-white font-bold">{formatPrice(u.usd_balance || 0)}</td>
+                      <td className="px-6 py-4">
+                         <div className="flex items-center justify-center gap-2">
+                           <input 
+                             type="number"
+                             placeholder="Amount"
+                             className="w-24 bg-black/40 border border-white/10 rounded px-2 py-1 text-[10px] text-white outline-none focus:border-primary"
+                             value={profitAmount[u.id] || ''}
+                             onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
+                           />
+                           <button 
+                             onClick={() => handleAddProfit(u.id)}
+                             disabled={processingId === u.id}
+                             className="p-1.5 bg-primary/10 text-primary rounded-lg border border-primary/20 hover:bg-primary hover:text-black transition-all disabled:opacity-50"
+                           >
+                             <span className="material-symbols-outlined text-sm">add</span>
+                           </button>
+                         </div>
+                      </td>
                       <td className="px-6 py-4 text-right text-zinc-600">{new Date(u.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}

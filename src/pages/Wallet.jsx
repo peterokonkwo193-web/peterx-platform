@@ -138,10 +138,10 @@ const Wallet = () => {
                 <React.Fragment key={i}>
                   <div className="flex items-center gap-4">
                     <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(252,213,53,0.5)]"></div>
-                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Institutional Node: Verified</span>
+                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Network: Secure</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Clearance Protocol v4.0 Active</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Live Trading Active</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
@@ -157,65 +157,36 @@ const Wallet = () => {
         <header className="relative mt-24 py-24 md:py-32 px-8 md:px-20 rounded-[48px] md:rounded-[64px] bg-[#0d0d0d] border border-white/[0.05] overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[200px] -z-10 animate-pulse"></div>
           <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-success/5 blur-[150px] -z-10"></div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div className="space-y-12">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="px-5 py-1.5 bg-primary/10 border border-primary/20 rounded-xl">
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Sovereign Balance</span>
-                  </div>
+         {/* PORTFOLIO OVERVIEW */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 px-4 md:px-8">
+           <div className="md:col-span-12 xl:col-span-8 space-y-12">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                 <div className="space-y-4">
+                    <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl w-fit">Wallet Overview</div>
+                    <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9]">My <span className="text-primary italic">Assets</span></h1>
+                 </div>
                   <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Protocol v4.0</span>
                 </div>
-                <h1 className="text-[64px] md:text-[110px] font-black text-white tracking-tighter leading-none flex items-baseline gap-2">
-                  {formatPrice(profile?.usd_balance || 0).split('.')[0]}
-                  <span className="text-2xl md:text-5xl text-zinc-700 font-bold">.{formatPrice(profile?.usd_balance || 0).split('.')[1] || '00'}</span>
-                </h1>
               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                 <Card className="p-8 citadel-card bg-primary/5 border-primary/10 relative overflow-hidden group shadow-2xl" glass>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
+                    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-4">Account Balance</span>
+                    <div className="relative z-10 space-y-2">
+                       <span className="text-4xl font-black text-white tracking-tighter block leading-none">{formatPrice(profile?.usd_balance || 0)}</span>
+                       <span className="text-[10px] font-bold text-success uppercase tracking-widest">+12.4% vs Previous Cycle</span>
+                    </div>
+                 </Card>
 
-              <div className="grid grid-cols-2 gap-12">
-                <div className="space-y-2">
-                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">24H Performance</span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl font-black text-success tracking-tighter">+12.42%</span>
-                    <span className="material-symbols-outlined text-success">trending_up</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Liquidity Index</span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl font-black text-white tracking-tighter">Platinum</span>
-                    <span className="material-symbols-outlined text-primary">verified</span>
-                  </div>
-                </div>
+                 <Card className="p-8 citadel-card bg-white/[0.01] border-white/5 relative overflow-hidden group" glass>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
+                    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-4">Crypto Portfolio</span>
+                    <div className="relative z-10 space-y-2">
+                       <span className="text-4xl font-black text-white tracking-tighter block leading-none">{formatPrice((portfolio || []).reduce((acc, curr) => acc + (parseFloat(curr.amount) * (marketData?.find(m => m.symbol.toLowerCase() === curr.symbol.toLowerCase())?.current_price || 0)), 0))}</span>
+                       <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{portfolio?.length || 0} Assets Synchronized</span>
+                    </div>
+                 </Card>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <motion.button 
-                whileHover={{ scale: 1.02, y: -4 }}
-                onClick={() => window.location.href = '/deposit'} 
-                className="group relative p-10 rounded-[40px] bg-primary border border-primary flex flex-col items-center text-center shadow-2xl transition-all"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-3xl text-primary font-black">add_circle</span>
-                </div>
-                <h3 className="text-lg font-black text-black uppercase tracking-[0.3em]">Initialize</h3>
-                <p className="text-[9px] text-black/60 font-bold mt-2 uppercase tracking-widest">Deposit Protocol</p>
-              </motion.button>
-
-              <motion.button 
-                whileHover={{ scale: 1.02, y: -4 }}
-                onClick={() => setActionModal('Withdraw')} 
-                className="group relative p-10 rounded-[40px] bg-white/[0.03] border border-white/5 hover:border-white/20 flex flex-col items-center text-center backdrop-blur-xl transition-all"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-white/10">
-                  <span className="material-symbols-outlined text-3xl text-zinc-400 font-black">outbox</span>
-                </div>
-                <h3 className="text-lg font-black text-white uppercase tracking-[0.3em]">Release</h3>
-                <p className="text-[9px] text-zinc-600 font-bold mt-2 uppercase tracking-widest">Withdraw Protocol</p>
-              </motion.button>
-            </div>
           </div>
         </header>
 
@@ -223,8 +194,8 @@ const Wallet = () => {
         <div className="space-y-10">
           <div className="flex justify-between items-end px-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Institutional Matrix</h2>
-              <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Cross-Chain Distribution v4.0</p>
+              <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Your Assets</h2>
+              <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Current holdings</p>
             </div>
           </div>
 
@@ -236,17 +207,17 @@ const Wallet = () => {
                   <span className="material-symbols-outlined text-3xl font-black">account_balance_wallet</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-black text-primary uppercase tracking-widest block mb-1">Cleared Balance</span>
+                  <span className="text-[10px] font-black text-primary uppercase tracking-widest block mb-1">Balance</span>
                   <span className="px-3 py-1 bg-primary/20 rounded-lg text-[9px] font-black text-primary uppercase tracking-widest border border-primary/20">Verified</span>
                 </div>
               </div>
               <div className="relative z-10 space-y-6">
                 <div>
                   <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Total Settlement</h3>
-                  <p className="text-4xl font-black text-white tracking-tighter">{(profile?.usd_balance || 0).toLocaleString()}<span className="text-lg ml-2 text-zinc-700">USDT</span></p>
+                  <p className="text-4xl font-black text-white tracking-tighter">{(profile?.usd_balance || 0).toLocaleString()}<span className="text-lg ml-2 text-zinc-700">USD</span></p>
                 </div>
                 <div className="pt-6 border-t border-white/5">
-                   <button onClick={() => window.location.href = '/deposit'} className="w-full py-4 bg-white/[0.03] border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-white hover:bg-primary hover:text-black transition-all">Expand Liquidity</button>
+                   <button onClick={() => window.location.href = '/deposit'} className="w-full py-4 bg-white/[0.03] border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-white hover:bg-primary hover:text-black transition-all">Add Funds</button>
                 </div>
               </div>
             </Card>
@@ -258,13 +229,13 @@ const Wallet = () => {
                   <div className="flex justify-between items-start mb-12">
                     <img src={coin?.image} alt={asset.symbol} className="w-14 h-14 rounded-2xl border border-white/10 p-1 bg-zinc-950 shadow-2xl" />
                     <div className="text-right">
-                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">{asset.symbol} Index</span>
-                      <span className="text-[10px] font-black text-success uppercase tracking-widest">Active Pool</span>
+                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">{asset.symbol}</span>
+                      <span className="text-[10px] font-black text-success uppercase tracking-widest">Active</span>
                     </div>
                   </div>
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Allocated Quantum</h3>
+                      <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Quantity</h3>
                       <p className="text-4xl font-black text-white tracking-tighter">{parseFloat(asset.amount).toFixed(4)}</p>
                     </div>
                     <div className="flex gap-3">
@@ -282,8 +253,7 @@ const Wallet = () => {
               <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-black transition-all border border-white/5">
                 <span className="material-symbols-outlined text-2xl font-black">account_balance</span>
               </div>
-              <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.4em] group-hover:text-white transition-colors">Integrate Strategy Asset</h3>
-              <p className="text-[9px] text-zinc-800 font-bold mt-2 uppercase tracking-widest">Tier 4 Clearance Required</p>
+              <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.4em] group-hover:text-white transition-colors">Add New Asset</h3>
             </div>
           </div>
         </div>
@@ -292,8 +262,8 @@ const Wallet = () => {
         <div className="space-y-10">
           <div className="flex justify-between items-end px-4">
              <div className="space-y-2">
-                <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Institutional Audit</h2>
-                <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Immutable Settlement History</p>
+                <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">History</h2>
+                <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Transaction log</p>
              </div>
           </div>
 
@@ -302,10 +272,10 @@ const Wallet = () => {
               <table className="w-full text-left">
                 <thead className="bg-black/40 text-[10px] text-zinc-600 uppercase tracking-[0.4em] border-b border-white/5">
                   <tr>
-                    <th className="px-12 py-8">Protocol Initiation</th>
-                    <th className="px-12 py-8">Asset Quantum</th>
-                    <th className="px-12 py-8">Settlement Status</th>
-                    <th className="px-12 py-8 text-right">Verification Stamp</th>
+                    <th className="px-12 py-8">Event</th>
+                    <th className="px-12 py-8">Amount</th>
+                    <th className="px-12 py-8">Status</th>
+                    <th className="px-12 py-8 text-right">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 font-mono text-[11px]">
@@ -322,7 +292,7 @@ const Wallet = () => {
                             {tx.type === 'Deposit' ? 'input' : tx.type === 'Transfer' ? 'sync_alt' : 'output'}
                           </span>
                         </div>
-                        <span className="font-black text-white uppercase tracking-widest">{tx.type} Execution</span>
+                        <span className="font-black text-white uppercase tracking-widest">{tx.type}</span>
                       </td>
                       <td className="px-12 py-8">
                         <div className="flex items-baseline gap-2">
@@ -335,7 +305,7 @@ const Wallet = () => {
                           "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] border",
                           tx.status === 'Completed' ? "bg-success/10 text-success border-success/20" : "bg-primary/10 text-primary border-primary/20 animate-pulse"
                         )}>
-                          {tx.status} Verified
+                          {tx.status}
                         </span>
                       </td>
                       <td className="px-12 py-8 text-right text-zinc-600 font-bold uppercase tracking-widest">

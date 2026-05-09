@@ -28,15 +28,26 @@ const Navbar = ({ className }) => {
   };
 
   return (
-    <nav className={cn("bg-black/60 backdrop-blur-3xl border-b border-white/5 fixed top-0 w-full h-20 z-50 px-8 lg:px-12 flex items-center justify-between shadow-[0_10px_50px_rgba(0,0,0,0.5)]", className)}>
+    <>
+    <div className="fixed top-0 w-full h-8 bg-[#05070a] border-b border-white/5 z-[60] hidden md:flex items-center justify-between px-6 overflow-hidden select-none">
+        <div className="flex items-center gap-6">
+          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em]">Load: <span className="text-primary">12.4%</span></span>
+          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em]">Latency: <span className="text-white">24ms</span></span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em]">Node: <span className="text-zinc-300">Active</span></span>
+        </div>
+    </div>
+    <nav className={cn("bg-black/60 backdrop-blur-3xl border-b border-white/5 fixed top-0 md:top-8 w-full h-20 z-50 px-8 lg:px-12 flex items-center justify-between shadow-[0_10px_50px_rgba(0,0,0,0.5)]", className)}>
       {/* Left: Branding & Status */}
       <div className="flex items-center gap-12">
         <Link to="/" className="flex flex-col group">
           <span className="text-2xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-primary transition-colors">Equity Citadel</span>
-          <div className="flex items-center gap-2 mt-1">
-             <span className="text-[8px] text-primary font-black tracking-[0.6em] uppercase">Institutional</span>
+          <div className="hidden md:flex items-center gap-2 mt-1">
+             <span className="text-[8px] text-primary font-black tracking-[0.6em] uppercase">Trading Platform</span>
              <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
-             <span className="text-[8px] text-zinc-600 font-black tracking-[0.2em] uppercase">Alpha OS</span>
+             <span className="text-[8px] text-zinc-600 font-black tracking-[0.2em] uppercase">Live</span>
           </div>
         </Link>
         
@@ -54,7 +65,7 @@ const Navbar = ({ className }) => {
         <span className="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600 text-lg group-focus-within:text-primary transition-all group-focus-within:scale-110">command</span>
         <input 
           type="text" 
-          placeholder="Execute Global Command (Assets, Protocols, Nodes)..." 
+          placeholder="Search for assets or features..." 
           className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-14 pr-20 text-[11px] font-black tracking-widest text-white uppercase placeholder:text-zinc-800 outline-none focus:border-primary/40 focus:bg-black/60 transition-all shadow-inner focus:shadow-[0_0_30px_rgba(252,213,53,0.05)]"
         />
         <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-2">
@@ -67,7 +78,7 @@ const Navbar = ({ className }) => {
       <div className="flex items-center gap-8">
         <div className="hidden sm:flex items-center gap-6 border-r border-white/5 pr-8">
            <div className="text-right space-y-1">
-              <span className="text-[9px] text-zinc-700 block font-black uppercase tracking-[0.4em]">Settled Balance</span>
+              <span className="text-[9px] text-zinc-700 block font-black uppercase tracking-[0.4em]">Balance</span>
               <div className="flex items-center gap-2 justify-end">
                  <span className="text-base font-black text-white tracking-tighter leading-none">{formatPrice(profile?.usd_balance || 0)}</span>
                  <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
@@ -85,9 +96,9 @@ const Navbar = ({ className }) => {
 
         {!user ? (
           <div className="flex items-center gap-8">
-            <Link to="/login" className="text-[11px] font-black text-zinc-600 hover:text-white uppercase tracking-[0.4em] transition-all">Authenticate</Link>
+            <Link to="/login" className="text-[11px] font-black text-zinc-600 hover:text-white uppercase tracking-[0.4em] transition-all">Login</Link>
             <Link to="/signup">
-              <Button variant="primary" className="py-3 px-8 text-[11px] font-black uppercase tracking-[0.4em] shadow-2xl transition-all hover:scale-105">Initialize</Button>
+              <Button variant="primary" className="py-3 px-8 text-[11px] font-black uppercase tracking-[0.4em] shadow-2xl transition-all hover:scale-105">Sign Up</Button>
             </Link>
           </div>
         ) : (
@@ -96,7 +107,7 @@ const Navbar = ({ className }) => {
                 <span className="text-sm font-black text-white block tracking-tighter truncate max-w-[140px] uppercase">{profile?.full_name || 'Trader_Alpha'}</span>
                 <div className="flex items-center gap-2 justify-end">
                    <div className="w-1 h-1 rounded-full bg-success"></div>
-                   <span className="text-[9px] text-primary font-black uppercase tracking-[0.4em] opacity-80">Executive</span>
+                   <span className="text-[9px] text-primary font-black uppercase tracking-[0.4em] opacity-80">Member</span>
                 </div>
              </div>
              
@@ -132,7 +143,7 @@ const Navbar = ({ className }) => {
                    </Link>
                    <div className="h-px bg-white/5 mx-5 my-4"></div>
                    <button onClick={handleLogout} className="flex items-center gap-4 w-full text-left px-5 py-3.5 text-[11px] font-black text-error hover:bg-error/5 transition-all rounded-2xl uppercase tracking-widest group/item">
-                      <span className="material-symbols-outlined text-xl transition-transform group-hover/item:-translate-x-1">power_settings_new</span> Terminate
+                      <span className="material-symbols-outlined text-xl transition-transform group-hover/item:-translate-x-1">power_settings_new</span> Logout
                    </button>
                 </div>
              </div>

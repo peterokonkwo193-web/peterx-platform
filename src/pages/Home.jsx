@@ -126,24 +126,24 @@ const Home = () => {
                <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Institutional Clearance Level 4 Active</span>
             </div>
             
-            <h1 className="text-[48px] sm:text-[70px] md:text-[110px] font-black leading-[0.95] tracking-tighter text-white">
-               Trade with the <span className="text-primary">Elite.</span><br/>
-               Profit with <span className="text-zinc-600">Precision.</span>
+            <h1 className="text-[40px] sm:text-[60px] md:text-[110px] font-black leading-[0.95] tracking-tighter text-white">
+               Trade with the <span className="text-primary">Best.</span><br/>
+               Profit with <span className="text-zinc-600">Ease.</span>
             </h1>
             
-            <p className="text-lg md:text-2xl text-zinc-400 max-w-4xl mx-auto font-medium leading-relaxed">
-              Equity Citadel is the premier liquidity terminal for institutional digital asset allocation. Secure, high-latency, and engineered for absolute sovereign capital growth.
+            <p className="text-base md:text-2xl text-zinc-400 max-w-4xl mx-auto font-medium leading-relaxed">
+              Equity Citadel is the leading platform for digital asset trading. Secure, fast, and built for your growth.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-12">
-              <Link to="/signup">
-                <Button className="px-14 py-6 text-xs font-black uppercase tracking-[0.3em] shadow-2xl bg-primary text-black hover:scale-105 transition-all">
-                   Initialize Account
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-12">
+              <Link to="/signup" className="w-full sm:w-auto">
+                <Button className="w-full px-14 py-6 text-xs font-black uppercase tracking-[0.3em] shadow-2xl bg-primary text-black hover:scale-105 transition-all">
+                   Open Account
                 </Button>
               </Link>
-              <a href="#plans">
-                <Button variant="outline" className="px-14 py-6 text-xs font-black uppercase tracking-[0.3em] border-white/10 hover:bg-white/5 transition-all">
-                   Strategic Plans
+              <a href="#plans" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full px-14 py-6 text-xs font-black uppercase tracking-[0.3em] border-white/10 hover:bg-white/5 transition-all">
+                   View Plans
                 </Button>
               </a>
             </div>
@@ -156,14 +156,14 @@ const Home = () => {
             transition={{ duration: 1, delay: 0.5 }}
             className="mt-32 w-full max-w-7xl"
           >
-            <Card className="p-1 citadel-card rounded-[40px] shadow-2xl relative overflow-hidden" glass>
-               <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5 p-12">
-                  <StatItem label="Market Liquidity" val="$14.2B+" sub="Deep Institutional Pool" />
-                  <StatItem label="Execution Delay" val="0.02ms" sub="Ultra-Low Latency" />
-                  <StatItem label="Uptime Record" val="99.99%" sub="Synchronized Nodes" />
-                  <StatItem label="Protocol Fee" val="0.005%" sub="Industry Minimal" />
-               </div>
-            </Card>
+             <Card className="p-1 citadel-card rounded-[40px] shadow-2xl relative overflow-hidden" glass>
+                <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5 p-8 md:p-12">
+                   <StatItem label="Liquidity" val="$14.2B+" sub="Global Pool" />
+                   <StatItem label="Fast Execution" val="0.02ms" sub="Ultra-Fast" />
+                   <StatItem label="Uptime" val="99.99%" sub="Always Online" />
+                   <StatItem label="Lowest Fees" val="0.005%" sub="Minimal" />
+                </div>
+             </Card>
           </motion.div>
         </section>
 
@@ -178,18 +178,18 @@ const Home = () => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-10 relative">
                  <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent hidden md:block -z-10"></div>
                  
-                 <StepCard 
-                    number="01" title="Register" desc="Create your institutional vault account with military-grade 256-bit encryption." icon="person_add" 
-                 />
-                 <StepCard 
-                    number="02" title="Verify" desc="Complete Tier-4 KYC/AML verification to unlock infinite liquidity pools." icon="verified_user" 
-                 />
-                 <StepCard 
-                    number="03" title="Fund" desc="Deposit assets instantly via our secure multi-sig institutional gateway." icon="account_balance_wallet" 
-                 />
-                 <StepCard 
-                    number="04" title="Trade" desc="Execute high-fidelity strategies with zero-latency clearance precision." icon="terminal" 
-                 />
+                  <StepCard 
+                     number="01" title="Register" desc="Create your account with secure encryption." icon="person_add" 
+                  />
+                  <StepCard 
+                     number="02" title="Verify" desc="Verify your identity to unlock all features." icon="verified_user" 
+                  />
+                  <StepCard 
+                     number="03" title="Fund" desc="Deposit assets instantly via our secure gateway." icon="account_balance_wallet" 
+                  />
+                  <StepCard 
+                     number="04" title="Trade" desc="Start trading with precision and grow your funds." icon="terminal" 
+                  />
               </div>
            </div>
         </section>
@@ -214,16 +214,16 @@ const Home = () => {
                  </div>
                  
                  <div className="space-y-10">
-                    <BenefitItem icon="trending_up" title="High-Frequency Clearance" desc="Execute thousands of positions per second with our low-latency institutional clearance engine." />
-                    <BenefitItem icon="token" title="Automated Staking Yield" desc="Generate up to 15.4% APR on your idle assets through our secondary liquidity staking protocol." />
-                    <BenefitItem icon="hub" title="Cross-Chain Settlement" desc="Move capital across global networks instantly with zero settlement risk or delay." />
-                 </div>
-
-                 <Link to="/signup" className="inline-block pt-8">
-                    <Button size="lg" className="px-14 py-6 text-xs font-black uppercase tracking-[0.3em] shadow-2xl bg-primary text-black hover:scale-105 transition-all">
-                       Initialize Yield Protocol
-                    </Button>
-                 </Link>
+                     <BenefitItem icon="trending_up" title="Fast Trading" desc="Trade at high speed with our advanced trading engine." />
+                     <BenefitItem icon="token" title="Passive Income" desc="Earn up to 15.4% APR on your assets through staking." />
+                     <BenefitItem icon="hub" title="Easy Transfers" desc="Move funds across global networks instantly with zero risk." />
+                  </div>
+ 
+                  <Link to="/signup" className="inline-block pt-8">
+                     <Button size="lg" className="px-14 py-6 text-xs font-black uppercase tracking-[0.3em] shadow-2xl bg-primary text-black hover:scale-105 transition-all">
+                        Get Started
+                     </Button>
+                  </Link>
               </motion.div>
 
               <div className="relative">

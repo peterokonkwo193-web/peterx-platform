@@ -32,7 +32,7 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
         )}
         <div className="absolute -left-10 -bottom-10 text-[100px] font-black text-white/[0.01] pointer-events-none select-none tracking-tighter uppercase leading-none">ALPHA</div>
 
-        {/* SUPPORT PROTOCOL */}
+        {/* SUPPORT */}
         <button 
           onClick={(e) => {
             e.stopPropagation();
@@ -40,7 +40,7 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
           }}
           className="absolute top-6 right-6 z-30 flex items-center gap-2 text-zinc-600 hover:text-primary transition-all duration-300 group/support"
         >
-          <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-0 group-hover/support:opacity-100 transition-all translate-x-2 group-hover/support:translate-x-0">Enquire</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-0 group-hover/support:opacity-100 transition-all translate-x-2 group-hover/support:translate-x-0">Help</span>
           <div className="w-10 h-10 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-center group-hover/support:border-primary/50 group-hover/support:bg-primary group-hover/support:text-black transition-all shadow-2xl">
             <span className="material-symbols-outlined text-xl font-black">support_agent</span>
           </div>
@@ -50,7 +50,7 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
           <div className="absolute top-8 left-10 z-20">
             <div className="bg-primary/10 border border-primary/20 backdrop-blur-xl text-primary text-[8px] font-black uppercase tracking-[0.4em] px-4 py-1.5 rounded-xl shadow-2xl flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-              Strategic Priority
+              Best Value
             </div>
           </div>
         )}
@@ -78,41 +78,41 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
                       <div key={i} className={cn("w-1.5 h-1.5 rounded-full", i < (isRecommended ? 5 : 3) ? "bg-primary shadow-[0_0_8px_rgba(252,213,53,0.4)]" : "bg-zinc-800")}></div>
                     ))}
                  </div>
-                 <span className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em]">Protocol Confidence</span>
+                 <span className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em]">Confidence</span>
               </div>
             </div>
           </div>
 
           <div className="space-y-10">
             <div className="relative">
-              <span className="text-[10px] text-zinc-700 uppercase font-black tracking-[0.4em] block mb-3">Capital Requirement</span>
+              <span className="text-[10px] text-zinc-700 uppercase font-black tracking-[0.4em] block mb-3">Min Deposit</span>
               <div className="flex items-baseline gap-3">
-                <span className="text-5xl font-black text-white tracking-tighter leading-none">
+                <span className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-none">
                   {formatPrice(plan.range)}
                 </span>
-                <span className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.3em]">Minimum</span>
+                <span className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.3em]">Min</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col gap-2 shadow-inner group-hover:border-white/10 transition-all">
-                <span className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em]">Execution Horizon</span>
+              <div className="p-4 md:p-5 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col gap-2 shadow-inner group-hover:border-white/10 transition-all">
+                <span className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em]">Duration</span>
                 <span className="text-base font-black text-white uppercase tracking-tighter">{plan.duration} Days</span>
               </div>
-              <div className="p-5 bg-success/5 border border-success/10 rounded-2xl flex flex-col gap-2 shadow-inner group-hover:border-success/20 transition-all">
-                <span className="text-[9px] text-success/60 font-black uppercase tracking-[0.3em]">Strategic ROI</span>
-                <span className="text-base font-black text-success uppercase tracking-tighter">+{plan.roi}% Epoch</span>
+              <div className="p-4 md:p-5 bg-success/5 border border-success/10 rounded-2xl flex flex-col gap-2 shadow-inner group-hover:border-success/20 transition-all">
+                <span className="text-[9px] text-success/60 font-black uppercase tracking-[0.3em]">Profit</span>
+                <span className="text-base font-black text-success uppercase tracking-tighter">+{plan.roi}%</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* ROI FORECAST MATRIX */}
-        <div className="mb-12 relative z-10">
-           <div className="flex justify-between items-end mb-4">
-              <span className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em]">Yield Forecast</span>
-              <span className="text-xs font-black text-zinc-400 font-mono tracking-tighter">+{plan.roi}% CURVE</span>
-           </div>
+         <div className="mb-12 relative z-10">
+            <div className="flex justify-between items-end mb-4">
+               <span className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em]">Projected Profit</span>
+               <span className="text-xs font-black text-zinc-400 font-mono tracking-tighter">+{plan.roi}%</span>
+            </div>
            <div className="h-2 bg-black rounded-full overflow-hidden border border-white/5 p-[1px] shadow-inner">
               <motion.div 
                 initial={{ width: 0 }}
@@ -151,7 +151,7 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
                )}
                onClick={() => onInvest(plan)}
              >
-               Allocate Protocol
+               Invest Now
              </Button>
              {isRecommended && (
                <motion.div 

@@ -21,7 +21,7 @@ const Deposit = () => {
   const [txRef, setTxRef] = useState('');
 
   useEffect(() => {
-    setTxRef(`EC-${Math.random().toString(36).toUpperCase().slice(2, 10)}`);
+    setTxRef(`DEP-${Math.random().toString(36).toUpperCase().slice(2, 10)}`);
   }, []);
 
   useEffect(() => {
@@ -71,36 +71,36 @@ const Deposit = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto py-12 md:py-20 px-8">
+      <div className="max-w-5xl mx-auto py-12 md:py-20 px-4 md:px-8">
         <header className="mb-16">
           <div className="flex flex-wrap items-center gap-4 mb-6">
-             <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Institutional Bridge</div>
-             <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Protocol v4.0 Active</span>
+             <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Deposit Funds</div>
+             <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Live Status: Active</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">Institutional <span className="text-primary">Clearance</span></h1>
-          <p className="text-zinc-500 mt-6 text-lg max-w-2xl font-medium leading-relaxed">Initialize your sovereign capital allocation by depositing assets into the Equity Citadel verified multi-sig vaults.</p>
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">Deposit <span className="text-primary">Funds</span></h1>
+          <p className="text-zinc-500 mt-6 text-lg max-w-2xl font-medium leading-relaxed uppercase tracking-tight">Deposit your funds into the secure wallets below to start trading.</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Progress Sidebar */}
-          <div className="md:col-span-4 space-y-6">
-            <StepIndicator number={1} title="Select Strategy Asset" active={step === 1} completed={step > 1} />
-            <StepIndicator number={2} title="Transfer to Vault" active={step === 2} completed={step > 2} />
-            <StepIndicator number={3} title="Await Settlement" active={step === 3} completed={step > 3} />
+          <div className="lg:col-span-4 space-y-6">
+            <StepIndicator number={1} title="Select Asset" active={step === 1} completed={step > 1} />
+            <StepIndicator number={2} title="Transfer Funds" active={step === 2} completed={step > 2} />
+            <StepIndicator number={3} title="Await Confirmation" active={step === 3} completed={step > 3} />
             
-            <div className="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-4">
-               <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Clearance Status</h4>
+            <div className="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-4 hidden lg:block">
+               <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Network Status</h4>
                <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
-                  <span className="text-[11px] font-bold text-white uppercase tracking-widest">Network Synchronized</span>
+                  <span className="text-[11px] font-bold text-white uppercase tracking-widest">Synchronized</span>
                </div>
-               <p className="text-[10px] text-zinc-600 leading-relaxed uppercase font-bold">Average settlement time: 4-12 network confirmations across institutional nodes.</p>
+               <p className="text-[10px] text-zinc-600 leading-relaxed uppercase font-bold">Average time: 4-12 confirmations.</p>
             </div>
           </div>
 
           {/* Main Interface */}
-          <div className="md:col-span-8">
-            <Card className="p-12 citadel-card shadow-2xl relative overflow-hidden" glass>
+          <div className="lg:col-span-8">
+            <Card className="p-6 md:p-12 citadel-card shadow-2xl relative overflow-hidden" glass>
               <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div 
@@ -111,8 +111,8 @@ const Deposit = () => {
                     className="space-y-10"
                   >
                     <div className="space-y-6">
-                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Target Digital Asset</label>
-                      <div className="grid grid-cols-2 gap-4">
+                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Select Asset</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {STATIC_COINS.map(coin => (
                           <button
                             key={coin.symbol}
@@ -135,7 +135,7 @@ const Deposit = () => {
                     </div>
 
                     <div className="space-y-6">
-                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Settlement Network</label>
+                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Select Network</label>
                       <div className="grid grid-cols-1 gap-3">
                         {(NETWORKS[selectedCoin.symbol] || []).map(net => (
                           <button
@@ -160,7 +160,7 @@ const Deposit = () => {
                       className="w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl"
                       onClick={() => setStep(2)}
                     >
-                      Authorize Clearance Gateway
+                      Next Step
                     </Button>
                   </motion.div>
                 )}
@@ -178,24 +178,24 @@ const Deposit = () => {
                       <img 
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${getVaultAddress()}`} 
                         alt="Deposit QR" 
-                        className="w-52 h-52 relative z-10"
+                        className="w-40 h-40 md:w-52 md:h-52 relative z-10"
                       />
                     </div>
 
                     <div className="px-6 py-2.5 bg-primary/10 border border-primary/20 rounded-xl backdrop-blur-xl">
-                       <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Protocol Session: {txRef}</span>
+                       <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Reference: {txRef}</span>
                     </div>
 
                     <div className="w-full space-y-6">
                       <div className="text-left space-y-3">
-                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Verified Institutional Vault Address</label>
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 bg-black/60 p-5 rounded-2xl border border-white/5 font-mono text-[11px] text-zinc-400 break-all select-all shadow-inner">
+                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Wallet Address</label>
+                        <div className="flex flex-col sm:flex-row items-center gap-3">
+                          <div className="flex-1 w-full bg-black/60 p-5 rounded-2xl border border-white/5 font-mono text-[11px] text-zinc-400 break-all select-all shadow-inner">
                             {getVaultAddress()}
                           </div>
                           <button 
                             onClick={handleCopy}
-                            className="p-5 bg-primary text-black rounded-2xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(252,213,53,0.3)]"
+                            className="w-full sm:w-auto p-5 bg-primary text-black rounded-2xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(252,213,53,0.3)]"
                           >
                             <span className="material-symbols-outlined text-lg">{copied ? 'verified' : 'content_copy'}</span>
                           </button>
@@ -205,18 +205,18 @@ const Deposit = () => {
                       <div className="p-6 bg-error/5 border border-error/20 rounded-[32px] flex items-start gap-5 text-left backdrop-blur-xl">
                         <span className="material-symbols-outlined text-error text-2xl">security_update_warning</span>
                         <p className="text-[10px] text-error font-black leading-relaxed uppercase tracking-widest opacity-80">
-                          CRITICAL: Deploy {selectedCoin.symbol} only via the {selectedNetwork} protocol. Cross-chain errors will result in permanent capital liquidation within the clearance node.
+                          IMPORTANT: Send only {selectedCoin.symbol} via the {selectedNetwork} network. Sending other assets will result in loss of funds.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex gap-4 w-full pt-6">
+                    <div className="flex flex-col sm:flex-row gap-4 w-full pt-6">
                       <Button 
                         variant="outline" 
                         className="flex-1 py-5 text-[10px] font-black uppercase tracking-widest border-white/10"
                         onClick={() => setStep(1)}
                       >
-                        Change Protocol
+                        Go Back
                       </Button>
                       <Button 
                         variant="primary" 
@@ -224,7 +224,7 @@ const Deposit = () => {
                         onClick={handleConfirm}
                         loading={loading}
                       >
-                        Confirm Transfer
+                        Confirm Deposit
                       </Button>
                     </div>
                   </motion.div>
@@ -242,12 +242,12 @@ const Deposit = () => {
                       <span className="material-symbols-outlined text-5xl">sync</span>
                     </div>
                     <div className="space-y-6">
-                      <h3 className="text-4xl font-black text-white uppercase tracking-tighter">Settlement <span className="text-primary italic">In Progress</span></h3>
+                      <h3 className="text-4xl font-black text-white uppercase tracking-tighter">Processing <span className="text-primary italic">Deposit</span></h3>
                       <div className="inline-block px-6 py-2.5 bg-white/[0.03] border border-white/5 rounded-2xl mb-4">
-                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Protocol Reference: <span className="text-white">{txRef}</span></span>
+                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Reference: <span className="text-white">{txRef}</span></span>
                       </div>
-                      <p className="text-zinc-500 text-base max-w-md mx-auto font-medium leading-relaxed">
-                        Your capital is being synchronized across the {selectedNetwork} institutional nodes. Status will update to 'Cleared' upon final validation.
+                      <p className="text-zinc-500 text-base max-w-md mx-auto font-medium leading-relaxed uppercase tracking-tight">
+                        Your deposit is being processed. Your balance will update once confirmed.
                       </p>
                     </div>
                     <Button 
@@ -255,7 +255,7 @@ const Deposit = () => {
                       className="px-16 py-5 text-[10px] font-black uppercase tracking-widest border-white/10"
                       onClick={() => window.location.href = '/wallet'}
                     >
-                      Return to Command Center
+                      Go to Wallet
                     </Button>
                   </motion.div>
                 )}

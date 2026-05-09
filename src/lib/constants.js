@@ -1,5 +1,4 @@
 export const STATIC_COINS = [
-  { symbol: 'USD', name: 'US Dollar', type: 'fiat', image: 'https://cdn-icons-png.flaticon.com/512/197/197374.png', color: 'from-blue-500/20' },
   { symbol: 'BTC', name: 'Bitcoin', type: 'crypto', image: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png', color: 'from-orange-500/20' },
   { symbol: 'ETH', name: 'Ethereum', type: 'crypto', image: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png', color: 'from-indigo-500/20' },
   { symbol: 'SOL', name: 'Solana', type: 'crypto', image: 'https://assets.coingecko.com/coins/images/4128/small/solana.png', color: 'from-teal-500/20' },
@@ -8,12 +7,10 @@ export const STATIC_COINS = [
 ];
 
 export const NETWORKS = {
-  'USD': ['Bank Transfer (ACH)', 'Wire Transfer', 'Instant Card'],
-  'BTC': ['Bitcoin (BTC)', 'Lightning Network', 'BNB Smart Chain (BEP20)', 'Ethereum (ERC20)'],
-  'ETH': ['Ethereum (ERC20)', 'Arbitrum One', 'Optimism', 'Polygon', 'BNB Smart Chain (BEP20)', 'Base'],
+  'BTC': ['Bitcoin (BTC)', 'BNB Smart Chain (BEP20)'],
+  'ETH': ['Ethereum (ERC20)', 'Arbitrum One', 'Optimism', 'Polygon', 'BNB Smart Chain (BEP20)'],
   'SOL': ['Solana (SOL)', 'BNB Smart Chain (BEP20)'],
-  'USDT': ['Tron (TRC20)', 'Ethereum (ERC20)', 'BNB Smart Chain (BEP20)', 'Polygon', 'Solana', 'Arbitrum One', 'Optimism', 'Avalanche C-Chain'],
-  'USDC': ['Ethereum (ERC20)', 'Solana', 'Polygon', 'Arbitrum One', 'Optimism', 'Base', 'Tron (TRC20)', 'BNB Smart Chain (BEP20)'],
+  'USDT': ['Tron (TRC20)', 'Ethereum (ERC20)', 'BNB Smart Chain (BEP20)', 'Polygon', 'Solana'],
   'PI': ['Pi Network Mainnet', 'BNB Smart Chain (BEP20)']
 };
 

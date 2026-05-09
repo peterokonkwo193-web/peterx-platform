@@ -14,7 +14,7 @@ const PLANS = [
     roi: 12,
     icon: 'rocket_launch',
     color: 'from-blue-500/20',
-    features: ['Low latency entry', 'Weekly settlement', 'Standard liquidity pool']
+    features: ['Fast entry', 'Weekly payouts', 'Secure pool']
   },
   {
     id: 'silver',
@@ -24,7 +24,7 @@ const PLANS = [
     roi: 25,
     icon: 'verified',
     color: 'from-zinc-500/20',
-    features: ['Enhanced yield curve', 'Bi-weekly settlement', 'Priority support']
+    features: ['Higher returns', 'Bi-weekly payouts', 'Priority support']
   },
   {
     id: 'gold',
@@ -34,7 +34,7 @@ const PLANS = [
     roi: 45,
     icon: 'account_balance',
     color: 'from-primary/20',
-    features: ['Maximum efficiency', 'Custom risk balancing', 'Direct API access'],
+    features: ['Max efficiency', 'Low risk balancing', 'Direct support'],
     recommended: true
   },
   {
@@ -45,7 +45,7 @@ const PLANS = [
     roi: 75,
     icon: 'diamond',
     color: 'from-pink-500/20',
-    features: ['Whale-grade liquidity', 'VIP concierge', 'Zero termination fees']
+    features: ['Elite liquidity', 'VIP support', 'No fees']
   }
 ];
 
@@ -66,7 +66,7 @@ const InvestmentPlans = ({ onSupport }) => {
             viewport={{ once: true }}
             className="text-[12px] font-black text-primary uppercase tracking-[0.5em] block"
           >
-            Capital Allocation Protocol v4.0
+            Live Investments
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -75,7 +75,7 @@ const InvestmentPlans = ({ onSupport }) => {
             transition={{ delay: 0.1 }}
             className="text-[56px] md:text-[84px] font-black text-white tracking-tighter leading-[0.9] uppercase"
           >
-            Institutional <span className="text-primary italic">Yield</span> Strategies
+            Investment <span className="text-primary italic">Yield</span> Strategies
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -84,7 +84,7 @@ const InvestmentPlans = ({ onSupport }) => {
             transition={{ delay: 0.2 }}
             className="text-zinc-500 max-w-3xl mx-auto font-medium text-xl leading-relaxed"
           >
-            Deploy assets into verified institutional-grade strategies with guaranteed deep-pool liquidity and precision cross-chain settlement.
+            Invest your funds into expert-managed strategies with guaranteed security and fast payouts.
           </motion.p>
         </div>
 
@@ -140,18 +140,18 @@ const InvestmentPlans = ({ onSupport }) => {
                 </h3>
                 
                 <div className="relative z-10 flex flex-col items-center mb-10">
-                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-2">Projected Net Yield</span>
+                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-2">Projected Profit</span>
                   <span className="text-5xl font-black text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
                 </div>
 
                 <div className="relative z-10 w-full p-8 bg-black/40 border border-white/5 rounded-[32px] mb-10 space-y-5 backdrop-blur-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Horizon</span>
-                    <span className="text-sm text-white font-black uppercase tracking-widest">{plan.duration} Trading Days</span>
+                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Duration</span>
+                    <span className="text-sm text-white font-black uppercase tracking-widest">{plan.duration} Days</span>
                   </div>
                   <div className="h-px bg-white/5 w-full"></div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Min Entry</span>
+                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Min Deposit</span>
                     <span className="text-sm text-white font-black tracking-widest font-mono">{formatPrice(plan.range)}</span>
                   </div>
                 </div>
@@ -169,7 +169,7 @@ const InvestmentPlans = ({ onSupport }) => {
                   to="/deposit" 
                   className="relative z-10 w-full py-6 bg-white/[0.03] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] text-white hover:bg-primary hover:text-black hover:border-primary transition-all shadow-2xl group-hover:scale-105"
                 >
-                  Initialize Allocation
+                  Invest Now
                 </Link>
                 
                 {/* Background Text Decor */}
