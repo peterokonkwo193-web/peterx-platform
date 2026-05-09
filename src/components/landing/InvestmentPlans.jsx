@@ -100,7 +100,7 @@ const InvestmentPlans = ({ onSupport }) => {
             >
               <Card 
                 className={cn(
-                  "h-full p-6 md:p-10 flex flex-col items-center text-center relative overflow-hidden transition-all duration-700 hover:scale-[1.05] border shadow-2xl",
+                  "h-full p-5 md:p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-700 hover:scale-[1.05] border shadow-2xl",
                   plan.recommended ? "border-primary/40 bg-primary/5" : "border-white/5 bg-white/[0.02]"
                 )} 
                 glass
@@ -129,30 +129,30 @@ const InvestmentPlans = ({ onSupport }) => {
                   </div>
                 )}
 
-                <div className="relative z-10 w-16 h-16 md:w-24 md:h-24 rounded-2xl md:rounded-[32px] bg-white/[0.03] flex items-center justify-center mb-6 md:mb-10 border border-white/5 group-hover:border-primary/40 transition-all group-hover:bg-primary/5 group-hover:scale-110 group-hover:rotate-3">
-                  <span className="material-symbols-outlined text-3xl md:text-5xl text-zinc-600 group-hover:text-primary transition-colors">
+                <div className="relative z-10 w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white/[0.03] flex items-center justify-center mb-5 md:mb-8 border border-white/5 group-hover:border-primary/40 transition-all group-hover:bg-primary/5 group-hover:scale-110 group-hover:rotate-3">
+                  <span className="material-symbols-outlined text-2xl md:text-3xl text-zinc-600 group-hover:text-primary transition-colors">
                     {plan.icon}
                   </span>
                 </div>
 
-                <h3 className="relative z-10 text-2xl font-black text-white uppercase tracking-tight mb-3">
+                <h3 className="relative z-10 text-xl font-black text-white uppercase tracking-tight mb-3">
                   {plan.name}
                 </h3>
                 
-                <div className="relative z-10 flex flex-col items-center mb-6 md:mb-10">
-                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-2">Projected Profit</span>
-                  <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
+                <div className="relative z-10 flex flex-col items-center mb-5 md:mb-8">
+                  <span className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-2">Projected Profit</span>
+                  <span className="text-3xl md:text-4xl font-black text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
                 </div>
 
-                <div className="relative z-10 w-full p-6 md:p-8 bg-black/40 border border-white/5 rounded-2xl md:rounded-[32px] mb-6 md:mb-10 space-y-4 md:space-y-5 backdrop-blur-xl">
+                <div className="relative z-10 w-full p-4 md:p-5 bg-black/40 border border-white/5 rounded-xl md:rounded-[20px] mb-6 md:mb-8 space-y-3 md:space-y-4 backdrop-blur-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Duration</span>
-                    <span className="text-sm text-white font-black uppercase tracking-widest">{plan.duration} Days</span>
+                    <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Duration</span>
+                    <span className="text-xs text-white font-black uppercase tracking-widest">{plan.duration} Days</span>
                   </div>
                   <div className="h-px bg-white/5 w-full"></div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Min Deposit</span>
-                    <span className="text-sm text-white font-black tracking-widest font-mono">{formatPrice(plan.range)}</span>
+                    <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Min Deposit</span>
+                    <span className="text-xs text-white font-black tracking-widest font-mono">{formatPrice(plan.range)}</span>
                   </div>
                 </div>
 
