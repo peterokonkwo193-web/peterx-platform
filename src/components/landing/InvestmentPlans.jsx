@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { cn } from '../../utils/cn';
+import Card from '../common/Card';
 import { useCurrency } from '../../context/CurrencyContext';
 
 const PLANS = [

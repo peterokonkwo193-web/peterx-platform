@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
+import Card from '../components/common/Card';
 import PlanCard from '../components/investments/PlanCard';
 import InvestmentModal from '../components/investments/InvestmentModal';
 import InvestmentDashboard from '../components/investments/InvestmentDashboard';
