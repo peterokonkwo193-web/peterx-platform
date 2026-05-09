@@ -13,7 +13,8 @@ const Admin = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [pendingTransactions, setPendingTransactions] = useState([]);
-  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'verifications' | 'audit'
+  const [pendingPayouts, setPendingPayouts] = useState([]);
+  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'verifications' | 'payouts' | 'audit' | 'portfolio'
   const [auditLogs, setAuditLogs] = useState([]);
   const [processingId, setProcessingId] = useState(null);
   const [verifyAmount, setVerifyAmount] = useState({});
@@ -35,6 +36,7 @@ const Admin = () => {
     await Promise.all([
       fetchAllUsers(), 
       fetchPendingTransactions(),
+      fetchPendingPayouts(),
       fetchAuditLogs()
     ]);
     setLoading(false);
@@ -67,6 +69,21 @@ const Admin = () => {
       setPendingTransactions(data || []);
     } catch (error) {
       console.error('Error fetching transactions:', error);
+    }
+  };
+
+  const fetchPendingPayouts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*, profiles(full_name)')
+        .eq('status', 'Pending Payout')
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      setPendingPayouts(data || []);
+    } catch (error) {
+      console.error('Error fetching payouts:', error);
     }
   };
 
@@ -182,6 +199,19 @@ const Admin = () => {
             {activeTab === 'verifications' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-success"></div>}
           </button>
           <button 
+            onClick={() => setActiveTab('payouts')}
+            className={cn(
+              "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
+              activeTab === 'payouts' ? "text-error" : "text-zinc-500 hover:text-white"
+            )}
+          >
+            Payout Authorization
+            {pendingPayouts.length > 0 && (
+              <span className="ml-2 px-1.5 py-0.5 bg-error text-white text-[9px] rounded-md">{pendingPayouts.length}</span>
+            )}
+            {activeTab === 'payouts' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-error"></div>}
+          </button>
+          <button 
             onClick={() => setActiveTab('audit')}
             className={cn(
               "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
@@ -208,6 +238,7 @@ const Admin = () => {
             <h2 className="text-lg font-bold text-white">
               {activeTab === 'users' && 'Registered Institutional Users'}
               {activeTab === 'verifications' && 'Institutional Funding Requests'}
+              {activeTab === 'payouts' && 'Institutional Payout Requests'}
               {activeTab === 'audit' && 'System Audit Protocol Logs'}
             </h2>
           </div>
@@ -311,6 +342,68 @@ const Admin = () => {
                   {pendingTransactions.length === 0 && (
                     <tr>
                       <td colSpan="5" className="py-12 text-center text-zinc-500">No pending verifications.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            ) : activeTab === 'payouts' ? (
+              <table className="w-full text-left">
+                <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                  <tr>
+                    <th className="px-6 py-4">Client</th>
+                    <th className="px-6 py-4">Asset</th>
+                    <th className="px-6 py-4">Destination Wallet</th>
+                    <th className="px-6 py-4">Request Date</th>
+                    <th className="px-6 py-4 text-right">Authorization</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-sm">
+                  {pendingPayouts.map((tx) => (
+                    <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-6 py-4">
+                        <span className="block font-medium text-zinc-200">{tx.profiles?.full_name || 'Institutional Client'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-1 bg-error/10 rounded text-[10px] font-black text-error border border-error/20">{tx.asset}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-zinc-500 text-[10px] break-all max-w-[200px] block">{tx.client_tx_id || 'INTERNAL_LEDGER'}</span>
+                      </td>
+                      <td className="px-6 py-4 text-zinc-500">
+                        {new Date(tx.created_at).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-3">
+                          <input 
+                            type="number"
+                            placeholder="Amount"
+                            className="w-24 bg-black border border-white/10 rounded px-2 py-1 text-xs text-white"
+                            value={verifyAmount[tx.id] || tx.amount}
+                            onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
+                          />
+                          <button 
+                            disabled={processingId === tx.id}
+                            onClick={() => handleVerify(tx.id, 'Completed')}
+                            className="px-4 py-2 bg-error text-white text-[10px] font-black uppercase tracking-widest rounded hover:scale-105 transition-transform disabled:opacity-50"
+                          >
+                            Sign Payout
+                          </button>
+                          <button 
+                            disabled={processingId === tx.id}
+                            onClick={() => handleVerify(tx.id, 'Rejected')}
+                            className="p-2 bg-zinc-800 text-zinc-500 rounded hover:text-white transition-all disabled:opacity-50"
+                          >
+                            <span className="material-symbols-outlined text-sm">close</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {pendingPayouts.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="py-12 text-center text-zinc-500">No pending payout authorizations.</td>
                     </tr>
                   )}
                 </tbody>

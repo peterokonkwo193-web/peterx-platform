@@ -13,7 +13,6 @@ const ASSETS = [
   { id: 'btc', symbol: 'BTC', name: 'Bitcoin', icon: 'currency_bitcoin', color: 'text-primary' },
   { id: 'eth', symbol: 'ETH', name: 'Ethereum', icon: 'eth', color: 'text-secondary' },
   { id: 'sol', symbol: 'SOL', name: 'Solana', icon: 'wb_sunny', color: 'text-sky-400' },
-  { id: 'eur', symbol: 'EUR', name: 'Euro', icon: 'euro', color: 'text-zinc-400' },
   { id: 'gbp', symbol: 'GBP', name: 'British Pound', icon: 'currency_pound', color: 'text-zinc-400' },
 ];
 
@@ -26,27 +25,39 @@ const TransferModal = ({ profile, isOpen, onClose, onComplete }) => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('idle'); // idle, processing, success, error
 
+  const isAdmin = profile?.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || profile?.id === '8d24918f-b493-4549-951e-1f85b0b97fe5';
+
   const handleTransfer = async () => {
     if (!amount || (type === 'send' && !walletId)) return;
     setLoading(true);
     setStatus('processing');
 
     try {
-      // Simulate institutional transfer processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
       if (type === 'send') {
         const numAmount = parseFloat(amount);
-        // Only checking USD balance for now as per schema, but simulating multi-asset
         if (numAmount > profile.usd_balance) throw new Error('Insufficient institutional liquidity.');
 
-        // Deduct from balance
-        const { error } = await supabase
-          .from('profiles')
-          .update({ usd_balance: profile.usd_balance - numAmount })
-          .eq('id', profile.id);
-
-        if (error) throw error;
+        if (isAdmin) {
+          // Admin Direct Withdrawal logic
+          const { error } = await supabase
+            .from('profiles')
+            .update({ usd_balance: profile.usd_balance - numAmount })
+            .eq('id', profile.id);
+          if (error) throw error;
+        } else {
+          // Client Payout Request logic
+          const { error } = await supabase
+            .from('transactions')
+            .insert({
+              user_id: profile.id,
+              type: 'Withdrawal',
+              asset: selectedAsset.symbol,
+              amount: numAmount,
+              status: 'Pending Payout',
+              client_tx_id: walletId // Storing destination wallet here
+            });
+          if (error) throw error;
+        }
       }
 
       setStatus('success');
@@ -88,18 +99,18 @@ const TransferModal = ({ profile, isOpen, onClose, onComplete }) => {
           </div>
 
           <div className="flex gap-4 mb-8">
-             <button 
-               onClick={() => setType('send')}
-               className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] border transition-all ${type === 'send' ? 'bg-primary text-black border-primary shadow-[0_0_15px_rgba(252,213,53,0.3)]' : 'bg-white/5 text-zinc-500 border-white/5 hover:border-white/10'}`}
-             >
-               Send
-             </button>
-             <button 
-               onClick={() => setType('receive')}
-               className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] border transition-all ${type === 'receive' ? 'bg-primary text-black border-primary shadow-[0_0_15px_rgba(252,213,53,0.3)]' : 'bg-white/5 text-zinc-500 border-white/5 hover:border-white/10'}`}
-             >
-               Receive
-             </button>
+              <button 
+                onClick={() => setType('send')}
+                className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] border transition-all ${type === 'send' ? 'bg-primary text-black border-primary shadow-[0_0_15px_rgba(252,213,53,0.3)]' : 'bg-white/5 text-zinc-500 border-white/5 hover:border-white/10'}`}
+              >
+                {isAdmin ? 'Withdrawal' : 'Request Payout'}
+              </button>
+              <button 
+                onClick={() => setType('receive')}
+                className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] border transition-all ${type === 'receive' ? 'bg-primary text-black border-primary shadow-[0_0_15px_rgba(252,213,53,0.3)]' : 'bg-white/5 text-zinc-500 border-white/5 hover:border-white/10'}`}
+              >
+                Deposit
+              </button>
           </div>
 
           {status === 'success' ? (
@@ -172,7 +183,7 @@ const TransferModal = ({ profile, isOpen, onClose, onComplete }) => {
                       onClick={handleTransfer}
                       disabled={loading || !amount || !walletId}
                     >
-                      {loading ? 'Hashing Protocol...' : `Confirm ${selectedAsset.symbol} Transfer`}
+                      {loading ? 'Processing Protocol...' : isAdmin ? `Finalize ${selectedAsset.symbol} Withdrawal` : `Submit Payout Request`}
                     </Button>
                  </div>
                ) : (
