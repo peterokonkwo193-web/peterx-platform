@@ -142,334 +142,185 @@ const Admin = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-black text-white tracking-tighter">Admin Dashboard</h1>
-            <p className="text-sm text-zinc-400">Platform Overview & User Management</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-4 bg-[#1e2329] px-6 py-3 rounded-xl border border-white/5">
-              <span className="material-symbols-outlined text-primary">group</span>
-              <div>
-                <span className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Total Users</span>
-                <span className="block text-xl font-black text-white">{users.length}</span>
+      <div className="max-w-[1600px] mx-auto space-y-8 pb-10 px-4 lg:px-8 pt-6">
+        
+        {/* Admin Command Header */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-10">
+           <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                 <div className="px-2 py-0.5 bg-error/10 rounded text-[9px] font-black text-error uppercase tracking-[0.2em] border border-error/20">Level 4 Clearance</div>
+                 <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></div>
+                    <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">System Secure</span>
+                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-4 bg-[#1e2329] px-6 py-3 rounded-xl border border-white/5 shadow-inner">
-              <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
-              <div>
-                <span className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Protocol TVL</span>
-                <span className="block text-xl font-black text-white">{formatPrice(treasuryMetrics.totalBalance)}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 bg-[#1e2329] px-6 py-3 rounded-xl border border-white/5">
-              <span className="material-symbols-outlined text-success">account_balance</span>
-              <div>
-                <span className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Pending Funding</span>
-                <span className="block text-xl font-black text-white">{pendingTransactions.length}</span>
-              </div>
-            </div>
-          </div>
+              <h1 className="text-4xl font-black text-white tracking-tighter">Command Terminal</h1>
+           </div>
+           
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full lg:w-auto">
+              {[
+                { label: 'Total Accounts', val: users.length, color: 'text-primary', icon: 'group' },
+                { label: 'Protocol TVL', val: formatPrice(treasuryMetrics.totalBalance), color: 'text-white', icon: 'account_balance_wallet' },
+                { label: 'Pending Payouts', val: pendingPayouts.length, color: 'text-error', icon: 'payments' },
+                { label: 'Active Nodes', val: '14/14', color: 'text-success', icon: 'hub' },
+              ].map((stat, i) => (
+                <div key={i} className="p-4 citadel-card bg-white/[0.02] min-w-[160px]">
+                   <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-1">{stat.label}</span>
+                   <div className="flex items-center gap-2">
+                      <span className={cn("text-xl font-black tracking-tighter", stat.color)}>{stat.val}</span>
+                   </div>
+                </div>
+              ))}
+           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex items-center gap-8 border-b border-white/5">
-          <button 
-            onClick={() => setActiveTab('users')}
-            className={cn(
-              "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
-              activeTab === 'users' ? "text-primary" : "text-zinc-500 hover:text-white"
-            )}
-          >
-            User Directory
-            {activeTab === 'users' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"></div>}
-          </button>
-          <button 
-            onClick={() => setActiveTab('verifications')}
-            className={cn(
-              "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
-              activeTab === 'verifications' ? "text-success" : "text-zinc-500 hover:text-white"
-            )}
-          >
-            Pending Verifications
-            {pendingTransactions.length > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 bg-success text-black text-[9px] rounded-md">{pendingTransactions.length}</span>
-            )}
-            {activeTab === 'verifications' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-success"></div>}
-          </button>
-          <button 
-            onClick={() => setActiveTab('payouts')}
-            className={cn(
-              "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
-              activeTab === 'payouts' ? "text-error" : "text-zinc-500 hover:text-white"
-            )}
-          >
-            Payout Authorization
-            {pendingPayouts.length > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 bg-error text-white text-[9px] rounded-md">{pendingPayouts.length}</span>
-            )}
-            {activeTab === 'payouts' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-error"></div>}
-          </button>
-          <button 
-            onClick={() => setActiveTab('audit')}
-            className={cn(
-              "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
-              activeTab === 'audit' ? "text-primary" : "text-zinc-500 hover:text-white"
-            )}
-          >
-            Audit Ledger
-            {activeTab === 'audit' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"></div>}
-          </button>
-          <button 
-            onClick={() => setActiveTab('portfolio')}
-            className={cn(
-              "pb-4 text-xs font-black uppercase tracking-widest transition-all relative",
-              activeTab === 'portfolio' ? "text-secondary" : "text-zinc-500 hover:text-white"
-            )}
-          >
-            Global Registry
-            {activeTab === 'portfolio' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-secondary"></div>}
-          </button>
+        {/* Tab Navigation */}
+        <div className="flex items-center gap-8 border-b border-white/5 overflow-x-auto custom-scrollbar whitespace-nowrap">
+          {[
+            { id: 'users', label: 'User Directory', color: 'primary' },
+            { id: 'verifications', label: 'Funding Requests', color: 'success', count: pendingTransactions.length },
+            { id: 'payouts', label: 'Payout Signatures', color: 'error', count: pendingPayouts.length },
+            { id: 'portfolio', label: 'Global Registry', color: 'zinc-400' },
+            { id: 'audit', label: 'Audit Ledger', color: 'primary' },
+          ].map(tab => (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "pb-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative flex items-center gap-2",
+                activeTab === tab.id ? `text-${tab.color || 'primary'}` : "text-zinc-500 hover:text-white"
+              )}
+            >
+              {tab.label}
+              {tab.count > 0 && <span className={cn("px-1.5 py-0.5 rounded text-[8px] font-black text-white", tab.id === 'payouts' ? 'bg-error' : 'bg-success')}>{tab.count}</span>}
+              {activeTab === tab.id && <div className={cn("absolute bottom-0 left-0 w-full h-0.5", `bg-${tab.color || 'primary'}`)}></div>}
+            </button>
+          ))}
         </div>
 
-        <Card className="p-0 overflow-hidden border-white/5" glass>
-          <div className="p-6 border-b border-white/5 bg-[#1e2329] flex justify-between items-center">
-            <h2 className="text-lg font-bold text-white">
-              {activeTab === 'users' && 'Registered Institutional Users'}
-              {activeTab === 'verifications' && 'Institutional Funding Requests'}
-              {activeTab === 'payouts' && 'Institutional Payout Requests'}
-              {activeTab === 'audit' && 'System Audit Protocol Logs'}
-            </h2>
-          </div>
-          
+        {/* Main Data View */}
+        <Card className="p-0 citadel-card overflow-hidden">
           <div className="overflow-x-auto">
-            {activeTab === 'users' ? (
+            {activeTab === 'users' && (
               <table className="w-full text-left">
-                <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
                   <tr>
-                    <th className="px-6 py-4">User</th>
-                    <th className="px-6 py-4">ID</th>
-                    <th className="px-6 py-4 text-right">USD Balance</th>
-                    <th className="px-6 py-4 text-right">Joined Date</th>
+                    <th className="px-6 py-4">Institutional User</th>
+                    <th className="px-6 py-4">Internal ID</th>
+                    <th className="px-6 py-4">Mark Price Balance</th>
+                    <th className="px-6 py-4 text-right">Registered</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-sm">
+                <tbody className="divide-y divide-white/5 text-[11px] font-mono">
                   {users.map((u) => (
                     <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                            {u.full_name?.charAt(0)?.toUpperCase() || '?'}
+                          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-[10px] text-primary font-black uppercase">
+                            {u.full_name?.charAt(0) || 'U'}
                           </div>
                           <div>
-                            <span className="block font-medium text-zinc-200">{u.full_name || 'Anonymous User'}</span>
-                            {u.is_admin && <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-md mt-1 inline-block">Admin</span>}
+                            <span className="block font-black text-white">{u.full_name || 'Anonymous'}</span>
+                            <span className="text-[9px] text-zinc-600 font-bold uppercase">{u.email}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="font-mono text-zinc-500 text-xs truncate max-w-[150px] block" title={u.id}>
-                          {u.id}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right font-medium text-white">
-                        {formatPrice(u.usd_balance || 0)}
-                      </td>
-                      <td className="px-6 py-4 text-right text-zinc-500">
-                        {new Date(u.created_at).toLocaleDateString()}
-                      </td>
+                      <td className="px-6 py-4 text-zinc-500">{u.id.slice(0, 8)}...</td>
+                      <td className="px-6 py-4 text-white font-bold">{formatPrice(u.usd_balance || 0)}</td>
+                      <td className="px-6 py-4 text-right text-zinc-600">{new Date(u.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            ) : activeTab === 'verifications' ? (
+            )}
+
+            {activeTab === 'verifications' && (
               <table className="w-full text-left">
-                <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
                   <tr>
-                    <th className="px-6 py-4">User</th>
-                    <th className="px-6 py-4">Asset</th>
-                    <th className="px-6 py-4">Tx ID</th>
-                    <th className="px-6 py-4">Requested Date</th>
-                    <th className="px-6 py-4 text-right">Verification</th>
+                    <th className="px-6 py-4">Client</th>
+                    <th className="px-6 py-4">Asset/Type</th>
+                    <th className="px-6 py-4">Protocol Hash</th>
+                    <th className="px-6 py-4 text-right">Execution</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-sm">
+                <tbody className="divide-y divide-white/5 text-[11px] font-mono">
                   {pendingTransactions.map((tx) => (
                     <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-6 py-4 text-white font-black">{tx.profiles?.full_name}</td>
                       <td className="px-6 py-4">
-                        <span className="block font-medium text-zinc-200">{tx.profiles?.full_name || 'Trader'}</span>
+                        <span className="px-2 py-1 bg-success/10 text-success rounded text-[9px] font-black uppercase border border-success/20">{tx.asset} • {tx.type}</span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-white/5 rounded text-[10px] font-black text-white">{tx.asset}</span>
-                          <span className="text-zinc-500 text-[10px] uppercase font-bold">{tx.type}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-mono text-zinc-500 text-[10px]">{tx.client_tx_id || tx.id.slice(0, 8)}</span>
-                      </td>
-                      <td className="px-6 py-4 text-zinc-500">
-                        {new Date(tx.created_at).toLocaleString()}
-                      </td>
+                      <td className="px-6 py-4 text-zinc-600">{tx.client_tx_id || 'INTERNAL'}</td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-3">
                           <input 
                             type="number"
-                            placeholder="Amount"
-                            className="w-24 bg-black border border-white/10 rounded px-2 py-1 text-xs text-white"
+                            placeholder="Amt"
+                            className="w-20 bg-black/40 border border-white/10 rounded px-2 py-1 text-[10px] text-white outline-none focus:border-primary"
                             value={verifyAmount[tx.id] || ''}
                             onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
                           />
-                          <button 
-                            disabled={processingId === tx.id}
-                            onClick={() => handleVerify(tx.id, 'Completed')}
-                            className="p-2 bg-success text-black rounded hover:scale-105 transition-transform disabled:opacity-50"
-                          >
-                            <span className="material-symbols-outlined text-sm">check</span>
-                          </button>
-                          <button 
-                            disabled={processingId === tx.id}
-                            onClick={() => handleVerify(tx.id, 'Rejected')}
-                            className="p-2 bg-rose-500/20 text-rose-500 rounded hover:bg-rose-500/30 transition-all disabled:opacity-50"
-                          >
-                            <span className="material-symbols-outlined text-sm">close</span>
+                          <button onClick={() => handleVerify(tx.id, 'Completed')} className="p-1.5 bg-success/10 text-success rounded-lg border border-success/20 hover:bg-success hover:text-black transition-all">
+                             <span className="material-symbols-outlined text-sm">check</span>
                           </button>
                         </div>
                       </td>
                     </tr>
                   ))}
-                  {pendingTransactions.length === 0 && (
-                    <tr>
-                      <td colSpan="5" className="py-12 text-center text-zinc-500">No pending verifications.</td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
-            ) : activeTab === 'payouts' ? (
+            )}
+
+            {activeTab === 'payouts' && (
               <table className="w-full text-left">
-                <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
                   <tr>
                     <th className="px-6 py-4">Client</th>
                     <th className="px-6 py-4">Asset</th>
-                    <th className="px-6 py-4">Destination Wallet</th>
-                    <th className="px-6 py-4">Request Date</th>
-                    <th className="px-6 py-4 text-right">Authorization</th>
+                    <th className="px-6 py-4">Destination Protocol</th>
+                    <th className="px-6 py-4 text-right">Signature Authority</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-sm">
+                <tbody className="divide-y divide-white/5 text-[11px] font-mono">
                   {pendingPayouts.map((tx) => (
                     <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-6 py-4 text-white font-black">{tx.profiles?.full_name}</td>
                       <td className="px-6 py-4">
-                        <span className="block font-medium text-zinc-200">{tx.profiles?.full_name || 'Institutional Client'}</span>
+                        <span className="px-2 py-1 bg-error/10 text-error rounded text-[9px] font-black uppercase border border-error/20">{tx.asset}</span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-error/10 rounded text-[10px] font-black text-error border border-error/20">{tx.asset}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-mono text-zinc-500 text-[10px] break-all max-w-[200px] block">{tx.client_tx_id || 'INTERNAL_LEDGER'}</span>
-                      </td>
-                      <td className="px-6 py-4 text-zinc-500">
-                        {new Date(tx.created_at).toLocaleString()}
-                      </td>
+                      <td className="px-6 py-4 text-zinc-500 truncate max-w-[200px]">{tx.client_tx_id || 'VAULT_TRANSFER'}</td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-3">
-                          <input 
-                            type="number"
-                            placeholder="Amount"
-                            className="w-24 bg-black border border-white/10 rounded px-2 py-1 text-xs text-white"
-                            value={verifyAmount[tx.id] || tx.amount}
-                            onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
-                          />
-                          <button 
-                            disabled={processingId === tx.id}
-                            onClick={() => handleVerify(tx.id, 'Completed')}
-                            className="px-4 py-2 bg-error text-white text-[10px] font-black uppercase tracking-widest rounded hover:scale-105 transition-transform disabled:opacity-50"
-                          >
-                            Sign Payout
-                          </button>
-                          <button 
-                            disabled={processingId === tx.id}
-                            onClick={() => handleVerify(tx.id, 'Rejected')}
-                            className="p-2 bg-zinc-800 text-zinc-500 rounded hover:text-white transition-all disabled:opacity-50"
-                          >
-                            <span className="material-symbols-outlined text-sm">close</span>
-                          </button>
-                        </div>
+                        <button onClick={() => handleVerify(tx.id, 'Completed')} className="px-4 py-1.5 bg-error text-white text-[9px] font-black uppercase tracking-widest rounded hover:bg-error/80 transition-all">
+                           Sign & Finalize Payout
+                        </button>
                       </td>
                     </tr>
                   ))}
-                  {pendingPayouts.length === 0 && (
-                    <tr>
-                      <td colSpan="5" className="py-12 text-center text-zinc-500">No pending payout authorizations.</td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
-            ) : activeTab === 'portfolio' ? (
+            )}
+
+            {activeTab === 'audit' && (
               <table className="w-full text-left">
-                <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
                   <tr>
-                    <th className="px-6 py-4">Protocol Asset</th>
-                    <th className="px-6 py-4">Total Aggregate Supply</th>
-                    <th className="px-6 py-4 text-right">Market Valuation</th>
+                    <th className="px-6 py-4">Admin Authority</th>
+                    <th className="px-6 py-4">Action Protocol</th>
+                    <th className="px-6 py-4">Timestamp</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-sm font-mono">
-                  <tr>
-                    <td className="px-6 py-8 flex items-center gap-3">
-                       <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black">BTC</span>
-                       <span className="text-white font-bold tracking-widest">Bitcoin Protocol</span>
-                    </td>
-                    <td className="px-6 py-8 text-zinc-200">142.428 BTC</td>
-                    <td className="px-6 py-8 text-right text-primary font-black">{formatPrice(9254200)}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-8 flex items-center gap-3">
-                       <span className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-black">ETH</span>
-                       <span className="text-white font-bold tracking-widest">Ethereum Network</span>
-                    </td>
-                    <td className="px-6 py-8 text-zinc-200">1,842.10 ETH</td>
-                    <td className="px-6 py-8 text-right text-secondary font-black">{formatPrice(4605250)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            ) : (
-              <table className="w-full text-left">
-                <thead className="bg-[#181a20] text-xs text-zinc-500 uppercase tracking-widest border-b border-white/5">
-                  <tr>
-                    <th className="px-6 py-4">Admin</th>
-                    <th className="px-6 py-4">Action</th>
-                    <th className="px-6 py-4">Details</th>
-                    <th className="px-6 py-4 text-right">Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 text-sm font-mono">
+                <tbody className="divide-y divide-white/5 text-[11px] font-mono">
                   {auditLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-6 py-4 text-white font-black">{log.profiles?.full_name || 'SYSTEM_MASTER'}</td>
                       <td className="px-6 py-4">
-                        <span className="text-zinc-200 font-bold">{log.profiles?.full_name || 'System Admin'}</span>
+                         <span className="text-primary font-bold uppercase tracking-tight">{log.action_type}</span>
+                         <span className="text-[9px] text-zinc-600 block mt-0.5">{JSON.stringify(log.details).slice(0, 50)}...</span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-white/5 rounded text-[10px] font-black text-primary border border-primary/20">{log.action_type}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-zinc-500 text-[10px] truncate max-w-[300px] block">
-                          {JSON.stringify(log.details)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right text-zinc-500 text-[10px]">
-                        {new Date(log.created_at).toLocaleString()}
-                      </td>
+                      <td className="px-6 py-4 text-zinc-600">{new Date(log.created_at).toLocaleString()}</td>
                     </tr>
                   ))}
-                  {auditLogs.length === 0 && (
-                    <tr>
-                      <td colSpan="4" className="py-12 text-center text-zinc-500 uppercase tracking-widest text-[10px] font-black">No audit logs found.</td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             )}

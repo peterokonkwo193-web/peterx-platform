@@ -51,40 +51,71 @@ const Login = ({ isSignUp = false }) => {
   };
 
   return (
-    <div className="bg-background text-on-background min-h-screen flex items-center justify-center relative overflow-hidden">
+    <div className="bg-[#0a0a0a] text-white min-h-screen flex items-center justify-center relative overflow-hidden font-sans">
       {/* Background Ethereal Shapes */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px]"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px]"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[150px]"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 rounded-full blur-[150px]"></div>
       
-      {/* Support Button (Connected to Global) */}
+      {/* Support Trigger */}
       <button 
         onClick={() => openSupport()}
-        className="fixed top-8 right-8 z-50 flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full hover:bg-primary/10 hover:border-primary/30 transition-all group"
+        className="fixed top-8 right-8 z-50 flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full hover:bg-primary/10 hover:border-primary/30 transition-all group backdrop-blur-xl"
       >
-        <span className="material-symbols-outlined text-primary text-sm group-hover:animate-pulse">contact_support</span>
-        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-primary transition-colors">Support</span>
+        <span className="material-symbols-outlined text-primary text-sm group-hover:rotate-12 transition-transform">contact_support</span>
+        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] group-hover:text-primary transition-colors">Protocol Support</span>
       </button>
       
-      <main className="w-full max-w-[1200px] grid lg:grid-cols-2 gap-stack-lg px-6 py-stack-lg z-10">
+      <main className="w-full max-w-[1400px] grid lg:grid-cols-2 gap-12 px-8 py-12 z-10">
         {/* Brand Side */}
-        <div className="hidden lg:flex flex-col justify-center space-y-stack-md">
-          <div className="mb-stack-lg">
-            <span className="font-display text-display text-on-surface tracking-tighter">Equity Citadel</span>
-            <p className="font-label-caps text-label-caps text-secondary mt-stack-xs tracking-[0.2em]">INSTITUTIONAL GRADE TRADING</p>
+        <div className="hidden lg:flex flex-col justify-center space-y-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+               <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary text-3xl">shield</span>
+               </div>
+               <div>
+                  <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Equity Citadel</h1>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mt-1">Institutional Liquidity Terminal</p>
+               </div>
+            </div>
           </div>
-          <div className="space-y-stack-md">
-            <h1 className="font-h1 text-h1 text-primary-fixed-dim max-w-md">Seamless entry into the digital asset ecosystem.</h1>
-            <p className="font-body-lg text-body-lg text-outline max-w-sm">Experience elite security and liquidity with our glassmorphic interface designed for clarity.</p>
+          
+          <div className="space-y-6 max-w-lg">
+            <h2 className="text-5xl font-black text-white leading-tight tracking-tighter">
+              The Sovereign <span className="text-primary">Standard</span> for Digital Asset Management.
+            </h2>
+            <p className="text-lg text-zinc-400 leading-relaxed font-medium">
+              Access institutional-grade liquidity, secure multi-sig custody, and advanced trading protocols through our crystal-glass interface.
+            </p>
+            
+            <div className="flex items-center gap-8 pt-8">
+               <div className="space-y-1">
+                  <span className="block text-2xl font-black text-white">$4.2B+</span>
+                  <span className="block text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Protocol TVL</span>
+               </div>
+               <div className="w-px h-10 bg-white/10"></div>
+               <div className="space-y-1">
+                  <span className="block text-2xl font-black text-white">99.9%</span>
+                  <span className="block text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Node Uptime</span>
+               </div>
+               <div className="w-px h-10 bg-white/10"></div>
+               <div className="space-y-1">
+                  <span className="block text-2xl font-black text-white">24/7</span>
+                  <span className="block text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Clearance</span>
+               </div>
+            </div>
           </div>
         </div>
 
         {/* Auth Card Side */}
         <div className="flex items-center justify-center">
-          <Card className="glass-card inner-glow w-full max-w-md rounded-xl p-10 shadow-2xl border border-outline/10" glass={false}>
-            <div className="mb-stack-md">
-              <h2 className="font-h2 text-h2 text-on-surface">{isSignUp ? 'Create Account' : 'Welcome back'}</h2>
-              <p className="font-body-md text-body-md text-outline">
-                {isSignUp ? 'Join the future of finance' : 'Sign in to manage your portfolio'}
+          <Card className="citadel-card w-full max-w-md p-10 relative overflow-hidden" glass>
+            <div className="mb-10 text-center lg:text-left">
+              <h3 className="text-2xl font-black text-white tracking-tight uppercase">
+                {isSignUp ? 'Initialize Protocol' : 'Access Terminal'}
+              </h3>
+              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-2">
+                {isSignUp ? 'Create your institutional account' : 'Verify credentials to enter environment'}
               </p>
             </div>
             
@@ -92,10 +123,10 @@ const Login = ({ isSignUp = false }) => {
               {isSignUp && (
                 <>
                   <div className="space-y-2">
-                    <label className="font-label-caps text-label-caps text-on-primary-container block uppercase tracking-widest text-[10px]">Full Name</label>
-                    <div className="relative group input-glow bg-surface-container-low border border-outline-variant rounded-xl transition-all duration-300">
+                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block">Full Legal Name</label>
+                    <div className="relative group bg-white/5 border border-white/10 rounded-xl focus-within:border-primary transition-all duration-300">
                       <input 
-                        className="w-full bg-transparent border-none text-on-surface font-body-md py-3 px-4 focus:ring-0 placeholder:text-outline/30" 
+                        className="w-full bg-transparent border-none text-white text-sm py-4 px-5 focus:ring-0 placeholder:text-zinc-700 font-mono" 
                         placeholder="John Doe" 
                         type="text" 
                         value={fullName}
@@ -106,31 +137,31 @@ const Login = ({ isSignUp = false }) => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="font-label-caps text-label-caps text-on-primary-container block uppercase tracking-widest text-[10px]">Crypto Experience</label>
+                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block">Experience Tier</label>
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         type="button"
                         onClick={() => setExperienceLevel('Beginner')}
                         className={cn(
-                          "py-3 px-4 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all",
+                          "py-3 px-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all",
                           experienceLevel === 'Beginner' 
-                            ? "bg-primary text-black border-primary" 
-                            : "bg-surface-container-low border-outline-variant text-secondary hover:border-primary/50"
+                            ? "bg-primary text-black border-primary shadow-[0_0_15px_rgba(252,213,53,0.3)]" 
+                            : "bg-white/5 border-white/5 text-zinc-500 hover:border-white/10"
                         )}
                       >
-                        New to Crypto
+                        Institutional
                       </button>
                       <button
                         type="button"
                         onClick={() => setExperienceLevel('Expert')}
                         className={cn(
-                          "py-3 px-4 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all",
+                          "py-3 px-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all",
                           experienceLevel === 'Expert' 
-                            ? "bg-primary text-black border-primary" 
-                            : "bg-surface-container-low border-outline-variant text-secondary hover:border-primary/50"
+                            ? "bg-primary text-black border-primary shadow-[0_0_15px_rgba(252,213,53,0.3)]" 
+                            : "bg-white/5 border-white/5 text-zinc-500 hover:border-white/10"
                         )}
                       >
-                        Expert Trader
+                        Sovereign
                       </button>
                     </div>
                   </div>
@@ -138,11 +169,11 @@ const Login = ({ isSignUp = false }) => {
               )}
 
               <div className="space-y-2">
-                <label className="font-label-caps text-label-caps text-on-primary-container block uppercase tracking-widest text-[10px]">Email or Phone Number</label>
-                <div className="relative group input-glow bg-surface-container-low border border-outline-variant rounded-xl transition-all duration-300">
+                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block">Digital Identifier</label>
+                <div className="relative group bg-white/5 border border-white/10 rounded-xl focus-within:border-primary transition-all duration-300">
                   <input 
-                    className="w-full bg-transparent border-none text-on-surface font-body-md py-3 px-4 focus:ring-0 placeholder:text-outline/30" 
-                    placeholder="Email or +1234567890" 
+                    className="w-full bg-transparent border-none text-white text-sm py-4 px-5 focus:ring-0 placeholder:text-zinc-700 font-mono" 
+                    placeholder="Email or Mobile" 
                     type="text" 
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
@@ -154,20 +185,20 @@ const Login = ({ isSignUp = false }) => {
               {!isForgotPassword && (
                 <div className="space-y-2">
                   <div className="flex justify-between items-end">
-                    <label className="font-label-caps text-label-caps text-on-primary-container uppercase tracking-widest text-[10px]">Password</label>
+                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Secret Key</label>
                     {!isSignUp && (
                       <button 
                         type="button"
                         onClick={() => setIsForgotPassword(true)}
-                        className="text-[10px] font-semibold text-secondary hover:text-primary transition-colors uppercase tracking-wider"
+                        className="text-[9px] font-black text-primary hover:text-white transition-colors uppercase tracking-widest"
                       >
                         Forgot?
                       </button>
                     )}
                   </div>
-                  <div className="relative group input-glow bg-surface-container-low border border-outline-variant rounded-xl transition-all duration-300">
+                  <div className="relative group bg-white/5 border border-white/10 rounded-xl focus-within:border-primary transition-all duration-300">
                     <input 
-                      className="w-full bg-transparent border-none text-on-surface font-body-md py-3 px-4 focus:ring-0 placeholder:text-outline/30" 
+                      className="w-full bg-transparent border-none text-white text-sm py-4 px-5 focus:ring-0 placeholder:text-zinc-700 font-mono" 
                       placeholder="••••••••" 
                       type="password" 
                       value={password}
@@ -179,35 +210,35 @@ const Login = ({ isSignUp = false }) => {
               )}
 
               {error && (
-                <div className="flex items-center gap-2 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
-                  <span className="material-symbols-outlined text-rose-500 text-sm">error</span>
-                  <p className="text-rose-400 text-xs font-semibold">{error}</p>
+                <div className="flex items-center gap-2 p-4 bg-error/10 border border-error/20 rounded-xl">
+                  <span className="material-symbols-outlined text-error text-sm">error</span>
+                  <p className="text-error text-[10px] font-black uppercase tracking-widest">{error}</p>
                 </div>
               )}
 
               {success && (
-                <div className="flex items-center gap-2 p-3 bg-success/10 border border-success/20 rounded-lg">
-                  <span className="material-symbols-outlined text-success text-sm">check_circle</span>
-                  <p className="text-success text-xs font-semibold">{success}</p>
+                <div className="flex items-center gap-2 p-4 bg-success/10 border border-success/20 rounded-xl">
+                  <span className="material-symbols-outlined text-success text-sm">verified</span>
+                  <p className="text-success text-[10px] font-black uppercase tracking-widest">{success}</p>
                 </div>
               )}
 
               <Button 
                 type="submit" 
                 variant="primary" 
-                className="w-full py-4 text-sm font-bold"
+                className="w-full py-4 text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl"
                 disabled={loading}
               >
-                {loading ? 'Processing...' : (isForgotPassword ? 'Reset Password' : (isSignUp ? 'Create Account' : 'Login'))}
+                {loading ? 'Validating Protocol...' : (isForgotPassword ? 'Reset Security Key' : (isSignUp ? 'Initialize Account' : 'Authenticate Entry'))}
               </Button>
             </form>
 
-            <div className="relative my-8">
+            <div className="relative my-10">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-outline-variant"></div>
+                <div className="w-full border-t border-white/5"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="px-4 bg-[#161416] text-outline font-label-caps text-[10px] tracking-widest uppercase">OR CONTINUE WITH</span>
+                <span className="px-4 bg-[#0a0a0a] text-zinc-600 font-black text-[9px] tracking-widest uppercase">Institutional Bridges</span>
               </div>
             </div>
 
@@ -216,19 +247,19 @@ const Login = ({ isSignUp = false }) => {
               <SocialButton label="Apple" onClick={() => signInWithOAuth('apple')} />
             </div>
 
-            <div className="mt-8 text-center">
+            <div className="mt-10 text-center">
               {isForgotPassword ? (
                 <button 
                   onClick={() => setIsForgotPassword(false)}
-                  className="text-secondary font-semibold hover:text-primary transition-colors text-sm"
+                  className="text-zinc-400 font-bold hover:text-white transition-colors text-[10px] uppercase tracking-widest"
                 >
-                  Back to Login
+                  Return to Terminal
                 </button>
               ) : (
-                <p className="font-body-md text-sm text-outline">
-                  {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+                  {isSignUp ? 'Already authenticated?' : "New Institutional Client?"}
                   <Link 
-                    className="text-secondary font-semibold hover:text-primary transition-colors ml-2" 
+                    className="text-primary font-black hover:text-white transition-colors ml-2" 
                     to={isSignUp ? "/login" : "/signup"}
                   >
                     {isSignUp ? 'Login' : 'Create Account'}
@@ -246,9 +277,9 @@ const Login = ({ isSignUp = false }) => {
 const SocialButton = ({ label, onClick }) => (
   <button 
     onClick={onClick}
-    className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-outline-variant hover:bg-white/5 transition-colors group"
+    className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-white/5 hover:bg-white/5 transition-all group backdrop-blur-xl"
   >
-    <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{label}</span>
+    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest group-hover:text-white transition-colors">{label}</span>
   </button>
 );
 

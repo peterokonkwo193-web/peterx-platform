@@ -22,9 +22,12 @@ const Investments = lazy(() => import('./pages/Investments'));
 const Deposit = lazy(() => import('./pages/Deposit'));
 
 const LoadingScreen = () => (
-  <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
-    <div className="w-12 h-12 border-4 border-pink-200 border-t-transparent rounded-full animate-spin"></div>
-    <p className="font-label-caps text-zinc-500 text-[10px] tracking-widest animate-pulse">CONNECTING TO PROTOCOL...</p>
+  <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center space-y-6">
+    <div className="relative">
+      <div className="w-16 h-16 border-4 border-primary/10 rounded-full"></div>
+      <div className="absolute inset-0 w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(252,213,53,0.2)]"></div>
+    </div>
+    <p className="text-[10px] font-black text-primary uppercase tracking-[0.6em] animate-pulse">Initializing Institutional Protocol</p>
   </div>
 );
 

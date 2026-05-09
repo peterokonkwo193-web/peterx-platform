@@ -154,120 +154,25 @@ const SecurityItem = ({ icon, title, desc, action }) => (
 );
 
 const Settings = () => {
-  const { user, profile, loading: dataLoading, error: supabaseError } = useSupabaseData();
+  const { user, profile, loading: dataLoading } = useSupabaseData();
   const { currency, setCurrency, currencies, formatPrice } = useCurrency();
-  const [alerts, setAlerts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [newAlert, setNewAlert] = useState({ symbol: 'BTC', price: '', condition: 'Above' });
   const [activeTab, setActiveTab] = useState('profile');
-  const [theme, setTheme] = useState(localStorage.getItem('terminal-theme') || 'dark');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const handleThemeChange = (newTheme) => {
-    setTheme(newTheme);
-    localStorage.setItem('terminal-theme', newTheme);
-  };
+  const tabs = [
+    { id: 'profile', label: 'Account & Identity', icon: 'person' },
+    { id: 'security', label: 'Security Protocols', icon: 'shield' },
+    { id: 'verifications', label: 'KYC & Verification', icon: 'verified_user' },
+    { id: 'notifications', label: 'Alert Streams', icon: 'notifications' },
+    { id: 'api', label: 'Developer API', icon: 'code' },
+    { id: 'preferences', label: 'Terminal Prefs', icon: 'tune' },
+  ];
 
-  const [selectedLanguage, setSelectedLanguage] = useState('en-US');
-
-  const handleSavePreferences = () => {
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
-  };
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
-  const [devices, setDevices] = useState([
-    { id: 1, name: 'Chrome / Windows', ip: '192.168.1.42', date: 'Active Now' },
-    { id: 2, name: 'Safari / iPhone 15', ip: '102.89.2.11', date: '2 hours ago' },
-    { id: 3, name: 'Desktop App / Mac', ip: '192.168.1.15', date: 'Yesterday' }
-  ]);
-  const [isSettingPassword, setIsSettingPassword] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      getAlerts(user.id).then(setAlerts).finally(() => setLoading(false));
-    } else if (!dataLoading) {
-      setLoading(false);
-    }
-  }, [user, dataLoading]);
-
-  const handleAddAlert = async (e) => {
-    e.preventDefault();
-    if (!newAlert.price) return;
-    
-    try {
-      await createAlert({
-        user_id: user.id,
-        symbol: newAlert.symbol,
-        target_price: parseFloat(newAlert.price),
-        condition: newAlert.condition
-      });
-      const updated = await getAlerts(user.id);
-      setAlerts(updated);
-      setNewAlert({ ...newAlert, price: '' });
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const handleDeleteAlert = async (id) => {
-    try {
-      await deleteAlert(id);
-      setAlerts(alerts.filter(a => a.id !== id));
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const handleRemoveDevice = (id) => {
-    setDevices(devices.filter(d => d.id !== id));
-  };
-
-  const handleToggle2FA = () => {
-    setIs2FAEnabled(!is2FAEnabled);
-  };
-
-  if (dataLoading || (loading && !user)) {
+  if (dataLoading) {
     return (
       <DashboardLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-12">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-primary/20 border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(252,213,53,0.1)]"></div>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 animate-pulse">Initializing Protocol...</p>
-          </div>
-          
-          {/* Emergency Diagnostic (Always visible during hangs) */}
-          <div className="w-full max-w-2xl">
-            <Card className="p-8 border-rose-500/20 bg-rose-500/5 shadow-2xl" glass>
-              <div className="flex items-center gap-4 mb-6">
-                <span className="material-symbols-outlined text-rose-500">error</span>
-                <h2 className="text-sm font-black uppercase tracking-[0.3em] text-white">Institutional Auth Handshake Status</h2>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-[11px]">
-                <div className="space-y-4">
-                  <div>
-                    <span className="text-zinc-500 uppercase font-bold block mb-1">Session Presence</span>
-                    <span className={cn(
-                      "px-3 py-1.5 rounded-lg border font-black uppercase inline-block",
-                      user ? "bg-success/20 text-success border-success/30" : "bg-error/20 text-error border-error/30"
-                    )}>
-                      {user ? 'ACTIVE_SESSION' : 'NO_SESSION_DETECTED'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-zinc-500 uppercase font-bold block mb-1">Internal Protocol ID</span>
-                    <span className="text-white bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 block truncate">{user?.id || 'PENDING...'}</span>
-                  </div>
-                </div>
-                <div className="p-4 bg-black/20 rounded-xl border border-white/5 space-y-2">
-                  <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Technical Guidance</span>
-                  <p className="text-zinc-400 leading-relaxed italic text-[10px]">
-                    "If 'NO_SESSION_DETECTED' is shown, your browser has not saved your login. Please return to the login page and sign in again."
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       </DashboardLayout>
     );
@@ -275,450 +180,250 @@ const Settings = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-[1400px] mx-auto grid grid-cols-12 gap-8">
+      <div className="max-w-[1600px] mx-auto py-12 md:py-24 px-8 min-h-screen">
         
-        {/* Navigation Sidebar */}
-        <div className="col-span-12 lg:col-span-3 space-y-3">
-          <h1 className="text-2xl font-bold mb-8 px-4 flex items-center gap-3">
-             <span className="material-symbols-outlined text-primary">settings</span>
-             Settings
-          </h1>
-          <SettingsTab active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} icon="person" label="Profile & Verification" />
-          <SettingsTab active={activeTab === 'security'} onClick={() => setActiveTab('security')} icon="shield" label="Security Center" />
-          <SettingsTab active={activeTab === 'alerts'} onClick={() => setActiveTab('alerts')} icon="notifications" label="Market Alerts" />
-          <SettingsTab active={activeTab === 'api'} onClick={() => setActiveTab('api')} icon="code" label="API Management" />
-          <SettingsTab active={activeTab === 'preferences'} onClick={() => setActiveTab('preferences')} icon="tune" label="Preferences" />
-        </div>
+        <header className="mb-16">
+          <div className="flex flex-wrap items-center gap-4 mb-6">
+             <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Institutional Control</div>
+             <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Protocol v4.0 Active</span>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">Management <span className="text-primary italic">Suite</span></h1>
+          <p className="text-zinc-500 mt-6 text-lg max-w-2xl font-medium leading-relaxed">Configure your high-security sovereign protocols and verify institutional identity parameters.</p>
+        </header>
 
-        {/* Content Area */}
-        <div className="col-span-12 lg:col-span-9 space-y-6">
+        <div className="flex flex-col lg:flex-row gap-16">
           
-          <AnimatePresence mode="wait">
-            {activeTab === 'profile' && (
-              <motion.div 
-                key="profile"
-                initial={{ opacity: 0, x: 20 }} 
-                animate={{ opacity: 1, x: 0 }} 
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <Card className="p-8 relative overflow-hidden shadow-2xl">
-                  <div className="absolute top-0 right-0 p-8">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-success/10 border border-success/20 rounded-full">
-                        <span className="material-symbols-outlined text-success text-sm">verified</span>
-                        <span className="text-[10px] font-bold text-success uppercase tracking-widest">
-                          {profile?.verification_status === 'Verified' ? 'Level 2 Verified' : (profile?.verification_status || 'Unverified')}
-                        </span>
-                    </div>
-                  </div>
-                  <h2 className="text-xl font-bold mb-8">Identity Verification</h2>
-                  <div className="flex items-center gap-6 mb-8">
-                    <div className="w-20 h-20 rounded-full bg-surface-variant flex items-center justify-center text-3xl font-bold text-primary border-2 border-primary/20 shadow-inner overflow-hidden">
-                      {profile?.avatar_url ? (
-                        <img src={profile.avatar_url} className="w-full h-full object-cover" />
-                      ) : (
-                        profile?.full_name?.charAt(0) || user?.email?.charAt(0) || '?'
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">{profile?.full_name || 'Account Holder'}</h3>
-                      <p className="text-sm text-secondary">{user?.email || 'Loading email...'}</p>
-                      <p className="text-[10px] font-mono text-zinc-500 mt-1 uppercase tracking-widest">UID: {user?.id?.slice(0, 8) || '********'}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Full Name</label>
-                      <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-sm focus:border-primary outline-none transition-all" defaultValue={profile?.full_name || ''} />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Trust Score</label>
-                      <div className="flex items-center gap-3 h-[54px] bg-white/5 border border-white/10 rounded-xl px-4">
-                        <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-success w-[92%] shadow-[0_0_10px_rgba(14,203,129,0.5)]"></div>
-                        </div>
-                        <span className="text-xs font-bold text-success font-mono">982</span>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">VIP Tier</label>
-                      <div className="w-full bg-gradient-to-r from-primary/20 to-transparent border border-primary/20 rounded-xl px-4 py-4 text-sm text-primary font-bold tracking-wide">
-                        Institutional Elite (Level 4)
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Institutional Type</label>
-                      <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-sm text-zinc-500" readOnly defaultValue="Personal (Individual)" />
-                    </div>
-                  </div>
-                  <Button variant="primary" className="mt-8 py-4 px-12 text-xs font-bold shadow-lg">Update Profile</Button>
-                </Card>
-
-                <Card className="p-8 border border-success/20 bg-gradient-to-br from-success/5 to-transparent">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="text-lg font-bold text-white mb-2">Institutional Limits</h2>
-                      <p className="text-sm text-secondary max-w-md leading-relaxed">
-                        {profile?.verification_status === 'Verified' 
-                          ? 'Your account is currently verified for $10M/daily withdrawal limits and unlimited deposits.'
-                          : 'Verify your identity to unlock higher withdrawal limits and premium trading features.'}
-                      </p>
-                    </div>
-                    <Button variant="outline" size="sm" className="text-success border-success/30 px-6 font-bold">View Limits</Button>
-                  </div>
-                </Card>
-              </motion.div>
-            )}
-
-            {activeTab === 'security' && (
-              <motion.div 
-                key="security"
-                initial={{ opacity: 0, x: 20 }} 
-                animate={{ opacity: 1, x: 0 }} 
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <Card className="p-8 shadow-2xl">
-                  <h2 className="text-xl font-bold mb-6">Security Center</h2>
-                  <div className="space-y-4">
-                    <SecurityItem 
-                      icon="lock" 
-                      title="Two-Factor Authentication (2FA)" 
-                      desc="Recommended: Secure your account with TOTP (Google Authenticator/Authy)."
-                      action={
-                        <div 
-                          onClick={handleToggle2FA}
-                          className={`w-14 h-7 rounded-full relative cursor-pointer transition-all duration-300 ${is2FAEnabled ? 'bg-primary' : 'bg-zinc-800'}`}
-                        >
-                          <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all duration-300 shadow-md ${is2FAEnabled ? 'right-1' : 'left-1'}`}></div>
-                        </div>
-                      }
-                    />
-                    <SecurityItem 
-                      icon="password" 
-                      title="Withdrawal Password" 
-                      desc="Require a separate password for all fund withdrawals."
-                      action={
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="font-bold px-6 border-white/20"
-                          onClick={() => setIsSettingPassword(true)}
-                        >
-                          {isSettingPassword ? 'Update Password' : 'Set Password'}
-                        </Button>
-                      }
-                    />
-                  </div>
-                </Card>
-
-                <Card className="p-0 overflow-hidden shadow-2xl">
-                  <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
-                    <h2 className="text-xl font-bold">Authorized Devices</h2>
-                    <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">{devices.length} Active</span>
-                  </div>
-                  <div className="p-8 space-y-2">
-                    {devices.map(device => (
-                      <div key={device.id} className="flex items-center justify-between py-5 border-b border-white/5 last:border-0 group hover:bg-white/[0.02] px-4 -mx-4 rounded-xl transition-all">
-                          <div className="flex items-center gap-5">
-                            <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-zinc-400 group-hover:text-primary transition-colors border border-white/5 shadow-inner">
-                                <span className="material-symbols-outlined">{device.name.includes('iPhone') ? 'smartphone' : 'laptop_mac'}</span>
-                            </div>
-                            <div>
-                                <p className="text-sm font-bold text-white">{device.name}</p>
-                                <p className="text-[10px] text-zinc-500 font-mono mt-1 tracking-tight">{device.ip} • {device.date}</p>
-                            </div>
-                          </div>
-                          <button 
-                            onClick={() => handleRemoveDevice(device.id)}
-                            className="text-[10px] font-black text-rose-500 uppercase tracking-widest hover:bg-rose-500/10 px-4 py-2 rounded-xl transition-all border border-transparent hover:border-rose-500/20"
-                          >
-                            Revoke Access
-                          </button>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </motion.div>
-            )}
-
-            {activeTab === 'alerts' && (
-              <motion.div 
-                key="alerts"
-                initial={{ opacity: 0, x: 20 }} 
-                animate={{ opacity: 1, x: 0 }} 
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <Card className="p-8">
-                  <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-xl font-bold">Market Price Alerts</h2>
-                    <span className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] border border-primary/20 flex items-center gap-2">
-                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
-                       Real-time Tracking
-                    </span>
-                  </div>
-
-                  <form onSubmit={handleAddAlert} className="grid grid-cols-12 gap-6 mb-10 bg-surface-variant p-8 rounded-2xl border border-white/10 shadow-inner">
-                    <div className="col-span-12 md:col-span-3 space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Protocol Asset</label>
-                      <select 
-                        className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-4 text-xs text-white outline-none focus:border-primary transition-all cursor-pointer"
-                        value={newAlert.symbol}
-                        onChange={(e) => setNewAlert({ ...newAlert, symbol: e.target.value })}
-                      >
-                        <option>BTC</option>
-                        <option>ETH</option>
-                        <option>SOL</option>
-                        <option>PEPE</option>
-                      </select>
-                    </div>
-                    <div className="col-span-12 md:col-span-3 space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Trigger Condition</label>
-                      <select 
-                        className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-4 text-xs text-white outline-none focus:border-primary transition-all cursor-pointer"
-                        value={newAlert.condition}
-                        onChange={(e) => setNewAlert({ ...newAlert, condition: e.target.value })}
-                      >
-                        <option>Above</option>
-                        <option>Below</option>
-                      </select>
-                    </div>
-                    <div className="col-span-12 md:col-span-4 space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Target Price (USD)</label>
-                      <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-mono text-xs">$</span>
-                        <input 
-                          type="number" 
-                          className="w-full bg-zinc-950 border border-white/10 rounded-xl pl-9 pr-4 py-4 text-xs text-white outline-none focus:border-primary transition-all font-mono" 
-                          placeholder="0.00"
-                          value={newAlert.price}
-                          onChange={(e) => setNewAlert({ ...newAlert, price: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-span-12 md:col-span-2 flex items-end">
-                      <Button type="submit" variant="primary" className="w-full py-4 text-xs font-bold shadow-lg">Set Alert</Button>
-                    </div>
-                  </form>
-
-                  <div className="space-y-4">
-                    {alerts.map((alert) => (
-                      <div key={alert.id} className="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group relative overflow-hidden">
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="flex items-center gap-8">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                               <span className="material-symbols-outlined text-primary text-xl">notifications_active</span>
-                            </div>
-                            <span className="font-black text-white text-base tracking-tighter">{alert.symbol}/USD</span>
-                          </div>
-                          <div className="flex flex-col">
-                             <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Condition</span>
-                             <span className="text-xs text-zinc-300 font-medium">{alert.condition} Target</span>
-                          </div>
-                          <div className="flex flex-col">
-                             <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Price Point</span>
-                             <span className="font-mono text-primary font-bold text-sm tracking-tighter">{formatPrice(alert.target_price)}</span>
-                          </div>
-                        </div>
-                        <button onClick={() => handleDeleteAlert(alert.id)} className="w-10 h-10 rounded-xl flex items-center justify-center text-zinc-600 hover:text-rose-500 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100 border border-transparent hover:border-rose-500/20">
-                          <span className="material-symbols-outlined">delete</span>
-                        </button>
-                      </div>
-                    ))}
-                    {alerts.length === 0 && (
-                      <div className="text-center py-20 bg-white/[0.02] rounded-3xl border border-dashed border-white/10">
-                        <span className="material-symbols-outlined text-5xl mb-4 text-zinc-700">notifications_off</span>
-                        <p className="text-zinc-500 text-sm font-medium tracking-tight">Your protocol alert stream is empty.</p>
-                      </div>
+          {/* Institutional Navigation Sidebar */}
+          <div className="w-full lg:w-80 flex-shrink-0">
+            <div className="sticky top-32 space-y-10">
+              <nav className="space-y-2">
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "w-full flex items-center gap-5 px-6 py-4.5 rounded-2xl transition-all font-black text-[11px] uppercase tracking-widest group",
+                      activeTab === tab.id 
+                        ? "bg-primary text-black shadow-[0_20px_50px_rgba(252,213,53,0.3)]" 
+                        : "text-zinc-500 hover:bg-white/[0.03] hover:text-white border border-transparent hover:border-white/5"
                     )}
-                  </div>
-                </Card>
-              </motion.div>
-            )}
+                  >
+                    <span className={cn("material-symbols-outlined text-2xl transition-colors", activeTab === tab.id ? "text-black" : "text-zinc-700 group-hover:text-primary")}>
+                      {tab.icon}
+                    </span>
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
 
-            {activeTab === 'preferences' && (
-              <motion.div 
-                key="preferences"
-                initial={{ opacity: 0, x: 20 }} 
-                animate={{ opacity: 1, x: 0 }} 
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+              {/* Security Status Widget */}
+              <div className="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-6">
+                 <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-success shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Security: Level 4</span>
+                 </div>
+                 <div className="space-y-4">
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                       <div className="h-full w-[85%] bg-primary shadow-[0_0_10px_rgba(252,213,53,0.3)]"></div>
+                    </div>
+                    <p className="text-[10px] text-zinc-600 leading-relaxed font-bold uppercase tracking-widest">Enable 2FA to achieve Level 5 sovereign status.</p>
+                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Dynamic Content Interface */}
+          <div className="flex-1">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-10"
               >
-                <Card className="p-8 shadow-2xl">
-                  <h2 className="text-xl font-bold mb-8">Institutional Preferences</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <SearchableSelect 
-                      label="Base Fiat Currency"
-                      options={currencies.map(c => ({ label: `${c.code} - ${c.name}`, value: c.code }))}
-                      value={currency.code}
-                      onChange={setCurrency}
-                      placeholder="Select Currency"
-                    />
-                    <SearchableSelect 
-                      label="System Localization"
-                      options={LANGUAGES}
-                      value={selectedLanguage}
-                      onChange={setSelectedLanguage}
-                      placeholder="Select Language"
-                    />
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Terminal Interface Theme</label>
-                      <div className="flex gap-4">
-                        <button 
-                          onClick={() => handleThemeChange('dark')}
-                          className={cn(
-                            "flex-1 py-4 rounded-xl border transition-all text-[11px] font-black uppercase tracking-widest",
-                            theme === 'dark' ? "border-primary bg-primary/10 text-primary shadow-[0_0_20px_rgba(252,213,53,0.15)]" : "border-white/10 text-secondary hover:bg-white/5"
-                          )}
-                        >
-                          Dark Protocol
-                        </button>
-                        <button 
-                          onClick={() => handleThemeChange('light')}
-                          className={cn(
-                            "flex-1 py-4 rounded-xl border transition-all text-[11px] font-black uppercase tracking-widest",
-                            theme === 'light' ? "border-primary bg-primary/10 text-primary shadow-[0_0_20px_rgba(252,213,53,0.15)]" : "border-white/10 text-secondary hover:bg-white/5"
-                          )}
-                        >
-                          Classic Light
-                        </button>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Data Stream Precision</label>
-                      <select className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-4 text-xs text-white outline-none focus:border-primary transition-all cursor-pointer">
-                        <option value="2">Standard (2 Decimals)</option>
-                        <option value="4">High (4 Decimals)</option>
-                        <option value="8">Institutional (8 Decimals)</option>
-                        <option value="12">Protocol Depth (12 Decimals)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="mt-12 flex justify-between items-center border-t border-white/5 pt-8">
-                    <div className="h-6">
-                      {saveSuccess && (
-                        <motion.span 
-                          initial={{ opacity: 0, x: -10 }} 
-                          animate={{ opacity: 1, x: 0 }} 
-                          className="text-[10px] font-black text-success uppercase tracking-[0.3em] flex items-center gap-2"
-                        >
-                          <span className="material-symbols-outlined text-sm">done_all</span>
-                          Sync Complete
-                        </motion.span>
-                      )}
-                    </div>
-                    <Button 
-                      variant="primary" 
-                      size="sm" 
-                      className="px-10 py-4 shadow-xl"
-                      onClick={handleSavePreferences}
-                    >
-                      Save Global Preferences
-                    </Button>
-                  </div>
-                </Card>
-
-                <Card className="p-8 border border-white/5 bg-zinc-900/30">
-                  <h2 className="text-lg font-bold mb-6 flex items-center gap-3">
-                     <span className="material-symbols-outlined text-primary text-base">hub</span>
-                     Notification Channels
-                  </h2>
-                  <div className="space-y-4">
-                    <SecurityItem 
-                      icon="mail" 
-                      title="Email Intelligence" 
-                      desc="Receive weekly portfolio performance and security updates."
-                      action={<div className="w-12 h-6 bg-primary rounded-full relative cursor-pointer shadow-lg"><div className="absolute right-1 top-1 w-4 h-4 bg-black rounded-full shadow-inner"></div></div>}
-                    />
-                    <SecurityItem 
-                      icon="chat" 
-                      title="SMS Protocol Alerts" 
-                      desc="Instant alerts for logins from new devices or large withdrawals."
-                      action={<div className="w-12 h-6 bg-white/10 rounded-full relative cursor-pointer border border-white/10"><div className="absolute left-1 top-1 w-4 h-4 bg-zinc-600 rounded-full shadow-sm"></div></div>}
-                    />
-                  </div>
-                </Card>
-              </motion.div>
-            )}
-
-            {activeTab === 'api' && (
-              <motion.div 
-                key="api"
-                initial={{ opacity: 0, x: 20 }} 
-                animate={{ opacity: 1, x: 0 }} 
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <Card className="p-8 shadow-2xl">
-                    <div className="flex justify-between items-start mb-8">
-                      <div>
-                        <h2 className="text-xl font-bold mb-2">Institutional API Keys</h2>
-                        <p className="text-sm text-secondary leading-relaxed">Automate your trading with high-frequency API access. Keep keys secure.</p>
-                      </div>
-                      <Button variant="primary" size="sm" className="px-8 font-bold">Generate Key</Button>
-                    </div>
-                    <div className="p-8 bg-zinc-950 rounded-2xl border border-white/10 shadow-inner relative overflow-hidden group">
-                      <div className="absolute right-0 top-0 p-2 opacity-20 group-hover:opacity-40 transition-opacity">
-                         <span className="material-symbols-outlined text-6xl text-primary">key</span>
-                      </div>
-                      <div className="flex justify-between items-center mb-6 relative z-10">
-                        <div className="flex items-center gap-3">
-                           <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-md border border-primary/20">Active</span>
-                           <span className="text-xs font-bold text-white uppercase tracking-widest">Master Execution Key</span>
+                {activeTab === 'profile' && (
+                  <div className="space-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+                      <Card className="md:col-span-8 p-12 citadel-card shadow-2xl relative overflow-hidden" glass>
+                        <div className="flex items-center gap-10 mb-16 border-b border-white/5 pb-12">
+                           <div className="relative group">
+                              <div className="w-32 h-32 rounded-[32px] bg-zinc-900 border border-white/10 flex items-center justify-center overflow-hidden shadow-2xl group-hover:border-primary/50 transition-all">
+                                 <img src={profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email}`} className="w-full h-full object-cover" />
+                              </div>
+                              <button className="absolute -bottom-3 -right-3 w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-black shadow-[0_10px_20px_rgba(252,213,53,0.4)] hover:scale-110 transition-all">
+                                 <span className="material-symbols-outlined text-lg">photo_camera</span>
+                              </button>
+                           </div>
+                           <div>
+                              <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">{profile?.full_name || 'Protocol Holder'}</h2>
+                              <p className="text-sm text-zinc-600 font-mono mt-3 uppercase tracking-widest">{user?.email}</p>
+                              <div className="flex gap-3 mt-6">
+                                 <span className="px-4 py-1.5 bg-success/10 text-success text-[9px] font-black uppercase tracking-widest rounded-lg border border-success/10">Identity Verified</span>
+                                 <span className="px-4 py-1.5 bg-white/5 text-zinc-500 text-[9px] font-black uppercase tracking-widest rounded-lg border border-white/5">Tier 4 Sovereign</span>
+                              </div>
+                           </div>
                         </div>
-                        <span className="text-[10px] text-zinc-500 font-mono">Last used: 2 hours ago</span>
-                      </div>
-                      <div className="flex gap-3 mb-8 relative z-10">
-                        <code className="flex-1 bg-white/[0.03] p-4 rounded-xl text-xs font-mono text-zinc-400 border border-white/5 break-all">pk_live_********************************3f2a</code>
-                        <Button variant="outline" size="sm" className="px-4 border-white/10 hover:border-primary transition-all"><span className="material-symbols-outlined text-sm">content_copy</span></Button>
-                      </div>
-                      <div className="flex flex-wrap gap-6 relative z-10">
-                        <div className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-success"></div><span className="text-[10px] text-zinc-400 uppercase font-black tracking-widest">Spot Trading</span></div>
-                        <div className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-success"></div><span className="text-[10px] text-zinc-400 uppercase font-black tracking-widest">Read-Only</span></div>
-                        <div className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-error"></div><span className="text-[10px] text-error uppercase font-black tracking-widest">Withdrawals Locked</span></div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                          <div className="space-y-3">
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Legal Entity Name</label>
+                            <input className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all shadow-inner" defaultValue={profile?.full_name} />
+                          </div>
+                          <div className="space-y-3">
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Institutional Node Email</label>
+                            <input className="w-full bg-black/20 border border-white/5 rounded-2xl px-6 py-5 text-zinc-600 font-black uppercase tracking-widest outline-none cursor-not-allowed" readOnly value={user?.email} />
+                          </div>
+                          <div className="space-y-3">
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Encrypted Phone Protocol</label>
+                            <input className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all shadow-inner" placeholder="+1 (555) 000-0000" />
+                          </div>
+                          <div className="space-y-3">
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Resident Sovereign Jurisdiction</label>
+                            <input className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all shadow-inner" defaultValue="United States" />
+                          </div>
+                        </div>
+
+                        <div className="mt-16 pt-12 border-t border-white/5 flex justify-end">
+                          <Button variant="primary" className="px-12 py-5 font-black uppercase tracking-[0.4em] text-[10px] shadow-2xl">Authorize Suite Update</Button>
+                        </div>
+                      </Card>
+
+                      <div className="md:col-span-4 space-y-8">
+                        <Card className="p-10 citadel-card bg-primary/5 border-primary/10" glass>
+                           <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6">Protocol Telemetry</h3>
+                           <div className="space-y-6 font-mono text-[10px]">
+                              <div className="flex justify-between py-3 border-b border-white/5">
+                                 <span className="text-zinc-600 uppercase">System_ID</span>
+                                 <span className="text-white font-black">{user?.id.slice(0, 12)}...</span>
+                              </div>
+                              <div className="flex justify-between py-3 border-b border-white/5">
+                                 <span className="text-zinc-600 uppercase">Clearance_Score</span>
+                                 <span className="text-success font-black tracking-tighter text-sm">98.4 / 100</span>
+                              </div>
+                              <div className="flex justify-between py-3">
+                                 <span className="text-zinc-600 uppercase">Node_Epoch</span>
+                                 <span className="text-white font-black">{new Date(profile?.created_at).toLocaleDateString()}</span>
+                              </div>
+                           </div>
+                        </Card>
+
+                        <div className="p-10 rounded-[40px] border border-dashed border-white/10 hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer group text-center">
+                           <div className="w-16 h-16 rounded-2xl bg-white/[0.02] flex items-center justify-center text-zinc-700 mb-6 mx-auto group-hover:bg-primary group-hover:text-black transition-all border border-white/5">
+                              <span className="material-symbols-outlined text-3xl font-black">shield_person</span>
+                           </div>
+                           <h4 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Advanced Verification</h4>
+                           <p className="text-[10px] text-zinc-600 mt-3 leading-relaxed font-bold uppercase tracking-widest">Upgrade to Institutional Tier 5 to unlock unlimited capital ingress.</p>
+                        </div>
                       </div>
                     </div>
-                </Card>
+                  </div>
+                )}
+
+                {activeTab === 'security' && (
+                  <Card className="p-12 citadel-card shadow-2xl" glass>
+                    <div className="mb-12">
+                       <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Security Configuration</h2>
+                       <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Multi-Sig & Sovereign Access Toggles</p>
+                    </div>
+                    <div className="grid grid-cols-1 gap-6">
+                      {[
+                        { title: 'Two-Factor Authentication (2FA)', desc: 'Encrypt all sovereign fund releases with mandatory TOTP verification.', status: 'Highly Recommended', action: 'Enable Protocol' },
+                        { title: 'Vault Whitelisting', desc: 'Restricts liquidity ingress to verified institutional wallet addresses only.', status: 'Tier 4 Active', action: 'Manage Vaults' },
+                        { title: 'Anti-Phishing Cipher', desc: 'Add a personal cryptographic code to all official protocol updates.', status: 'Protocol Inactive', action: 'Set Cipher' },
+                        { title: 'Master Access Password', desc: 'Institutional password updated within current epoch. Regular updates recommended.', status: 'Verified', action: 'Rotate Access' },
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center justify-between p-8 bg-white/[0.02] rounded-[32px] border border-white/5 hover:border-white/10 transition-all group">
+                           <div className="space-y-2">
+                              <p className="text-lg font-black text-white uppercase tracking-tight">{item.title}</p>
+                              <p className="text-xs text-zinc-500 max-w-xl leading-relaxed font-medium">{item.desc}</p>
+                              <div className="flex items-center gap-3 pt-2">
+                                 <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+                                 <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">{item.status}</span>
+                              </div>
+                           </div>
+                           <Button variant="outline" className="px-8 py-4 border-white/10 hover:border-primary text-[10px] font-black uppercase tracking-widest transition-all group-hover:scale-105">
+                             {item.action}
+                           </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+
+                {activeTab === 'verifications' && (
+                  <Card className="p-12 citadel-card shadow-2xl" glass>
+                    <div className="mb-12">
+                       <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Institutional Verification</h2>
+                       <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Identity Parameters & Sovereign Status</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                       <div className="p-10 bg-success/5 rounded-[40px] border border-success/10 relative overflow-hidden group">
+                          <div className="absolute -right-6 -top-6 w-32 h-32 bg-success/10 rounded-full blur-3xl group-hover:scale-150 transition-transform"></div>
+                          <div className="flex items-center gap-6 mb-8 relative z-10">
+                             <div className="w-14 h-14 rounded-2xl bg-success flex items-center justify-center text-white shadow-2xl">
+                                <span className="material-symbols-outlined text-3xl font-black">verified</span>
+                             </div>
+                             <div>
+                                <p className="text-lg font-black text-white uppercase tracking-tight leading-none">Basic Identity</p>
+                                <p className="text-[10px] text-success font-black uppercase tracking-[0.3em] mt-2">Protocol Cleared</p>
+                             </div>
+                          </div>
+                          <div className="pt-6 border-t border-success/10 relative z-10">
+                             <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-4">Tier 1 Verification Complete</span>
+                             <div className="w-full py-4 bg-success text-black rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-center shadow-2xl">Sovereign Active</div>
+                          </div>
+                       </div>
+
+                       <div className="p-10 bg-white/[0.02] rounded-[40px] border border-white/5 border-dashed relative group hover:border-primary/40 hover:bg-primary/5 transition-all">
+                          <div className="flex items-center gap-6 mb-8">
+                             <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-zinc-700 shadow-2xl border border-white/5 group-hover:bg-primary group-hover:text-black transition-all">
+                                <span className="material-symbols-outlined text-3xl font-black">badge</span>
+                             </div>
+                             <div>
+                                <p className="text-lg font-black text-white uppercase tracking-tight leading-none">Advanced KYC</p>
+                                <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mt-2">Unlock Tier 5 Limits</p>
+                             </div>
+                          </div>
+                          <div className="pt-6 border-t border-white/5">
+                             <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-4">Required for Capital releases {'>'} $100M</span>
+                             <button className="w-full py-4 bg-white/[0.05] border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-white hover:bg-primary hover:text-black transition-all shadow-2xl">Initialize Verification</button>
+                          </div>
+                       </div>
+                    </div>
+                  </Card>
+                )}
+
+                {activeTab === 'api' && (
+                  <Card className="p-12 citadel-card shadow-2xl" glass>
+                    <div className="flex justify-between items-start mb-16">
+                      <div className="space-y-2">
+                         <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Execution API</h2>
+                         <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">High-Latency Terminal Integration</p>
+                      </div>
+                      <Button variant="primary" className="px-10 py-5 font-black text-[10px] uppercase tracking-[0.4em] shadow-2xl transition-all hover:scale-105">Generate Master Key</Button>
+                    </div>
+                    <div className="p-10 bg-black/60 rounded-[40px] border border-white/5 font-mono relative overflow-hidden group">
+                       <div className="absolute -right-10 -bottom-10 text-[150px] font-black text-white/[0.01] pointer-events-none select-none tracking-tighter uppercase">API</div>
+                       <div className="flex justify-between mb-8 relative z-10">
+                          <div className="flex items-center gap-4">
+                             <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                             <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Master_Protocol_Key_v4.0</span>
+                          </div>
+                          <span className="text-[9px] font-black text-success uppercase tracking-widest bg-success/10 px-3 py-1 rounded-lg">Synchronized</span>
+                       </div>
+                       <div className="flex gap-4 relative z-10">
+                          <code className="flex-1 bg-white/[0.03] p-6 rounded-2xl text-xs text-zinc-400 break-all border border-white/5 font-mono shadow-inner">pk_live_830a672f...494c7e63b379</code>
+                          <button className="p-6 bg-white/[0.05] border border-white/10 rounded-2xl text-zinc-500 hover:text-primary transition-all shadow-2xl">
+                             <span className="material-symbols-outlined text-xl">content_copy</span>
+                          </button>
+                       </div>
+                    </div>
+                  </Card>
+                )}
               </motion.div>
-            )}
-          </AnimatePresence>
-
-        </div>
-
-        {/* Institutional System Information (Diagnostic) - Permanent Placement */}
-        <div className="col-span-12 mt-12">
-          <Card className="p-8 border-primary/20 bg-primary/5 shadow-2xl" glass>
-            <div className="flex items-center gap-4 mb-6">
-              <span className="material-symbols-outlined text-primary">security</span>
-              <h2 className="text-sm font-black uppercase tracking-[0.3em] text-white">Institutional System Diagnostic</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-[11px]">
-              <div className="space-y-4">
-                <div>
-                  <span className="text-zinc-500 uppercase font-bold block mb-1">Internal Protocol ID</span>
-                  <span className="text-white bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 block truncate">{user?.id || 'NO_SESSION_ACTIVE'}</span>
-                </div>
-                <div>
-                  <span className="text-zinc-500 uppercase font-bold block mb-1">Administrative Clearance</span>
-                  <span className={cn(
-                    "px-3 py-1.5 rounded-lg border font-black uppercase inline-block",
-                    profile?.is_admin ? "bg-success/20 text-success border-success/30" : "bg-error/20 text-error border-error/30"
-                  )}>
-                    {profile?.is_admin ? 'Level 4: Master Admin' : 'Level 0: Standard Trader'}
-                  </span>
-                </div>
-              </div>
-              <div className="p-4 bg-black/20 rounded-xl border border-white/5 space-y-2">
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Protocol Notes</span>
-                <p className="text-zinc-400 leading-relaxed italic">
-                  "This diagnostic tool is active to ensure your administrative privileges are correctly synchronized with the live mainnet."
-                </p>
-              </div>
-            </div>
-          </Card>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </DashboardLayout>
@@ -726,4 +431,3 @@ const Settings = () => {
 };
 
 export default Settings;
-

@@ -5,8 +5,7 @@ import Button from '../common/Button';
 import { supabase } from '../../lib/supabase';
 import { useCurrency } from '../../context/CurrencyContext';
 import { cn } from '../../utils/cn';
-
-
+import { VAULT_ADDRESSES } from '../../lib/constants';
 
 const ASSETS = [
   { id: 'usdt', symbol: 'USDT', name: 'Tether USD', icon: 'payments', color: 'text-success' },
@@ -26,6 +25,12 @@ const TransferModal = ({ profile, isOpen, onClose, onComplete }) => {
   const [status, setStatus] = useState('idle'); // idle, processing, success, error
 
   const isAdmin = profile?.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || profile?.id === '8d24918f-b493-4549-951e-1f85b0b97fe5';
+
+  const getVaultAddress = (symbol) => {
+    const addr = VAULT_ADDRESSES[symbol];
+    if (typeof addr === 'object') return addr.TRC20; // Default to TRC20 for USDT
+    return addr || profile?.id;
+  };
 
   const handleTransfer = async () => {
     if (!amount || (type === 'send' && !walletId)) return;
@@ -191,25 +196,32 @@ const TransferModal = ({ profile, isOpen, onClose, onComplete }) => {
                     <div>
                        <div className="w-48 h-48 bg-white p-4 rounded-3xl mx-auto mb-6 shadow-[0_0_40px_rgba(252,213,53,0.2)]">
                           <img 
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${profile?.id || 'anonymous'}:${selectedAsset.id}`} 
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${getVaultAddress(selectedAsset.symbol)}`} 
                             alt="Vault QR" 
                             className="w-full h-full"
                           />
                        </div>
                        <h3 className="text-xs font-black text-white mb-2 uppercase tracking-[0.3em]">Institutional {selectedAsset.symbol} Vault</h3>
-                       <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4 group">
-                          <code className="flex-1 text-[10px] text-zinc-500 font-mono break-all font-bold">{profile?.id || 'Protocol ID Pending'}</code>
+                       <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4 group overflow-hidden">
+                          <code className="flex-1 text-[10px] text-zinc-500 font-mono break-all font-bold text-left">{getVaultAddress(selectedAsset.symbol)}</code>
                           <button 
                             className="text-primary hover:text-white transition-colors"
                             onClick={() => {
-                              navigator.clipboard.writeText(profile?.id);
-                              alert('Vault ID copied to clipboard');
+                              navigator.clipboard.writeText(getVaultAddress(selectedAsset.symbol));
+                              alert('Institutional Vault Address copied to clipboard');
                             }}
                           >
                              <span className="material-symbols-outlined text-sm">content_copy</span>
                           </button>
                        </div>
                     </div>
+                    {selectedAsset.symbol === 'USDT' && (
+                       <div className="flex justify-center gap-4">
+                          <div className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[9px] font-black text-zinc-500 uppercase">TRC20</div>
+                          <div className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[9px] font-black text-zinc-500 uppercase">ERC20</div>
+                          <div className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[9px] font-black text-zinc-500 uppercase">BEP20</div>
+                       </div>
+                    )}
                     <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
                        <p className="text-[9px] text-primary font-black uppercase tracking-[0.2em] leading-relaxed">
                           Secure Gateway Active. All {selectedAsset.name} deposits are subject to tier-4 verification.

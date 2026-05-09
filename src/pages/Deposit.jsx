@@ -8,21 +8,7 @@ import { useMarketData } from '../hooks/useMarketData';
 import { createTransaction } from '../lib/db';
 import { cn } from '../utils/cn';
 
-const STATIC_COINS = [
-  { symbol: 'BTC', name: 'Bitcoin', type: 'crypto', image: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png', color: 'from-orange-500/20' },
-  { symbol: 'ETH', name: 'Ethereum', type: 'crypto', image: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png', color: 'from-indigo-500/20' },
-  { symbol: 'SOL', name: 'Solana', type: 'crypto', image: 'https://assets.coingecko.com/coins/images/4128/small/solana.png', color: 'from-teal-500/20' },
-  { symbol: 'USDT', name: 'Tether', type: 'crypto', image: 'https://assets.coingecko.com/coins/images/325/small/tether.png', color: 'from-success/20' },
-  { symbol: 'PI', name: 'Pi Network', type: 'crypto', image: 'https://minepi.com/wp-content/uploads/2021/11/logo-pi-600.png', color: 'from-primary/20' }
-];
-
-const NETWORKS = {
-  'BTC': ['Bitcoin (BTC)', 'Lightning Network', 'BNB Smart Chain (BEP20)'],
-  'ETH': ['Ethereum (ERC20)', 'Arbitrum One', 'Optimism', 'Polygon', 'Base'],
-  'SOL': ['Solana (SOL)', 'BNB Smart Chain (BEP20)'],
-  'USDT': ['Tron (TRC20)', 'Ethereum (ERC20)', 'BNB Smart Chain (BEP20)', 'Polygon', 'Solana'],
-  'PI': ['Pi Network Mainnet', 'BNB Smart Chain (BEP20)']
-};
+import { STATIC_COINS, NETWORKS, VAULT_ADDRESSES } from '../lib/constants';
 
 const Deposit = () => {
   const { user, profile } = useSupabaseData();
@@ -35,8 +21,7 @@ const Deposit = () => {
   const [txRef, setTxRef] = useState('');
 
   useEffect(() => {
-    // Generate a unique reference for this deposit session
-    setTxRef(`REF-${Math.random().toString(36).toUpperCase().slice(2, 10)}`);
+    setTxRef(`EC-${Math.random().toString(36).toUpperCase().slice(2, 10)}`);
   }, []);
 
   useEffect(() => {
@@ -46,8 +31,18 @@ const Deposit = () => {
     }
   }, [selectedCoin]);
 
+  const getVaultAddress = () => {
+    if (selectedCoin.symbol === 'USDT') {
+      if (selectedNetwork.includes('TRC20')) return VAULT_ADDRESSES.USDT.TRC20;
+      if (selectedNetwork.includes('ERC20')) return VAULT_ADDRESSES.USDT.ERC20;
+      if (selectedNetwork.includes('BEP20')) return VAULT_ADDRESSES.USDT.BEP20;
+      return VAULT_ADDRESSES.USDT.TRC20;
+    }
+    return VAULT_ADDRESSES[selectedCoin.symbol] || VAULT_ADDRESSES.ETH;
+  };
+
   const handleCopy = () => {
-    const addr = "0x" + Math.random().toString(16).slice(2, 12) + "..." + Math.random().toString(16).slice(2, 6);
+    const addr = getVaultAddress();
     navigator.clipboard.writeText(addr);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -76,76 +71,85 @@ const Deposit = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto py-8 md:py-12 px-6">
-        <header className="mb-8 md:mb-12">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-             <div className="px-3 py-1 bg-primary/10 rounded-full text-[9px] md:text-[10px] font-black text-primary uppercase tracking-[0.2em] border border-primary/20">Institutional Gateway</div>
-             <span className="text-[9px] md:text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Secure Asset Ingress</span>
+      <div className="max-w-5xl mx-auto py-12 md:py-20 px-8">
+        <header className="mb-16">
+          <div className="flex flex-wrap items-center gap-4 mb-6">
+             <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Institutional Bridge</div>
+             <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Protocol v4.0 Active</span>
           </div>
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">Institutional <span className="text-primary italic">Deposit</span></h1>
-          <p className="text-zinc-500 mt-4 text-sm md:text-base font-medium">Initialize your capital allocation by depositing assets into your secure institutional vault.</p>
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">Institutional <span className="text-primary">Clearance</span></h1>
+          <p className="text-zinc-500 mt-6 text-lg max-w-2xl font-medium leading-relaxed">Initialize your sovereign capital allocation by depositing assets into the Equity Citadel verified multi-sig vaults.</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
           {/* Progress Sidebar */}
-          <div className="md:col-span-4 space-y-4">
-            <StepIndicator number={1} title="Select Asset" active={step === 1} completed={step > 1} />
-            <StepIndicator number={2} title="Transfer Assets" active={step === 2} completed={step > 2} />
-            <StepIndicator number={3} title="Await Verification" active={step === 3} completed={step > 3} />
+          <div className="md:col-span-4 space-y-6">
+            <StepIndicator number={1} title="Select Strategy Asset" active={step === 1} completed={step > 1} />
+            <StepIndicator number={2} title="Transfer to Vault" active={step === 2} completed={step > 2} />
+            <StepIndicator number={3} title="Await Settlement" active={step === 3} completed={step > 3} />
+            
+            <div className="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-4">
+               <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Clearance Status</h4>
+               <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                  <span className="text-[11px] font-bold text-white uppercase tracking-widest">Network Synchronized</span>
+               </div>
+               <p className="text-[10px] text-zinc-600 leading-relaxed uppercase font-bold">Average settlement time: 4-12 network confirmations across institutional nodes.</p>
+            </div>
           </div>
 
           {/* Main Interface */}
           <div className="md:col-span-8">
-            <Card className="p-8 shadow-2xl relative overflow-hidden" glass>
+            <Card className="p-12 citadel-card shadow-2xl relative overflow-hidden" glass>
               <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div 
                     key="step1"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-8"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="space-y-10"
                   >
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Choose Digital Asset</label>
+                    <div className="space-y-6">
+                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Target Digital Asset</label>
                       <div className="grid grid-cols-2 gap-4">
                         {STATIC_COINS.map(coin => (
                           <button
                             key={coin.symbol}
                             onClick={() => setSelectedCoin(coin)}
                             className={cn(
-                              "flex items-center gap-4 p-4 rounded-2xl border transition-all",
+                              "flex items-center gap-4 p-5 rounded-2xl border transition-all group",
                               selectedCoin.symbol === coin.symbol 
-                                ? "bg-primary/10 border-primary shadow-[0_0_20px_rgba(252,213,53,0.1)]" 
-                                : "bg-white/5 border-white/5 hover:bg-white/10"
+                                ? "bg-primary/10 border-primary shadow-[0_0_30px_rgba(252,213,53,0.15)]" 
+                                : "bg-white/[0.03] border-white/5 hover:bg-white/[0.05]"
                             )}
                           >
-                            <img src={coin.image} alt={coin.name} className="w-8 h-8 rounded-full" />
+                            <img src={coin.image} alt={coin.name} className="w-10 h-10 rounded-xl" />
                             <div className="text-left">
-                              <p className="text-sm font-black text-white uppercase">{coin.symbol}</p>
-                              <p className="text-[10px] text-zinc-500 font-bold uppercase">{coin.name}</p>
+                              <p className="text-sm font-black text-white uppercase tracking-tight">{coin.symbol}</p>
+                              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{coin.name}</p>
                             </div>
                           </button>
                         ))}
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Select Network</label>
-                      <div className="space-y-2">
+                    <div className="space-y-6">
+                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Settlement Network</label>
+                      <div className="grid grid-cols-1 gap-3">
                         {(NETWORKS[selectedCoin.symbol] || []).map(net => (
                           <button
                             key={net}
                             onClick={() => setSelectedNetwork(net)}
                             className={cn(
-                              "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
+                              "w-full flex items-center justify-between p-5 rounded-2xl border transition-all",
                               selectedNetwork === net 
                                 ? "bg-white/10 border-white/20 text-white" 
-                                : "bg-transparent border-white/5 text-zinc-500 hover:text-white"
+                                : "bg-transparent border-white/5 text-zinc-600 hover:text-white"
                             )}
                           >
-                            <span className="text-xs font-bold uppercase tracking-widest">{net}</span>
-                            {selectedNetwork === net && <span className="material-symbols-outlined text-primary text-sm">check_circle</span>}
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em]">{net}</span>
+                            {selectedNetwork === net && <span className="material-symbols-outlined text-primary text-sm shadow-[0_0_10px_rgba(252,213,53,0.5)]">verified</span>}
                           </button>
                         ))}
                       </div>
@@ -153,10 +157,10 @@ const Deposit = () => {
 
                     <Button 
                       variant="primary" 
-                      className="w-full py-5 text-[10px] font-black uppercase tracking-[0.3em]"
+                      className="w-full py-6 text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl"
                       onClick={() => setStep(2)}
                     >
-                      Generate Gateway
+                      Authorize Clearance Gateway
                     </Button>
                   </motion.div>
                 )}
@@ -164,62 +168,63 @@ const Deposit = () => {
                 {step === 2 && (
                   <motion.div 
                     key="step2"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-8 flex flex-col items-center text-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="space-y-10 flex flex-col items-center text-center"
                   >
-                    <div className="p-6 bg-white rounded-3xl shadow-2xl">
+                    <div className="p-8 bg-white rounded-[40px] shadow-2xl relative group">
+                      <div className="absolute inset-0 bg-primary/10 blur-[30px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                       <img 
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${txRef}`} 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${getVaultAddress()}`} 
                         alt="Deposit QR" 
-                        className="w-48 h-48"
+                        className="w-52 h-52 relative z-10"
                       />
                     </div>
 
-                    <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
-                       <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Session Reference: {txRef}</span>
+                    <div className="px-6 py-2.5 bg-primary/10 border border-primary/20 rounded-xl backdrop-blur-xl">
+                       <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Protocol Session: {txRef}</span>
                     </div>
 
-                    <div className="w-full space-y-4">
-                      <div className="text-left">
-                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Personal {selectedCoin.symbol} Deposit Address</label>
-                        <div className="flex items-center gap-2 mt-2">
-                          <div className="flex-1 bg-zinc-950 p-4 rounded-xl border border-white/10 font-mono text-[10px] text-zinc-400 break-all select-all">
-                            0x{Math.random().toString(16).slice(2, 12)}...{Math.random().toString(16).slice(2, 8)}
+                    <div className="w-full space-y-6">
+                      <div className="text-left space-y-3">
+                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block">Verified Institutional Vault Address</label>
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 bg-black/60 p-5 rounded-2xl border border-white/5 font-mono text-[11px] text-zinc-400 break-all select-all shadow-inner">
+                            {getVaultAddress()}
                           </div>
                           <button 
                             onClick={handleCopy}
-                            className="p-4 bg-primary text-black rounded-xl hover:scale-105 transition-transform"
+                            className="p-5 bg-primary text-black rounded-2xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(252,213,53,0.3)]"
                           >
-                            <span className="material-symbols-outlined">{copied ? 'check' : 'content_copy'}</span>
+                            <span className="material-symbols-outlined text-lg">{copied ? 'verified' : 'content_copy'}</span>
                           </button>
                         </div>
                       </div>
 
-                      <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl flex items-start gap-4 text-left">
-                        <span className="material-symbols-outlined text-yellow-500 text-lg">warning</span>
-                        <p className="text-[10px] text-yellow-500/80 font-bold leading-relaxed uppercase">
-                          Important: Ensure you are sending {selectedCoin.symbol} via the {selectedNetwork} network. Sending any other asset or using a different network will result in permanent loss of funds.
+                      <div className="p-6 bg-error/5 border border-error/20 rounded-[32px] flex items-start gap-5 text-left backdrop-blur-xl">
+                        <span className="material-symbols-outlined text-error text-2xl">security_update_warning</span>
+                        <p className="text-[10px] text-error font-black leading-relaxed uppercase tracking-widest opacity-80">
+                          CRITICAL: Deploy {selectedCoin.symbol} only via the {selectedNetwork} protocol. Cross-chain errors will result in permanent capital liquidation within the clearance node.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex gap-4 w-full pt-4">
+                    <div className="flex gap-4 w-full pt-6">
                       <Button 
                         variant="outline" 
-                        className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest"
+                        className="flex-1 py-5 text-[10px] font-black uppercase tracking-widest border-white/10"
                         onClick={() => setStep(1)}
                       >
-                        Change Asset
+                        Change Protocol
                       </Button>
                       <Button 
                         variant="primary" 
-                        className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest"
+                        className="flex-1 py-5 text-[10px] font-black uppercase tracking-widest shadow-2xl"
                         onClick={handleConfirm}
                         loading={loading}
                       >
-                        I've Transferred
+                        Confirm Transfer
                       </Button>
                     </div>
                   </motion.div>
@@ -228,29 +233,29 @@ const Deposit = () => {
                 {step === 3 && (
                   <motion.div 
                     key="step3"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="py-12 flex flex-col items-center text-center space-y-8"
+                    className="py-16 flex flex-col items-center text-center space-y-10"
                   >
-                    <div className="w-24 h-24 bg-success/10 rounded-full flex items-center justify-center text-success relative">
-                      <div className="absolute inset-0 border-4 border-success border-t-transparent rounded-full animate-spin"></div>
-                      <span className="material-symbols-outlined text-5xl">hourglass_empty</span>
+                    <div className="w-28 h-28 bg-primary/10 rounded-[32px] flex items-center justify-center text-primary relative">
+                      <div className="absolute inset-0 border-2 border-primary border-t-transparent rounded-[32px] animate-spin"></div>
+                      <span className="material-symbols-outlined text-5xl">sync</span>
                     </div>
-                    <div className="space-y-4">
-                      <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Verification <span className="text-primary italic">Pending</span></h3>
-                      <div className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-xl mb-4">
-                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Reference ID: <span className="text-white">{txRef}</span></span>
+                    <div className="space-y-6">
+                      <h3 className="text-4xl font-black text-white uppercase tracking-tighter">Settlement <span className="text-primary italic">In Progress</span></h3>
+                      <div className="inline-block px-6 py-2.5 bg-white/[0.03] border border-white/5 rounded-2xl mb-4">
+                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Protocol Reference: <span className="text-white">{txRef}</span></span>
                       </div>
-                      <p className="text-zinc-500 text-sm max-w-sm mx-auto font-medium leading-relaxed">
-                        Our institutional node is currently verifying your transfer on the {selectedNetwork}. Please provide your Reference ID to support if verification takes longer than 24 hours.
+                      <p className="text-zinc-500 text-base max-w-md mx-auto font-medium leading-relaxed">
+                        Your capital is being synchronized across the {selectedNetwork} institutional nodes. Status will update to 'Cleared' upon final validation.
                       </p>
                     </div>
                     <Button 
                       variant="outline" 
-                      className="px-12 py-4 text-[10px] font-black uppercase tracking-widest"
+                      className="px-16 py-5 text-[10px] font-black uppercase tracking-widest border-white/10"
                       onClick={() => window.location.href = '/wallet'}
                     >
-                      Return to Vault
+                      Return to Command Center
                     </Button>
                   </motion.div>
                 )}

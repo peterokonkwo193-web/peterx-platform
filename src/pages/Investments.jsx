@@ -86,95 +86,104 @@ const Investments = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-12 max-w-[1600px] mx-auto pb-20 px-4 md:px-8">
+      <div className="max-w-[1600px] mx-auto py-12 md:py-24 px-8 space-y-16">
         
-        {/* Header */}
-        <header className="flex flex-col gap-4 pt-4">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3"
-          >
-             <div className="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-black text-primary uppercase tracking-[0.2em] border border-primary/20 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                Institutional Alpha
-             </div>
-             <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Protocol Yield v4.2</span>
-          </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none"
-          >
-            Capital <span className="text-primary italic">Allocation</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-sm md:text-base text-zinc-500 max-w-2xl font-medium leading-relaxed"
-          >
-            Deploy assets into verified institutional-grade strategies. Our secondary liquidity pool ensures maximum capital efficiency with zero-latency execution.
-          </motion.p>
+        {/* INSTITUTIONAL HUD */}
+        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
+           <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                 <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Protocol Alpha v4.2</div>
+                 <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-success shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                    <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Cluster Health: Optimal</span>
+                 </div>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">Strategic <span className="text-primary italic">Allocation</span></h1>
+              <p className="text-zinc-500 text-lg max-w-2xl font-medium leading-relaxed uppercase tracking-tight">Deploy sovereign capital into verified institutional-grade managed strategies with multi-sig clearance.</p>
+           </div>
+           
+           <div className="flex flex-wrap gap-6 w-full lg:w-auto">
+              <div className="flex-1 lg:flex-none p-8 citadel-card bg-primary/5 border-primary/10 min-w-[320px] relative overflow-hidden group">
+                 <div className="absolute right-0 top-0 w-32 h-32 bg-primary/10 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
+                 <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block mb-3">Managed Liquidity</span>
+                 <div className="flex items-baseline gap-4 relative z-10">
+                    <span className="text-3xl font-black text-white tracking-tighter leading-none">{formatPrice(investments?.reduce((a,b) => a + parseFloat(b.amount), 0) || 0)}</span>
+                    <div className="flex items-center gap-1 text-success">
+                       <span className="material-symbols-outlined text-xs font-black">verified</span>
+                       <span className="text-[10px] font-black tracking-widest uppercase">Secured</span>
+                    </div>
+                 </div>
+              </div>
+           </div>
         </header>
 
-        {/* Plan Grid */}
-        <motion.div 
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.1
-              }
-            }
-          }}
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8"
-        >
-          {INVESTMENT_PLANS.map((plan) => (
-            <PlanCard 
-              key={plan.id} 
-              plan={plan} 
-              onInvest={handleInvestClick}
-              onSupport={openSupport}
-              isRecommended={plan.recommended}
-            />
-          ))}
-        </motion.div>
+        {/* STRATEGY GRID */}
+        <div className="space-y-8">
+           <div className="flex items-center gap-4 px-2">
+              <div className="h-px flex-1 bg-white/5"></div>
+              <h2 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">Verified Allocation Channels</h2>
+              <div className="h-px flex-1 bg-white/5"></div>
+           </div>
+           <motion.div 
+             initial="hidden"
+             animate="visible"
+             variants={{
+               hidden: { opacity: 0 },
+               visible: {
+                 opacity: 1,
+                 transition: { staggerChildren: 0.1 }
+               }
+             }}
+             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10"
+           >
+             {INVESTMENT_PLANS.map((plan) => (
+               <PlanCard 
+                 key={plan.id} 
+                 plan={plan} 
+                 onInvest={handleInvestClick}
+                 onSupport={openSupport}
+                 isRecommended={plan.recommended}
+               />
+             ))}
+           </motion.div>
+        </div>
 
-        {/* Dashboard */}
+        {/* IMMUTABLE SETTLEMENT DASHBOARD */}
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="pt-20 border-t border-white/5"
+          className="pt-24 border-t border-white/5"
         >
-           <header className="mb-10 flex justify-between items-end">
-              <div>
-                <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Protocol Dashboard</h2>
-                <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mt-2">Real-time settlement monitoring</p>
+           <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">Settlement <span className="text-primary italic">Terminal</span></h2>
+                <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Real-time protocol execution & node telemetry</p>
               </div>
-              <div className="flex gap-4">
-                 <div className="text-right">
-                    <span className="text-[9px] text-zinc-600 font-black uppercase block">Cluster Health</span>
-                    <span className="text-xs font-black text-success uppercase">Optimal</span>
+              <div className="flex gap-6 p-4 bg-white/[0.02] rounded-2xl border border-white/5 backdrop-blur-xl">
+                 <div className="text-right px-4 border-r border-white/10">
+                    <span className="text-[9px] text-zinc-700 font-black uppercase block mb-1">Active Clusters</span>
+                    <span className="text-xs font-black text-white uppercase tracking-widest">Node_Alpha_7</span>
+                 </div>
+                 <div className="text-right px-4">
+                    <span className="text-[9px] text-zinc-700 font-black uppercase block mb-1">Execution Mode</span>
+                    <span className="text-xs font-black text-success uppercase tracking-widest">Aggressive</span>
                  </div>
               </div>
            </header>
            
-           {loading ? (
-             <div className="h-64 flex items-center justify-center">
-                <div className="relative">
-                   <div className="w-12 h-12 border-4 border-primary/10 rounded-full"></div>
-                   <div className="absolute inset-0 w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+           <Card className="p-0 citadel-card shadow-[0_40px_100px_rgba(0,0,0,1)] overflow-hidden" glass glow>
+              {loading ? (
+                <div className="h-96 flex items-center justify-center">
+                   <div className="relative">
+                      <div className="w-20 h-20 border-4 border-primary/5 rounded-full"></div>
+                      <div className="absolute inset-0 w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(252,213,53,0.3)]"></div>
+                   </div>
                 </div>
-             </div>
-           ) : (
-             <InvestmentDashboard investments={investments} />
-           )}
+              ) : (
+                <InvestmentDashboard investments={investments} />
+              )}
+           </Card>
         </motion.div>
       </div>
 

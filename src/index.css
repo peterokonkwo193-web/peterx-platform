@@ -1,60 +1,37 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #C4A47C;
-  --color-on-primary: #0A0F1A;
-  --color-primary-fixed: #E2C29A;
-  --color-primary-fixed-dim: #A68761;
-  
-  --color-secondary: #94A3B8;
-  --color-on-secondary: #0A0F1A;
-  
-  --color-background: #0A0F1A;
-  --color-on-background: #F8FAFC;
-  
-  --color-surface: #131B2A;
-  --color-on-surface: #F8FAFC;
-  --color-surface-variant: #1B263B;
-  --color-on-surface-variant: #94A3B8;
-  
-  --color-outline: #2D3A54;
-  --color-outline-variant: #4B5A77;
-  
-  --color-error: #EF4444;
-  --color-on-error: #FFFFFF;
-  --color-success: #10B981;
-  
-  --font-h1: "Inter", sans-serif;
-  --font-display: "Inter", sans-serif;
-  --font-h2: "Inter", sans-serif;
-  --font-body-lg: "Inter", sans-serif;
-  --font-body-md: "Inter", sans-serif;
-  --font-label-caps: "Inter", sans-serif;
-
-  --spacing-margin-page: 48px;
-  --spacing-stack-xs: 4px;
-  --spacing-stack-sm: 12px;
-  --spacing-stack-md: 24px;
-  --spacing-stack-lg: 48px;
-  --spacing-unit: 8px;
-  --spacing-gutter: 24px;
-  --spacing-container-max: 1440px;
+  --color-primary: #fcd535;
+  --color-on-primary: #0a0a0a;
+  --color-secondary: #000000;
+  --color-on-secondary: #ffffff;
+  --color-background: #0a0a0a;
+  --color-on-background: #ffffff;
+  --color-surface: #121212;
+  --color-on-surface: #ffffff;
+  --color-success: #0ecb81;
+  --color-error: #ff4d4d;
+  --color-warning: #f0b90b;
 }
 
 @layer base {
-  html, body {
-    @apply bg-background text-on-background antialiased overflow-x-hidden w-full m-0 p-0;
-    background-color: #0A0F1A;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+    --primary: 47 97% 60%;
+    --citadel-gold: #fcd535;
   }
 
-  /* Prevent horizontal scroll on mobile */
+  html, body {
+    @apply bg-background text-on-background antialiased overflow-x-hidden w-full m-0 p-0;
+    background-color: #050505;
+    font-family: 'Inter', sans-serif;
+  }
+
   #root {
     @apply overflow-x-hidden w-full;
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -65,40 +42,29 @@
   ::-webkit-scrollbar-thumb {
     @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
   }
-
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 3px;
-  }
 }
 
 @layer components {
-  .glass-panel {
-    @apply backdrop-blur-md bg-surface border border-outline;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  .citadel-card {
+    @apply bg-black/40 backdrop-blur-3xl border border-white/10 rounded-2xl transition-all duration-300;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
   }
 
-  .glass-card {
-    @apply bg-surface border border-outline transition-all duration-300;
+  .citadel-card:hover {
+    @apply border-primary/30;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.7), inset 0 1px 2px rgba(255,255,255,0.1);
   }
 
-  .glass-card:hover {
-    @apply border-outline-variant;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  .institutional-input {
+    @apply w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary/50 outline-none transition-all font-medium placeholder:text-zinc-600;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #FCD535 0%, #FFF4C2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .input-glow:focus-within {
-    @apply border-primary ring-1 ring-primary;
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-white to-zinc-500;
   }
 }
 
-/* Institutional Utilities */
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -108,15 +74,6 @@
   animation: marquee 30s linear infinite;
 }
 
-.neon-glow-primary {
-  box-shadow: 0 0 20px rgba(252, 213, 53, 0.3);
-}
-
-.neon-glow-success {
-  box-shadow: 0 0 20px rgba(14, 203, 129, 0.3);
-}
-
-/* Material Symbols configuration */
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   vertical-align: middle;

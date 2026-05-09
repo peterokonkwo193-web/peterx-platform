@@ -28,137 +28,120 @@ const Navbar = ({ className }) => {
   };
 
   return (
-    <nav className={cn("bg-background/80 backdrop-blur-3xl border-b border-white/5 fixed top-0 w-full h-20 z-50 px-6 md:px-12 flex items-center justify-between", className)}>
-      <div className="flex items-center gap-10">
+    <nav className={cn("bg-black/60 backdrop-blur-3xl border-b border-white/5 fixed top-0 w-full h-20 z-50 px-8 lg:px-12 flex items-center justify-between shadow-[0_10px_50px_rgba(0,0,0,0.5)]", className)}>
+      {/* Left: Branding & Status */}
+      <div className="flex items-center gap-12">
         <Link to="/" className="flex flex-col group">
-          <span className="font-display text-2xl text-on-background tracking-tighter">
-            Equity Citadel
-          </span>
-          <span className="font-label-caps text-[8px] text-primary tracking-[0.4em] uppercase -mt-1">Institutional</span>
+          <span className="text-2xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-primary transition-colors">Equity Citadel</span>
+          <div className="flex items-center gap-2 mt-1">
+             <span className="text-[8px] text-primary font-black tracking-[0.6em] uppercase">Institutional</span>
+             <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
+             <span className="text-[8px] text-zinc-600 font-black tracking-[0.2em] uppercase">Alpha OS</span>
+          </div>
         </Link>
-
-        <div className="hidden lg:flex items-center gap-2 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full">
-          <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-          <span className="text-[9px] font-bold text-success uppercase tracking-widest font-mono">Protocol Mainnet: Active</span>
+        
+        <div className="hidden xl:flex items-center gap-4 px-5 py-2 bg-white/[0.02] rounded-2xl border border-white/5 shadow-inner">
+           <div className="relative">
+              <div className="w-2 h-2 rounded-full bg-success"></div>
+              <div className="absolute inset-0 w-2 h-2 rounded-full bg-success animate-ping"></div>
+           </div>
+           <span className="text-[10px] font-black text-success uppercase tracking-[0.3em]">Mainnet Gateway Active</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 md:gap-8">
-        {/* Global Currency Switcher - Hidden on small mobile */}
-        <div className="relative hidden sm:block">
-          <button 
-            onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
-            className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all group"
-          >
-            <span className="text-[10px] font-black text-primary uppercase tracking-widest">{currency.code}</span>
-            <span className="material-symbols-outlined text-sm text-zinc-500 group-hover:text-white transition-colors">language</span>
-          </button>
-          
-          <AnimatePresence>
-            {isCurrencyOpen && (
-              <div className="absolute top-full right-0 mt-2 w-56 bg-zinc-900 border border-white/10 rounded-xl py-2 shadow-2xl z-[60] flex flex-col max-h-[400px]">
-                <div className="px-4 py-2 border-b border-white/5 space-y-2">
-                  <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Protocol Currency</span>
-                  <div className="relative">
-                    <span className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-sm text-zinc-500">search</span>
-                    <input 
-                      type="text" 
-                      placeholder="Search currency..."
-                      value={currencySearch}
-                      onChange={(e) => setCurrencySearch(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg py-1.5 pl-8 pr-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 transition-colors"
-                      autoFocus
-                    />
-                  </div>
-                </div>
-                <div className="overflow-y-auto flex-1 custom-scrollbar">
-                  {filteredCurrencies.length === 0 ? (
-                    <div className="px-4 py-4 text-center text-xs text-zinc-500">No currencies found</div>
-                  ) : (
-                    filteredCurrencies.map(c => (
-                      <button 
-                        key={c.code}
-                        onClick={() => {
-                          setCurrency(c);
-                          setIsCurrencyOpen(false);
-                          setCurrencySearch('');
-                        }}
-                        className={cn(
-                          "w-full text-left px-4 py-2 text-xs transition-colors flex justify-between items-center",
-                          currency.code === c.code ? "bg-primary/10 text-primary" : "text-zinc-400 hover:bg-white/5 hover:text-white"
-                        )}
-                      >
-                        <span>{c.name}</span>
-                        <span className="font-mono text-[10px] opacity-50">{c.symbol}</span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </AnimatePresence>
+      {/* Center: Global Command Search */}
+      <div className="hidden lg:flex flex-1 max-w-xl mx-12 relative group">
+        <span className="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600 text-lg group-focus-within:text-primary transition-all group-focus-within:scale-110">command</span>
+        <input 
+          type="text" 
+          placeholder="Execute Global Command (Assets, Protocols, Nodes)..." 
+          className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-14 pr-20 text-[11px] font-black tracking-widest text-white uppercase placeholder:text-zinc-800 outline-none focus:border-primary/40 focus:bg-black/60 transition-all shadow-inner focus:shadow-[0_0_30px_rgba(252,213,53,0.05)]"
+        />
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-2">
+           <span className="px-2 py-1 bg-white/5 rounded-lg text-[9px] font-black text-zinc-700 border border-white/5 uppercase tracking-tighter">Ctrl</span>
+           <span className="px-2 py-1 bg-white/5 rounded-lg text-[9px] font-black text-zinc-700 border border-white/5 uppercase tracking-tighter">K</span>
         </div>
+      </div>
 
-        <div className="hidden xl:flex items-center gap-4 mr-4">
-           <Link to="/wallet" className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors group">
-              <span className="material-symbols-outlined text-sm group-hover:text-primary transition-colors">account_balance_wallet</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Institutional Vault</span>
-           </Link>
+      {/* Right: User & Actions */}
+      <div className="flex items-center gap-8">
+        <div className="hidden sm:flex items-center gap-6 border-r border-white/5 pr-8">
+           <div className="text-right space-y-1">
+              <span className="text-[9px] text-zinc-700 block font-black uppercase tracking-[0.4em]">Settled Balance</span>
+              <div className="flex items-center gap-2 justify-end">
+                 <span className="text-base font-black text-white tracking-tighter leading-none">{formatPrice(profile?.usd_balance || 0)}</span>
+                 <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
+              </div>
+           </div>
+           
+           <button 
+             onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
+             className="flex items-center gap-3 px-5 py-2.5 bg-white/[0.02] rounded-2xl border border-white/5 hover:border-primary/30 transition-all group shadow-inner"
+           >
+              <span className="text-[11px] font-black text-primary uppercase tracking-widest">{currency.code}</span>
+              <span className="material-symbols-outlined text-lg text-zinc-700 group-hover:text-white transition-all group-hover:rotate-180">expand_more</span>
+           </button>
         </div>
 
         {!user ? (
-          <div className="hidden md:flex items-center gap-6">
-            <Link to="/login" className="font-label-caps text-xs text-zinc-400 hover:text-white transition-colors">Login</Link>
+          <div className="flex items-center gap-8">
+            <Link to="/login" className="text-[11px] font-black text-zinc-600 hover:text-white uppercase tracking-[0.4em] transition-all">Authenticate</Link>
             <Link to="/signup">
-              <Button variant="primary" className="py-2 px-6 text-[10px]">Register</Button>
+              <Button variant="primary" className="py-3 px-8 text-[11px] font-black uppercase tracking-[0.4em] shadow-2xl transition-all hover:scale-105">Initialize</Button>
             </Link>
           </div>
         ) : (
-          <div className="flex items-center gap-4 md:gap-6">
-            <div className="hidden md:flex items-center gap-6 mr-6 border-r border-white/10 pr-8">
-              <div className="text-right">
-                <span className="text-[10px] text-zinc-500 block uppercase tracking-widest font-bold">Balance</span>
-                <span className="text-sm font-bold text-zinc-200">
-                  {formatPrice(profile?.usd_balance || 0)}
-                </span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4 group relative">
-              <div className="text-right hidden sm:block">
-                <span className="text-xs font-bold block truncate max-w-[100px]">{profile?.full_name || 'Trader'}</span>
-                <span className={cn("text-[10px] uppercase tracking-widest font-black", profile?.is_premium ? "text-pink-200" : "text-zinc-500")}>
-                  {profile?.is_premium ? 'Premium' : 'Standard'}
-                </span>
-              </div>
-              <div 
-                className="w-10 h-10 rounded-full border-2 border-pink-200/20 hover:border-pink-200/50 transition-all p-0.5 cursor-pointer"
+          <div className="flex items-center gap-5 relative group">
+             <div className="text-right hidden md:block space-y-0.5">
+                <span className="text-sm font-black text-white block tracking-tighter truncate max-w-[140px] uppercase">{profile?.full_name || 'Trader_Alpha'}</span>
+                <div className="flex items-center gap-2 justify-end">
+                   <div className="w-1 h-1 rounded-full bg-success"></div>
+                   <span className="text-[9px] text-primary font-black uppercase tracking-[0.4em] opacity-80">Executive</span>
+                </div>
+             </div>
+             
+             <div 
+                className="w-12 h-12 rounded-[20px] bg-zinc-950 border border-white/10 p-0.5 cursor-pointer hover:border-primary transition-all overflow-hidden shadow-2xl relative group/avatar"
                 onClick={() => setIsAvatarSelectorOpen(true)}
-              >
+             >
+                <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover/avatar:opacity-100 transition-opacity z-10"></div>
                 <img 
                   src={profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} 
-                  alt="Avatar" 
-                  className="w-full h-full rounded-full bg-zinc-800" 
+                  alt="" 
+                  className="w-full h-full rounded-[18px] object-cover relative z-0 transition-transform group-hover/avatar:scale-110"
                 />
-              </div>
+             </div>
 
-              {/* Dropdown Menu (Simplified) */}
-              <div className="absolute top-full right-0 mt-2 w-48 bg-zinc-900 border border-white/10 rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-2xl z-[60]">
-                <Link to="/dashboard" className="block px-4 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5">Dashboard</Link>
-                {(profile?.is_admin || user?.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || user?.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') && (
-                  <Link to="/admin" className="block px-4 py-2 text-xs text-primary font-bold hover:bg-primary/5">Admin Terminal</Link>
-                )}
-                <Link to="/settings" className="block px-4 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5">Settings</Link>
-                <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-xs text-rose-400 hover:bg-rose-500/10">Logout</button>
-              </div>
-            </div>
+             {/* Profile Menu Dropdown */}
+             <div className="absolute top-full right-0 mt-6 w-64 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[32px] py-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-[0_40px_100px_rgba(0,0,0,0.8)] z-[100] translate-y-4 group-hover:translate-y-0">
+                <div className="px-8 py-4 border-b border-white/5 mb-4">
+                   <p className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em] mb-2">Protocol Identity</p>
+                   <p className="text-[11px] font-black text-white truncate lowercase tracking-tighter">{user.email}</p>
+                </div>
+                <div className="px-3 space-y-1">
+                   <Link to="/dashboard" className="flex items-center gap-4 px-5 py-3.5 text-[11px] font-black text-zinc-500 hover:text-white hover:bg-white/5 transition-all rounded-2xl uppercase tracking-widest group/item">
+                      <span className="material-symbols-outlined text-xl transition-transform group-hover/item:scale-110">grid_view</span> Dashboard
+                   </Link>
+                   {(profile?.is_admin || user?.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || user?.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') && (
+                     <Link to="/admin" className="flex items-center gap-4 px-5 py-3.5 text-[11px] text-primary font-black hover:bg-primary/5 transition-all rounded-2xl uppercase tracking-widest group/item">
+                        <span className="material-symbols-outlined text-xl transition-transform group-hover/item:scale-110">shield_person</span> Admin Control
+                     </Link>
+                   )}
+                   <Link to="/settings" className="flex items-center gap-4 px-5 py-3.5 text-[11px] font-black text-zinc-500 hover:text-white hover:bg-white/5 transition-all rounded-2xl uppercase tracking-widest group/item">
+                      <span className="material-symbols-outlined text-xl transition-transform group-hover/item:scale-110">settings_suggest</span> Management
+                   </Link>
+                   <div className="h-px bg-white/5 mx-5 my-4"></div>
+                   <button onClick={handleLogout} className="flex items-center gap-4 w-full text-left px-5 py-3.5 text-[11px] font-black text-error hover:bg-error/5 transition-all rounded-2xl uppercase tracking-widest group/item">
+                      <span className="material-symbols-outlined text-xl transition-transform group-hover/item:-translate-x-1">power_settings_new</span> Terminate
+                   </button>
+                </div>
+             </div>
           </div>
         )}
 
-        {/* Mobile Menu Toggle */}
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="lg:hidden w-12 h-12 flex items-center justify-center bg-white/5 border border-white/5 rounded-2xl text-white transition-all hover:bg-white/10"
         >
           <span className="material-symbols-outlined">{isMobileMenuOpen ? 'close' : 'menu'}</span>
         </button>
