@@ -283,42 +283,49 @@ const Admin = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-[11px] font-mono">
-                  {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-white/[0.04] transition-colors cursor-pointer" onClick={() => handleUserClick(u)}>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-[10px] text-primary font-black uppercase">
-                            {u.full_name?.charAt(0) || 'U'}
-                          </div>
-                          <div>
-                            <span className="block font-black text-white">{u.full_name || 'Anonymous'}</span>
-                            <span className="text-[9px] text-zinc-600 font-bold uppercase">{u.email}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-zinc-500">{u.id.slice(0, 8)}...</td>
-                      <td className="px-6 py-4 text-white font-bold">{formatPrice(u.usd_balance || 0)}</td>
-                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                         <div className="flex items-center justify-center gap-2">
-                           <input 
-                             type="number"
-                             placeholder="Amount"
-                             className="w-24 bg-black/40 border border-white/10 rounded px-2 py-1 text-[10px] text-white outline-none focus:border-primary"
-                             value={profitAmount[u.id] || ''}
-                             onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
-                           />
-                           <button 
-                             onClick={() => handleAddProfit(u.id)}
-                             disabled={processingId === u.id}
-                             className="p-1.5 bg-primary/10 text-primary rounded-lg border border-primary/20 hover:bg-primary hover:text-black transition-all disabled:opacity-50"
-                           >
-                             <span className="material-symbols-outlined text-sm">add</span>
-                           </button>
-                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-right text-zinc-600">{new Date(u.created_at).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
+                   {users.map((u) => {
+                     const isNew = new Date(u.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+                     return (
+                       <tr key={u.id} className={cn("hover:bg-white/[0.04] transition-colors cursor-pointer", isNew && "bg-primary/5")} onClick={() => handleUserClick(u)}>
+                         <td className="px-6 py-4">
+                           <div className="flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-[10px] text-primary font-black uppercase relative">
+                               {u.full_name?.charAt(0) || 'U'}
+                               {isNew && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-black animate-pulse shadow-[0_0_8px_rgba(252,213,53,0.5)]"></span>}
+                             </div>
+                             <div>
+                               <div className="flex items-center gap-2">
+                                 <span className="block font-black text-white">{u.full_name || 'Anonymous'}</span>
+                                 {isNew && <span className="px-1.5 py-0.5 bg-primary/20 text-primary text-[7px] font-black uppercase rounded border border-primary/20 tracking-widest">New Signup</span>}
+                               </div>
+                               <span className="text-[9px] text-zinc-600 font-bold uppercase">{u.email}</span>
+                             </div>
+                           </div>
+                         </td>
+                         <td className="px-6 py-4 text-zinc-500">{u.id.slice(0, 8)}...</td>
+                         <td className="px-6 py-4 text-white font-bold">{formatPrice(u.usd_balance || 0)}</td>
+                         <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-center gap-2">
+                              <input 
+                                type="number"
+                                placeholder="Amount"
+                                className="w-24 bg-black/40 border border-white/10 rounded px-2 py-1 text-[10px] text-white outline-none focus:border-primary"
+                                value={profitAmount[u.id] || ''}
+                                onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
+                              />
+                              <button 
+                                onClick={() => handleAddProfit(u.id)}
+                                disabled={processingId === u.id}
+                                className="p-1.5 bg-primary/10 text-primary rounded-lg border border-primary/20 hover:bg-primary hover:text-black transition-all disabled:opacity-50"
+                              >
+                                <span className="material-symbols-outlined text-sm">add</span>
+                              </button>
+                            </div>
+                         </td>
+                         <td className="px-6 py-4 text-right text-zinc-600">{new Date(u.created_at).toLocaleDateString()}</td>
+                       </tr>
+                     );
+                   })}
                 </tbody>
               </table>
             )}
