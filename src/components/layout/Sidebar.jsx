@@ -25,8 +25,6 @@ const Sidebar = () => {
       items: [
         { name: 'Terminal', path: '/trade', icon: 'terminal' },
         { name: 'Markets', path: '/markets', icon: 'monitoring' },
-        { name: 'Spot Trading', path: '/trade?type=spot', icon: 'swap_horiz' },
-        { name: 'Futures', path: '/trade?type=futures', icon: 'trending_up' },
       ]
     },
     {

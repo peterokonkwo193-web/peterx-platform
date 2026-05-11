@@ -188,7 +188,7 @@ const Home = () => {
                      number="03" title="Fund" desc="Deposit assets instantly via our secure gateway." icon="account_balance_wallet" 
                   />
                   <StepCard 
-                     number="04" title="Trade" desc="Start trading with precision and grow your funds." icon="terminal" 
+                     number="04" title="Invest" desc="Start investing with precision and grow your funds." icon="monitoring" 
                   />
               </div>
            </div>
@@ -214,7 +214,7 @@ const Home = () => {
                  </div>
                  
                  <div className="space-y-10">
-                     <BenefitItem icon="trending_up" title="Fast Trading" desc="Trade at high speed with our advanced trading engine." />
+                     <BenefitItem icon="monitoring" title="Yield Optimization" desc="Invest with our advanced portfolio management engine." />
                      <BenefitItem icon="token" title="Passive Income" desc="Earn up to 15.4% APR on your assets through staking." />
                      <BenefitItem icon="hub" title="Easy Transfers" desc="Move funds across global networks instantly with zero risk." />
                   </div>

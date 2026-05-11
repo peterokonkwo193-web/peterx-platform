@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #fcd535;
+  --color-primary: #BFA685;
   --color-on-primary: #0a0a0a;
   --color-secondary: #000000;
   --color-on-secondary: #ffffff;
@@ -18,8 +18,8 @@
   :root {
     --background: 0 0% 4%;
     --foreground: 0 0% 98%;
-    --primary: 47 97% 60%;
-    --citadel-gold: #fcd535;
+    --primary: 35 31% 63%;
+    --citadel-gold: #BFA685;
   }
 
   html, body {
