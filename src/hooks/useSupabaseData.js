@@ -168,17 +168,20 @@ export const useSupabaseData = () => {
           }
         }
       })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions', filter: 'status=eq.Pending Verification' }, (payload) => {
-        if (payload.new) {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions' }, (payload) => {
+        console.log('Global Admin Notif - Transaction:', payload);
+        if (payload.new?.status === 'Pending Verification') {
           const msg = `💰 NEW DEPOSIT ALERT: A user just clicked "I have sent the money" for ${payload.new.asset}. Please verify!`;
           if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             new Notification('Equity Citadel Payment Alert', { body: msg });
           } else {
-            alert(msg);
+            console.log('Toast would trigger if Admin Page was open');
           }
         }
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Global Admin Channel Status:', status);
+      });
 
     return () => {
       supabase.removeChannel(adminSub);

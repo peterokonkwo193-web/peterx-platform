@@ -44,24 +44,32 @@ const Admin = () => {
   useEffect(() => {
     if (!profile?.is_admin) return;
 
+    const timestamp = Date.now();
     const txSub = supabase
-      .channel('admin-tx-updates')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions', filter: 'status=eq.Pending Verification' }, (payload) => {
-        fetchPendingTransactions();
-        playNotificationSound();
-        const newNotif = { 
-          id: Date.now(), 
-          message: `NEW PAYMENT ALERT: A user just deposited ${payload.new.asset}.`,
-          type: 'deposit'
-        };
-        setNotifications(prev => [newNotif, ...prev]);
-        setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== newNotif.id)), 10000);
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
+      .channel(`admin-tx-updates-${timestamp}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, (payload) => {
+        console.log('Real-time Transaction Event:', payload);
+        
+        // Refresh the lists regardless of event type to keep UI in sync
         fetchPendingTransactions();
         fetchPendingPayouts();
+
+        // If it's a new deposit that needs verification, trigger alert
+        if (payload.eventType === 'INSERT' && payload.new?.status === 'Pending Verification') {
+          console.log('New Deposit Detected! Triggering Alert...');
+          playNotificationSound();
+          const newNotif = { 
+            id: Date.now(), 
+            message: `NEW PAYMENT ALERT: A user just deposited ${payload.new.asset}.`,
+            type: 'deposit'
+          };
+          setNotifications(prev => [newNotif, ...prev]);
+          setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== newNotif.id)), 15000);
+        }
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Supabase Subscription Status:', status);
+      });
 
     const userSub = supabase
       .channel('admin-user-updates')
@@ -241,7 +249,20 @@ const Admin = () => {
                     <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">System Secure</span>
                  </div>
               </div>
-              <h1 className="text-4xl font-black text-white tracking-tighter">Command Terminal</h1>
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <h1 className="text-4xl font-black text-white tracking-tighter">Command Terminal</h1>
+                <button 
+                  onClick={() => {
+                    playNotificationSound();
+                    const testNotif = { id: Date.now(), message: "SYSTEM TEST: Notification system is active and functional.", type: 'test' };
+                    setNotifications(prev => [testNotif, ...prev]);
+                    setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== testNotif.id)), 5000);
+                  }}
+                  className="px-4 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black text-zinc-500 uppercase tracking-widest transition-all"
+                >
+                  Test Notification System
+                </button>
+              </div>
            </div>
            
            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full lg:w-auto">
