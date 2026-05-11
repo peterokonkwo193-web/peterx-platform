@@ -12,6 +12,16 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Equity Citadel Protocol Error:', error, errorInfo);
+    
+    // Auto-reload on chunk load errors (occurs after a new deployment)
+    const isChunkError = error?.name === 'ChunkLoadError' || 
+                         error?.message?.includes('Failed to fetch dynamically imported module');
+    
+    if (isChunkError) {
+      console.log('Chunk load error detected. Forcing application reload...');
+      window.location.reload();
+    }
+    
     this.setState({ errorInfo });
   }
 
