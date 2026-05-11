@@ -26,6 +26,7 @@ const Admin = () => {
   const [userInvestments, setUserInvestments] = useState([]);
   const [isUserDetailOpen, setIsUserDetailOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const playNotificationSound = () => {
     const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
@@ -315,62 +316,88 @@ const Admin = () => {
         <Card className="p-0 citadel-card overflow-hidden">
           <div className="overflow-x-auto">
             {activeTab === 'users' && (
-              <table className="w-full text-left">
-                <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
-                  <tr>
-                    <th className="px-6 py-4">User</th>
-                    <th className="px-6 py-4">Account ID</th>
-                    <th className="px-6 py-4">Balance</th>
-                    <th className="px-6 py-4 text-center">Add Profit</th>
-                    <th className="px-6 py-4 text-right">Registered</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 text-[11px] font-mono">
-                   {users.map((u) => {
-                     const isNew = new Date(u.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
-                     return (
-                       <tr key={u.id} className={cn("hover:bg-white/[0.04] transition-colors cursor-pointer", isNew && "bg-primary/5")} onClick={() => handleUserClick(u)}>
-                         <td className="px-6 py-4">
-                           <div className="flex items-center gap-3">
-                             <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-[10px] text-primary font-black uppercase relative">
-                               {u.full_name?.charAt(0) || 'U'}
-                               {isNew && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-black animate-pulse shadow-[0_0_8px_rgba(252,213,53,0.5)]"></span>}
-                             </div>
-                             <div>
-                               <div className="flex items-center gap-2">
-                                 <span className="block font-black text-white">{u.full_name || 'Anonymous'}</span>
-                                 {isNew && <span className="px-1.5 py-0.5 bg-primary/20 text-primary text-[7px] font-black uppercase rounded border border-primary/20 tracking-widest">New Signup</span>}
+              <div className="space-y-0">
+                {/* Search Bar */}
+                <div className="p-6 md:p-8 border-b border-white/5 bg-white/[0.01]">
+                   <div className="relative max-w-2xl mx-auto">
+                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600">search</span>
+                      <input 
+                        type="text" 
+                        placeholder="Search clients by name or email address..."
+                        className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-white focus:border-primary transition-all outline-none"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                   </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                      <tr>
+                        <th className="px-6 py-4">Client Information</th>
+                        <th className="px-6 py-4">Balance</th>
+                        <th className="px-6 py-4 text-center">Profit Injection</th>
+                        <th className="px-6 py-4 text-right">Registered</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-[11px] font-mono">
+                       {users
+                         .filter(u => 
+                           u.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           u.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                         )
+                         .map((u) => {
+                         const isNew = new Date(u.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+                         return (
+                           <tr key={u.id} className={cn("hover:bg-white/[0.02] transition-colors cursor-pointer", isNew && "bg-primary/5")} onClick={() => handleUserClick(u)}>
+                             <td className="px-6 py-4">
+                               <div className="flex items-center gap-4">
+                                 <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-[11px] text-primary font-black uppercase relative shadow-lg">
+                                   {u.full_name?.charAt(0) || 'U'}
+                                   {isNew && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-black animate-pulse shadow-[0_0_8px_rgba(252,213,53,0.5)]"></span>}
+                                 </div>
+                                 <div>
+                                   <div className="flex items-center gap-2 mb-0.5">
+                                     <span className="block font-black text-white text-sm tracking-tight">{u.full_name || 'Anonymous'}</span>
+                                     {isNew && <span className="px-1.5 py-0.5 bg-primary text-black text-[7px] font-black uppercase rounded tracking-widest">New</span>}
+                                   </div>
+                                   <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">{u.email}</span>
+                                 </div>
                                </div>
-                               <span className="text-[9px] text-zinc-600 font-bold uppercase">{u.email}</span>
-                             </div>
-                           </div>
-                         </td>
-                         <td className="px-6 py-4 text-zinc-500">{u.id.slice(0, 8)}...</td>
-                         <td className="px-6 py-4 text-white font-bold">{formatPrice(u.usd_balance || 0)}</td>
-                         <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-center gap-2">
-                              <input 
-                                type="number"
-                                placeholder="Amount"
-                                className="w-24 bg-black/40 border border-white/10 rounded px-2 py-1 text-[10px] text-white outline-none focus:border-primary"
-                                value={profitAmount[u.id] || ''}
-                                onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
-                              />
-                              <button 
-                                onClick={() => handleAddProfit(u.id)}
-                                disabled={processingId === u.id}
-                                className="p-1.5 bg-primary/10 text-primary rounded-lg border border-primary/20 hover:bg-primary hover:text-black transition-all disabled:opacity-50"
-                              >
-                                <span className="material-symbols-outlined text-sm">add</span>
-                              </button>
-                            </div>
-                         </td>
-                         <td className="px-6 py-4 text-right text-zinc-600">{new Date(u.created_at).toLocaleDateString()}</td>
-                       </tr>
-                     );
-                   })}
-                </tbody>
-              </table>
+                             </td>
+                             <td className="px-6 py-4">
+                               <span className="text-white font-black text-sm tracking-tighter">{formatPrice(u.usd_balance || 0)}</span>
+                             </td>
+                             <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center justify-center gap-3">
+                                  <div className="relative">
+                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-black text-[9px]">$</span>
+                                     <input 
+                                       type="number"
+                                       placeholder="Add Profit"
+                                       className="w-28 bg-black border border-white/10 rounded-xl pl-6 pr-3 py-2 text-[11px] text-white outline-none focus:border-primary transition-all shadow-inner"
+                                       value={profitAmount[u.id] || ''}
+                                       onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
+                                     />
+                                  </div>
+                                  <button 
+                                    onClick={() => handleAddProfit(u.id)}
+                                    disabled={processingId === u.id}
+                                    className="w-9 h-9 bg-primary text-black rounded-xl hover:scale-110 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center shadow-[0_5px_15px_rgba(252,213,53,0.2)]"
+                                  >
+                                    <span className="material-symbols-outlined text-base font-black">add</span>
+                                  </button>
+                                </div>
+                             </td>
+                             <td className="px-6 py-4 text-right text-zinc-600 font-bold text-[9px] uppercase tracking-widest">{new Date(u.created_at).toLocaleDateString()}</td>
+                           </tr>
+                         );
+                       })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             )}
 
             {activeTab === 'verifications' && (
