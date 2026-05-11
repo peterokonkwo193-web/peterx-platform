@@ -21,6 +21,9 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [profitAmount, setProfitAmount] = useState({});
   const [treasuryMetrics, setTreasuryMetrics] = useState({ totalBalance: 0, avgBalance: 0 });
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userInvestments, setUserInvestments] = useState([]);
+  const [isUserDetailOpen, setIsUserDetailOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading) {
@@ -137,38 +140,12 @@ const Admin = () => {
     
     setProcessingId(userId);
     try {
-      // 1. Get current balance
-      const { data: user, error: fetchError } = await supabase
-        .from('profiles')
-        .select('usd_balance')
-        .eq('id', userId)
-        .single();
+      const { error } = await supabase.rpc('admin_add_profit', {
+        p_user_id: userId,
+        p_amount: amount
+      });
         
-      if (fetchError) throw fetchError;
-      
-      const newBalance = (user.usd_balance || 0) + amount;
-      
-      // 2. Update balance
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ usd_balance: newBalance })
-        .eq('id', userId);
-        
-      if (updateError) throw updateError;
-      
-      // 3. Log transaction
-      const { error: txError } = await supabase
-        .from('transactions')
-        .insert({
-          user_id: userId,
-          asset: 'USD',
-          type: 'Profit',
-          amount: amount,
-          value: amount,
-          status: 'Completed'
-        });
-        
-      if (txError) throw txError;
+      if (error) throw error;
       
       await fetchAllUsers();
       setProfitAmount({ ...profitAmount, [userId]: '' });
@@ -177,6 +154,25 @@ const Admin = () => {
       alert(error.message);
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handleUserClick = async (user) => {
+    setSelectedUser(user);
+    setIsUserDetailOpen(true);
+    
+    // Fetch this user's investments
+    try {
+      const { data, error } = await supabase
+        .from('investments')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      setUserInvestments(data || []);
+    } catch (error) {
+      console.error('Error fetching user investments:', error);
     }
   };
 
@@ -264,7 +260,7 @@ const Admin = () => {
                 </thead>
                 <tbody className="divide-y divide-white/5 text-[11px] font-mono">
                   {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={u.id} className="hover:bg-white/[0.04] transition-colors cursor-pointer" onClick={() => handleUserClick(u)}>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-[10px] text-primary font-black uppercase">
@@ -278,7 +274,7 @@ const Admin = () => {
                       </td>
                       <td className="px-6 py-4 text-zinc-500">{u.id.slice(0, 8)}...</td>
                       <td className="px-6 py-4 text-white font-bold">{formatPrice(u.usd_balance || 0)}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                          <div className="flex items-center justify-center gap-2">
                            <input 
                              type="number"
@@ -396,6 +392,104 @@ const Admin = () => {
           </div>
         </Card>
       </div>
+
+      {/* User Detail Modal */}
+      <AnimatePresence>
+        {isUserDetailOpen && selectedUser && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsUserDetailOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-2xl bg-zinc-950 border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+              
+              <div className="flex justify-between items-start mb-8">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-2xl text-primary font-black uppercase">
+                    {selectedUser.full_name?.charAt(0) || 'U'}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter">{selectedUser.full_name || 'Anonymous'}</h2>
+                    <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">{selectedUser.email}</p>
+                  </div>
+                </div>
+                <button onClick={() => setIsUserDetailOpen(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all">
+                  <span className="material-symbols-outlined text-zinc-400">close</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl">
+                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Current Balance</span>
+                  <p className="text-2xl font-black text-white tracking-tighter">{formatPrice(selectedUser.usd_balance || 0)}</p>
+                </div>
+                <div className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl">
+                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Joined</span>
+                  <p className="text-xl font-black text-zinc-400 tracking-tight">{new Date(selectedUser.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Active Investments</h3>
+                <div className="max-h-60 overflow-y-auto custom-scrollbar space-y-3">
+                  {userInvestments.length === 0 ? (
+                    <div className="p-8 text-center bg-white/[0.01] border border-dashed border-white/10 rounded-2xl">
+                      <p className="text-[10px] text-zinc-700 font-black uppercase tracking-widest italic">No active strategies detected</p>
+                    </div>
+                  ) : (
+                    userInvestments.map(inv => (
+                      <div key={inv.id} className="p-4 bg-white/[0.02] border border-white/5 rounded-xl flex justify-between items-center group hover:border-white/20 transition-all">
+                        <div>
+                          <span className="block text-[11px] font-black text-white uppercase tracking-tight">{inv.plan_name}</span>
+                          <span className="text-[9px] text-zinc-600 font-bold uppercase">{formatPrice(inv.amount)} • {inv.status}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="block text-[11px] font-black text-success">+{formatPrice(inv.expected_profit)}</span>
+                          <span className="text-[9px] text-zinc-600 font-bold uppercase">Ends: {new Date(inv.end_date).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-10 pt-8 border-t border-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-2">Inject Manual Profit</span>
+                    <div className="flex gap-2">
+                      <input 
+                        type="number"
+                        placeholder="Profit Amount"
+                        className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary"
+                        value={profitAmount[selectedUser.id] || ''}
+                        onChange={(e) => setProfitAmount({ ...profitAmount, [selectedUser.id]: e.target.value })}
+                      />
+                      <Button 
+                        onClick={() => handleAddProfit(selectedUser.id)}
+                        disabled={processingId === selectedUser.id}
+                        variant="primary" 
+                        className="px-8 font-black uppercase tracking-widest text-[10px]"
+                      >
+                        {processingId === selectedUser.id ? 'Processing...' : 'Authorize Profit'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </DashboardLayout>
   );
 };
