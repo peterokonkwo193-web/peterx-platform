@@ -236,7 +236,6 @@ const Home = () => {
                     <div className="absolute bottom-12 left-12 p-8 bg-black/60 backdrop-blur-xl border border-white/5 rounded-3xl max-w-sm pointer-events-none shadow-2xl">
                            <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Senior Portfolio Manager</p>
                         </div>
-                     </div>
                   </Card>
                </div>
             </div>

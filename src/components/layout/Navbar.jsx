@@ -242,6 +242,7 @@ const Navbar = ({ className }) => {
         }}
       />
     </nav>
+    </>
   );
 };
 
