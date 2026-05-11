@@ -108,29 +108,31 @@ const InvestmentPlans = ({ onSupport }) => {
                 {/* Protocol Info Overlay */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 
-                {/* Support Bridge */}
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onSupport(plan);
-                  }}
-                  className="absolute top-8 left-8 z-20 flex items-center gap-2 group/support backdrop-blur-xl"
-                  title="Contact Support"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center group-hover/support:border-primary/50 group-hover/support:bg-primary/10 transition-all">
-                    <span className="material-symbols-outlined text-[18px] text-zinc-500 group-hover/support:text-primary transition-colors">contact_support</span>
-                  </div>
-                </button>
+                {/* CARD HEADER */}
+                <div className="flex justify-between items-center w-full mb-6 relative z-30">
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onSupport(plan);
+                    }}
+                    className="flex items-center gap-2 group/support backdrop-blur-xl"
+                    title="Contact Support"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/10 flex items-center justify-center group-hover/support:border-primary/50 group-hover/support:bg-primary/10 transition-all">
+                      <span className="material-symbols-outlined text-[16px] text-zinc-500 group-hover/support:text-primary transition-colors">contact_support</span>
+                    </div>
+                  </button>
 
-                {plan.recommended && (
-                  <div className="absolute top-8 right-8 px-4 py-1.5 bg-primary rounded-xl z-20 shadow-[0_0_15px_rgba(252,213,53,0.3)]">
-                    <span className="text-[9px] font-bold text-black uppercase tracking-widest">Recommended</span>
-                  </div>
-                )}
+                  {plan.recommended && (
+                    <div className="px-3 py-1 bg-primary/10 border border-primary/20 backdrop-blur-xl rounded-lg shadow-[0_0_15px_rgba(252,213,53,0.1)]">
+                      <span className="text-[8px] font-bold text-primary uppercase tracking-widest">Recommended</span>
+                    </div>
+                  )}
+                </div>
 
-                <div className="relative z-10 w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white/[0.03] flex items-center justify-center mb-5 md:mb-8 border border-white/5 group-hover:border-primary/40 transition-all group-hover:bg-primary/5 group-hover:scale-110">
-                  <span className="material-symbols-outlined text-2xl md:text-3xl text-zinc-600 group-hover:text-primary transition-colors">
+                <div className="relative z-10 w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-xl bg-white/[0.03] flex items-center justify-center mb-4 md:mb-6 border border-white/5 group-hover:border-primary/40 transition-all group-hover:bg-primary/5 group-hover:scale-110">
+                  <span className="material-symbols-outlined text-xl md:text-2xl text-zinc-600 group-hover:text-primary transition-colors">
                     {plan.icon}
                   </span>
                 </div>
@@ -144,15 +146,15 @@ const InvestmentPlans = ({ onSupport }) => {
                   <span className="text-2xl md:text-3xl font-bold text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
                 </div>
 
-                <div className="relative z-10 w-full p-4 md:p-5 bg-black/40 border border-white/5 rounded-xl md:rounded-[20px] mb-6 md:mb-8 space-y-3 md:space-y-4 backdrop-blur-xl">
+                <div className="relative z-10 w-full p-4 bg-black/40 border border-white/5 rounded-xl mb-6 md:mb-8 space-y-3 backdrop-blur-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Duration</span>
-                    <span className="text-xs text-white font-bold uppercase tracking-widest">{plan.duration} Days</span>
+                    <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">Duration</span>
+                    <span className="text-[10px] text-white font-bold uppercase tracking-widest">{plan.duration} Days</span>
                   </div>
                   <div className="h-px bg-white/5 w-full"></div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Min Deposit</span>
-                    <span className="text-xs text-white font-bold tracking-widest font-mono">{formatPrice(plan.range)}</span>
+                    <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">Min Deposit</span>
+                    <span className="text-[10px] text-white font-bold tracking-widest font-mono">{formatPrice(plan.range)}</span>
                   </div>
                 </div>
 

@@ -32,33 +32,35 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
         )}
         <div className="absolute -left-10 -bottom-10 text-[100px] font-black text-white/[0.01] pointer-events-none select-none tracking-tighter uppercase leading-none">ALPHA</div>
 
-        {/* SUPPORT */}
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            onSupport(plan);
-          }}
-          className="absolute top-6 right-6 z-30 flex items-center gap-2 text-zinc-600 hover:text-primary transition-all duration-300 group/support"
-        >
-          <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-0 group-hover/support:opacity-100 transition-all translate-x-2 group-hover/support:translate-x-0">Help</span>
-          <div className="w-10 h-10 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-center group-hover/support:border-primary/50 group-hover/support:bg-primary group-hover/support:text-black transition-all shadow-2xl">
-            <span className="material-symbols-outlined text-xl font-black">support_agent</span>
+        {/* CARD HEADER */}
+        <div className="flex justify-between items-center w-full mb-6 relative z-30">
+          <div>
+            {isRecommended && (
+              <div className="bg-primary/10 border border-primary/20 backdrop-blur-xl text-primary text-[8px] font-bold uppercase tracking-[0.4em] px-3 py-1 rounded-lg shadow-2xl flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-primary animate-pulse"></span>
+                Best Value
+              </div>
+            )}
           </div>
-        </button>
-
-        {isRecommended && (
-          <div className="absolute top-6 left-6 z-20">
-            <div className="bg-primary/10 border border-primary/20 backdrop-blur-xl text-primary text-[8px] font-bold uppercase tracking-[0.4em] px-3 py-1 rounded-lg shadow-2xl flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-primary animate-pulse"></span>
-              Best Value
+          
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onSupport(plan);
+            }}
+            className="flex items-center gap-2 text-zinc-600 hover:text-primary transition-all duration-300 group/support"
+          >
+            <span className="text-[8px] font-black uppercase tracking-[0.4em] opacity-0 group-hover/support:opacity-100 transition-all translate-x-2 group-hover/support:translate-x-0">Help</span>
+            <div className="w-8 h-8 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-center group-hover/support:border-primary/50 group-hover/support:bg-primary group-hover/support:text-black transition-all shadow-2xl">
+              <span className="material-symbols-outlined text-[18px] font-black">support_agent</span>
             </div>
-          </div>
-        )}
+          </button>
+        </div>
 
         <div className="mb-12 mt-4 relative z-10">
           <div className="flex items-center gap-4 mb-6 md:mb-8">
             <div className={cn(
-              "w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center border transition-all duration-700 shadow-[0_20px_50px_rgba(0,0,0,0.5)]",
+              "w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-xl flex items-center justify-center border transition-all duration-700 shadow-[0_20px_50px_rgba(0,0,0,0.5)]",
               isRecommended 
                 ? "bg-primary/20 border-primary/40 shadow-primary/10 group-hover:scale-110" 
                 : "bg-zinc-900 border-white/5 group-hover:border-white/20"
@@ -71,7 +73,7 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
               </span>
             </div>
             <div>
-              <h3 className="text-lg md:text-xl font-bold text-white tracking-tighter uppercase leading-[1.1] mb-2">{plan.name}</h3>
+              <h3 className="text-base md:text-lg font-bold text-white tracking-tighter uppercase leading-[1.1] mb-2">{plan.name}</h3>
               <div className="flex items-center gap-3">
                  <div className="flex gap-1">
                     {[...Array(5)].map((_, i) => (
@@ -94,14 +96,14 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 md:gap-3">
-              <div className="p-3 md:p-4 bg-white/[0.02] border border-white/5 rounded-xl flex flex-col gap-1 shadow-inner group-hover:border-white/10 transition-all">
-                <span className="text-[8px] text-zinc-600 font-bold uppercase tracking-[0.3em]">Duration</span>
-                <span className="text-xs font-bold text-white uppercase tracking-tighter">{plan.duration} Days</span>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="p-2 md:p-3 bg-white/[0.02] border border-white/5 rounded-xl flex flex-col gap-1 shadow-inner group-hover:border-white/10 transition-all">
+                <span className="text-[7px] text-zinc-600 font-bold uppercase tracking-[0.3em]">Duration</span>
+                <span className="text-[10px] font-bold text-white uppercase tracking-tighter">{plan.duration} Days</span>
               </div>
-              <div className="p-3 md:p-4 bg-success/5 border border-success/10 rounded-xl flex flex-col gap-1 shadow-inner group-hover:border-success/20 transition-all">
-                <span className="text-[8px] text-success/60 font-bold uppercase tracking-[0.3em]">Profit</span>
-                <span className="text-xs font-bold text-success uppercase tracking-tighter">+{plan.roi}%</span>
+              <div className="p-2 md:p-3 bg-success/5 border border-success/10 rounded-xl flex flex-col gap-1 shadow-inner group-hover:border-success/20 transition-all">
+                <span className="text-[7px] text-success/60 font-bold uppercase tracking-[0.3em]">Profit</span>
+                <span className="text-[10px] font-bold text-success uppercase tracking-tighter">+{plan.roi}%</span>
               </div>
             </div>
           </div>
