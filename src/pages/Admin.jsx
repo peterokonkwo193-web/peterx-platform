@@ -210,6 +210,28 @@ const Admin = () => {
     }
   };
 
+  const handleFixPermissions = async () => {
+    if (!user || user.email !== 'equitycitadelassociates@gmail.com') {
+      return alert('This fix is only for the Master Admin account.');
+    }
+    
+    setProcessingId('fix-perms');
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_admin: true })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      alert('Database permissions restored! Please refresh the page.');
+      window.location.reload();
+    } catch (error) {
+      alert('Manual fix failed: ' + error.message + '\n\nPlease run the SQL command in your Supabase dashboard instead.');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   const handleAddProfit = async (userId) => {
     const amount = parseFloat(profitAmount[userId] || 0);
     if (!amount || amount <= 0) return alert('Enter a valid profit amount');
@@ -271,6 +293,12 @@ const Admin = () => {
            <div className="space-y-2">
               <div className="flex items-center gap-3">
                  <div className="px-2 py-0.5 bg-error/10 rounded text-[9px] font-black text-error uppercase tracking-[0.2em] border border-error/20">Level 4 Clearance</div>
+                 <button 
+                   onClick={handleFixPermissions}
+                   className="px-3 py-1 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 text-[8px] font-black text-zinc-400 uppercase tracking-widest transition-all"
+                 >
+                   Fix Database Permissions
+                 </button>
                  <div className="flex flex-col items-end gap-2">
               <button 
                 onClick={fetchData}
