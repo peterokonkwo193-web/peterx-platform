@@ -12,6 +12,7 @@ export const useSupabaseData = () => {
   const [stakingPositions, setStakingPositions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pendingAdminCount, setPendingAdminCount] = useState(0);
 
   const refreshData = async () => {
     if (!user) return;
@@ -164,23 +165,35 @@ export const useSupabaseData = () => {
           if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             new Notification('Equity Citadel Admin Alert', { body: msg });
           } else {
-            alert(msg);
+            console.log('New User Registered');
           }
         }
       })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions' }, (payload) => {
-        console.log('Global Admin Notif - Transaction:', payload);
-        if (payload.new?.status === 'Pending Verification') {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, (payload) => {
+        console.log('Global Admin Notif - Transaction Event:', payload);
+        
+        // Refresh global pending count
+        supabase
+          .from('transactions')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'Pending Verification')
+          .then(({ count }) => setPendingAdminCount(count || 0));
+
+        if (payload.eventType === 'INSERT' && payload.new?.status === 'Pending Verification') {
           const msg = `💰 NEW DEPOSIT ALERT: A user just clicked "I have sent the money" for ${payload.new.asset}. Please verify!`;
           if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             new Notification('Equity Citadel Payment Alert', { body: msg });
-          } else {
-            console.log('Toast would trigger if Admin Page was open');
           }
         }
       })
       .subscribe((status) => {
-        console.log('Global Admin Channel Status:', status);
+        if (status === 'SUBSCRIBED') {
+          supabase
+            .from('transactions')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'Pending Verification')
+            .then(({ count }) => setPendingAdminCount(count || 0));
+        }
       });
 
     return () => {
@@ -188,5 +201,5 @@ export const useSupabaseData = () => {
     };
   }, [profile?.is_admin]);
 
-  return { user, profile, portfolio: portfolio || [], watchlist: watchlist || [], futuresPositions, stakingPositions, transactions, refreshData, loading, error };
+  return { user, profile, portfolio: portfolio || [], watchlist: watchlist || [], futuresPositions, stakingPositions, transactions, refreshData, loading, error, pendingAdminCount };
 };

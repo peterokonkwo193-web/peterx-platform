@@ -1,8 +1,9 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 import { cn } from '../../utils/cn';
 
 const MobileNav = () => {
+  const { pendingAdminCount } = useSupabaseData();
   const location = useLocation();
 
   const navItems = [
@@ -30,6 +31,11 @@ const MobileNav = () => {
               <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
                 {item.icon}
               </span>
+              {item.adminOnly && pendingAdminCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-error text-[8px] font-black text-white flex items-center justify-center rounded-full border border-black animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+                  {pendingAdminCount}
+                </span>
+              )}
             </div>
             <span className={cn(
               "text-[8px] font-black uppercase tracking-widest transition-colors",
