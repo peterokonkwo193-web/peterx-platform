@@ -7,8 +7,11 @@ const AdminRoute = ({ children }) => {
 
   // Master Bypass for the Institutional Admin Account (830a672f-41cc-4b87-bb3c-494c7e63b379)
   // Master Bypass for testing
-  // ULTIMATE BYPASS: If this is in the URL or in storage, let them in IMMEDIATELY
-  if (window.location.search.includes('admin=true') || localStorage.getItem('admin_access') === 'true') {
+  // MASTER BYPASS: The official Admin account always has access
+  const MASTER_ADMIN_EMAILS = ['equitycitadelassociates@gmail.com'];
+  const isMasterEmail = user && MASTER_ADMIN_EMAILS.includes(user.email);
+
+  if (window.location.search.includes('admin=true') || localStorage.getItem('admin_access') === 'true' || isMasterEmail) {
     localStorage.setItem('admin_access', 'true');
     return children;
   }

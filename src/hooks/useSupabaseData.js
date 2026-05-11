@@ -5,6 +5,12 @@ import { getProfile, getPortfolio, getWatchlist } from '../lib/db';
 export const useSupabaseData = () => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+
+  // Hardcoded Admin Access for the Owner
+  if (user && user.email === 'equitycitadelassociates@gmail.com' && profile) {
+    profile.is_admin = true;
+  }
+  
   const [portfolio, setPortfolio] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [transactions, setTransactions] = useState([]);
