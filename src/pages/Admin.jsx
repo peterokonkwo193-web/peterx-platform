@@ -24,6 +24,12 @@ const Admin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userInvestments, setUserInvestments] = useState([]);
   const [isUserDetailOpen, setIsUserDetailOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  const playNotificationSound = () => {
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    audio.play().catch(() => {});
+  };
 
   useEffect(() => {
     if (!authLoading) {
@@ -40,6 +46,17 @@ const Admin = () => {
 
     const txSub = supabase
       .channel('admin-tx-updates')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions', filter: 'status=eq.Pending Verification' }, (payload) => {
+        fetchPendingTransactions();
+        playNotificationSound();
+        const newNotif = { 
+          id: Date.now(), 
+          message: `NEW PAYMENT ALERT: A user just deposited ${payload.new.asset}.`,
+          type: 'deposit'
+        };
+        setNotifications(prev => [newNotif, ...prev]);
+        setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== newNotif.id)), 10000);
+      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
         fetchPendingTransactions();
         fetchPendingPayouts();
@@ -532,6 +549,51 @@ const Admin = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications */}
+      <div className="fixed bottom-8 right-8 z-[200] space-y-4">
+        <AnimatePresence>
+          {notifications.map(n => (
+            <motion.div
+              key={n.id}
+              initial={{ opacity: 0, x: 100, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+              className="w-80 p-5 bg-zinc-950 border border-primary/40 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-start gap-4 relative overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-primary/5 opacity-50"></div>
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary shadow-[0_0_15px_rgba(252,213,53,0.5)]"></div>
+              
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0 relative z-10">
+                <span className="material-symbols-outlined text-xl">payments</span>
+              </div>
+              
+              <div className="relative z-10">
+                <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Incoming Transaction</h4>
+                <p className="text-[11px] text-white font-bold uppercase tracking-tight leading-relaxed">{n.message}</p>
+                <div className="mt-3 flex items-center gap-2">
+                   <button 
+                     onClick={() => {
+                       setActiveTab('verifications');
+                       setNotifications(prev => prev.filter(notif => notif.id !== n.id));
+                     }}
+                     className="text-[8px] font-black text-primary uppercase tracking-widest hover:underline"
+                   >
+                     Review Now
+                   </button>
+                   <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
+                   <button 
+                     onClick={() => setNotifications(prev => prev.filter(notif => notif.id !== n.id))}
+                     className="text-[8px] font-black text-zinc-600 uppercase tracking-widest hover:text-white"
+                   >
+                     Dismiss
+                   </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </DashboardLayout>
   );
 };
