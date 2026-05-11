@@ -6,10 +6,7 @@ export const useSupabaseData = () => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
 
-  // Hardcoded Admin Access for the Owner
-  if (user && user.email === 'equitycitadelassociates@gmail.com' && profile) {
-    profile.is_admin = true;
-  }
+  // Hardcoded Admin logic is now handled in state setters below to prevent re-render loops
   
   const [portfolio, setPortfolio] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
@@ -31,7 +28,11 @@ export const useSupabaseData = () => {
         supabase.from('staking_positions').select('*').eq('user_id', user.id).then(res => res.data || []),
         supabase.from('transactions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50).then(res => res.data || [])
       ]);
-      setProfile(p);
+      const profileData = p;
+      if (user.email === 'equitycitadelassociates@gmail.com' && profileData) {
+        profileData.is_admin = true;
+      }
+      setProfile(profileData);
       setPortfolio(port || []);
       setWatchlist(watch || []);
       setFuturesPositions(futures || []);
@@ -58,7 +59,11 @@ export const useSupabaseData = () => {
             supabase.from('staking_positions').select('*').eq('user_id', currentUser.id).then(res => res.data || []),
             supabase.from('transactions').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(50).then(res => res.data || [])
           ]);
-          setProfile(p);
+          const profileData = p;
+          if (currentUser.email === 'equitycitadelassociates@gmail.com' && profileData) {
+            profileData.is_admin = true;
+          }
+          setProfile(profileData);
           setPortfolio(port || []);
           setWatchlist(watch || []);
           setFuturesPositions(futures || []);
@@ -103,7 +108,11 @@ export const useSupabaseData = () => {
     const profileSub = supabase
       .channel(`profile-changes-${user.id}-${timestamp}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, (payload) => {
-        if (payload.new) setProfile(payload.new);
+        if (payload.new) {
+          const updatedProfile = payload.new;
+          if (user.email === 'equitycitadelassociates@gmail.com') updatedProfile.is_admin = true;
+          setProfile(updatedProfile);
+        }
       })
       .subscribe();
 
