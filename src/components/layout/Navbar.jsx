@@ -60,19 +60,8 @@ const Navbar = ({ className }) => {
         </div>
       </div>
 
-      {/* Center: Global Command Search */}
-      <div className="hidden lg:flex flex-1 max-w-xl mx-12 relative group">
-        <span className="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600 text-lg group-focus-within:text-primary transition-all group-focus-within:scale-110">command</span>
-        <input 
-          type="text" 
-          placeholder="Search for assets or features..." 
-          className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 pl-14 pr-20 text-[11px] font-black tracking-widest text-white uppercase placeholder:text-zinc-800 outline-none focus:border-primary/40 focus:bg-black/60 transition-all shadow-inner focus:shadow-[0_0_30px_rgba(252,213,53,0.05)]"
-        />
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-2">
-           <span className="px-2 py-1 bg-white/5 rounded-lg text-[9px] font-black text-zinc-700 border border-white/5 uppercase tracking-tighter">Ctrl</span>
-           <span className="px-2 py-1 bg-white/5 rounded-lg text-[9px] font-black text-zinc-700 border border-white/5 uppercase tracking-tighter">K</span>
-        </div>
-      </div>
+      {/* Center: Removed Command Search as requested */}
+      <div className="hidden lg:flex flex-1"></div>
 
       {/* Right: User & Actions */}
       <div className="flex items-center gap-8">
