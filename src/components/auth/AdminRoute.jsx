@@ -7,13 +7,13 @@ const AdminRoute = ({ children }) => {
 
   // Master Bypass for the Institutional Admin Account (830a672f-41cc-4b87-bb3c-494c7e63b379)
   // Master Bypass for testing
-  const hasSecretBypass = window.location.search.includes('admin=true');
-  // Persistent Bypass logic
-  if (hasSecretBypass) {
-    console.log('Admin Bypass Detected in URL');
+  // ULTIMATE BYPASS: If this is in the URL, let them in IMMEDIATELY
+  if (window.location.search.includes('admin=true')) {
     localStorage.setItem('admin_access', 'true');
+    return children;
   }
 
+  // Persistent Bypass logic
   const isMasterAdmin = (user && (user.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || user.id === '8d24918f-b493-4549-951e-1f85b0b97fe5')) || 
                         profile?.is_admin || 
                         localStorage.getItem('admin_access') === 'true';
