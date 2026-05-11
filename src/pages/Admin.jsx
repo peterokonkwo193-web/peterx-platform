@@ -374,56 +374,88 @@ const Admin = () => {
             )}
 
             {activeTab === 'verifications' && (
-              <div className="divide-y divide-white/5">
+              <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pendingTransactions.length === 0 ? (
-                  <div className="p-20 text-center space-y-4">
+                  <div className="col-span-full py-20 text-center space-y-4">
                     <span className="material-symbols-outlined text-4xl text-zinc-800">check_circle</span>
                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Queue Clear: All payments verified</p>
                   </div>
                 ) : (
-                  pendingTransactions.map((tx) => (
-                    <div key={tx.id} className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-white/[0.02] transition-all">
-                       <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-success/10 flex items-center justify-center text-success border border-success/20">
-                             <span className="material-symbols-outlined">payments</span>
+                  pendingTransactions.map((tx) => {
+                    const isNew = new Date().getTime() - new Date(tx.created_at).getTime() < 60000;
+                    return (
+                      <Card 
+                        key={tx.id} 
+                        className={cn(
+                          "p-6 citadel-card transition-all relative overflow-hidden group",
+                          isNew ? "border-primary shadow-[0_0_20px_rgba(252,213,53,0.15)]" : "border-white/5"
+                        )}
+                        glass
+                      >
+                        {isNew && (
+                          <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+                        )}
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                              <span className="material-symbols-outlined text-primary text-2xl">account_balance_wallet</span>
+                            </div>
+                            <div>
+                              <h3 className="text-white font-black uppercase tracking-tight text-lg">{tx.profiles?.full_name || 'Anonymous User'}</h3>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{tx.profiles?.email}</span>
+                                {isNew && <span className="px-2 py-0.5 bg-primary text-black text-[8px] font-black rounded uppercase animate-pulse">New</span>}
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                             <h4 className="text-sm font-black text-white uppercase tracking-tight">{tx.profiles?.full_name || 'Anonymous User'}</h4>
-                             <div className="flex items-center gap-2 mt-1">
-                                <span className="px-1.5 py-0.5 bg-white/5 rounded text-[8px] font-black text-zinc-500 uppercase tracking-widest border border-white/10">{tx.asset} • {tx.type}</span>
-                                <span className="text-[10px] font-mono text-primary">{tx.client_tx_id || 'VAULT_REF'}</span>
-                             </div>
+                          <div className="text-right">
+                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Status</span>
+                            <span className="px-2 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-lg border border-primary/20 uppercase tracking-widest animate-pulse">Waiting</span>
                           </div>
-                       </div>
+                        </div>
 
-                       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4">
-                          <div className="relative group">
-                             <input 
-                               type="number"
-                               placeholder="Received Amount"
-                               className="w-full md:w-32 bg-black border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-primary transition-all shadow-inner"
-                               value={verifyAmount[tx.id] || ''}
-                               onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
-                             />
-                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-zinc-700 uppercase tracking-widest pointer-events-none">{tx.asset}</span>
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                          <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                            <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Ref ID</span>
+                            <span className="text-xs font-mono font-black text-white uppercase tracking-tighter">{tx.client_tx_id || 'N/A'}</span>
                           </div>
-                          <div className="flex gap-2">
-                             <button 
-                               onClick={() => handleVerify(tx.id, 'Completed')} 
-                               className="flex-1 md:flex-none px-6 py-2.5 bg-success text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl"
-                             >
-                               Approve
-                             </button>
-                             <button 
-                               onClick={() => handleVerify(tx.id, 'Rejected')} 
-                               className="px-4 py-2.5 bg-white/5 text-error text-[10px] font-black uppercase tracking-widest rounded-xl border border-error/20 hover:bg-error/10 transition-all"
-                             >
-                               Decline
-                             </button>
+                          <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                            <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Asset</span>
+                            <span className="text-xs font-black text-primary uppercase tracking-tighter">{tx.asset}</span>
                           </div>
-                       </div>
-                    </div>
-                  ))
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-black text-sm">$</span>
+                            <input
+                              type="number"
+                              placeholder="Amount Received"
+                              className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-10 pr-4 text-white font-black text-lg focus:outline-none focus:border-primary/50 transition-all placeholder:text-zinc-700"
+                              value={verifyAmount[tx.id] || ''}
+                              onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
+                            />
+                          </div>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => handleVerify(tx.id, 'Completed', tx.user_id)}
+                              disabled={processingId === tx.id}
+                              className="flex-1 bg-primary text-black font-black uppercase tracking-widest py-3.5 rounded-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(252,213,53,0.1)] disabled:opacity-50"
+                            >
+                              <span className="material-symbols-outlined font-black text-sm">check_circle</span>
+                              {processingId === tx.id ? 'Wait..' : 'Approve'}
+                            </button>
+                            <button
+                              onClick={() => handleVerify(tx.id, 'Rejected')}
+                              className="px-5 bg-white/5 text-zinc-500 font-black uppercase tracking-widest py-3.5 rounded-xl hover:bg-error/10 hover:text-error border border-white/10 hover:border-error/20 transition-all active:scale-95"
+                            >
+                              <span className="material-symbols-outlined font-black text-sm">cancel</span>
+                            </button>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })
                 )}
               </div>
             )}
