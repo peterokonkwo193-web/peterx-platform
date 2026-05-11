@@ -270,7 +270,7 @@ const Admin = () => {
                 { label: 'Total Accounts', val: users.length, color: 'text-primary', icon: 'group' },
                 { label: 'Protocol TVL', val: formatPrice(treasuryMetrics.totalBalance), color: 'text-white', icon: 'account_balance_wallet' },
                 { label: 'Pending Payouts', val: pendingPayouts.length, color: 'text-error', icon: 'payments' },
-                { label: 'Active Nodes', val: '14/14', color: 'text-success', icon: 'hub' },
+                { label: 'Pending Deposits', val: pendingTransactions.length, color: 'text-success', icon: 'history_edu' },
               ].map((stat, i) => (
                 <div key={i} className="p-4 citadel-card bg-white/[0.02] min-w-[160px]">
                    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-1">{stat.label}</span>
@@ -369,52 +369,58 @@ const Admin = () => {
             )}
 
             {activeTab === 'verifications' && (
-              <table className="w-full text-left">
-                <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
-                  <tr>
-                    <th className="px-6 py-4">Client</th>
-                    <th className="px-6 py-4">Asset/Type</th>
-                    <th className="px-6 py-4">Protocol Hash</th>
-                    <th className="px-6 py-4 text-right">Execution</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 text-[11px] font-mono">
-                  {pendingTransactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="px-6 py-4 text-white font-black">{tx.profiles?.full_name}</td>
-                      <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-success/10 text-success rounded text-[9px] font-black uppercase border border-success/20">{tx.asset} • {tx.type}</span>
-                      </td>
-                      <td className="px-6 py-4 text-zinc-600">{tx.client_tx_id || 'INTERNAL'}</td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <input 
-                            type="number"
-                            placeholder="Amt"
-                            className="w-20 bg-black/40 border border-white/10 rounded px-2 py-1 text-[10px] text-white outline-none focus:border-primary"
-                            value={verifyAmount[tx.id] || ''}
-                            onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
-                          />
-                          <button 
-                            onClick={() => handleVerify(tx.id, 'Completed')} 
-                            className="p-2 bg-success/10 text-success rounded-lg border border-success/20 hover:bg-success hover:text-black transition-all flex items-center justify-center"
-                            title="Accept Payment"
-                          >
-                             <span className="material-symbols-outlined text-sm">check</span>
-                          </button>
-                          <button 
-                            onClick={() => handleVerify(tx.id, 'Rejected')} 
-                            className="p-2 bg-error/10 text-error rounded-lg border border-error/20 hover:bg-error hover:text-black transition-all flex items-center justify-center"
-                            title="Decline Payment"
-                          >
-                             <span className="material-symbols-outlined text-sm">close</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="divide-y divide-white/5">
+                {pendingTransactions.length === 0 ? (
+                  <div className="p-20 text-center space-y-4">
+                    <span className="material-symbols-outlined text-4xl text-zinc-800">check_circle</span>
+                    <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Queue Clear: All payments verified</p>
+                  </div>
+                ) : (
+                  pendingTransactions.map((tx) => (
+                    <div key={tx.id} className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-white/[0.02] transition-all">
+                       <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-success/10 flex items-center justify-center text-success border border-success/20">
+                             <span className="material-symbols-outlined">payments</span>
+                          </div>
+                          <div>
+                             <h4 className="text-sm font-black text-white uppercase tracking-tight">{tx.profiles?.full_name || 'Anonymous User'}</h4>
+                             <div className="flex items-center gap-2 mt-1">
+                                <span className="px-1.5 py-0.5 bg-white/5 rounded text-[8px] font-black text-zinc-500 uppercase tracking-widest border border-white/10">{tx.asset} • {tx.type}</span>
+                                <span className="text-[10px] font-mono text-primary">{tx.client_tx_id || 'VAULT_REF'}</span>
+                             </div>
+                          </div>
+                       </div>
+
+                       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+                          <div className="relative group">
+                             <input 
+                               type="number"
+                               placeholder="Received Amount"
+                               className="w-full md:w-32 bg-black border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-primary transition-all shadow-inner"
+                               value={verifyAmount[tx.id] || ''}
+                               onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
+                             />
+                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-zinc-700 uppercase tracking-widest pointer-events-none">{tx.asset}</span>
+                          </div>
+                          <div className="flex gap-2">
+                             <button 
+                               onClick={() => handleVerify(tx.id, 'Completed')} 
+                               className="flex-1 md:flex-none px-6 py-2.5 bg-success text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+                             >
+                               Approve
+                             </button>
+                             <button 
+                               onClick={() => handleVerify(tx.id, 'Rejected')} 
+                               className="px-4 py-2.5 bg-white/5 text-error text-[10px] font-black uppercase tracking-widest rounded-xl border border-error/20 hover:bg-error/10 transition-all"
+                             >
+                               Decline
+                             </button>
+                          </div>
+                       </div>
+                    </div>
+                  ))
+                )}
+              </div>
             )}
 
             {activeTab === 'payouts' && (
