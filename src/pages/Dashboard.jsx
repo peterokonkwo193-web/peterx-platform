@@ -80,6 +80,20 @@ const Dashboard = () => {
     return total;
   };
 
+  const calculateTotalProfit = () => {
+    if (!investments) return 0;
+    const now = new Date().getTime();
+    return investments.reduce((sum, inv) => {
+      if (inv.status !== 'Active') return sum;
+      const start = new Date(inv.start_date).getTime();
+      const end = new Date(inv.end_date).getTime();
+      const totalDuration = end - start;
+      const elapsed = Math.max(0, now - start);
+      const progress = Math.min(1, elapsed / totalDuration);
+      return sum + (inv.expected_profit * progress);
+    }, 0);
+  };
+
   const chartData = useMemo(() => {
     return generateMockOHLC(selectedChartCoin?.current_price || 50000);
   }, [selectedChartCoin]);
@@ -123,21 +137,33 @@ const Dashboard = () => {
                     <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Global: Online</span>
                  </div>
               </div>
-              <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">My <span className="text-primary italic">Dashboard</span></h1>
+              <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter uppercase leading-[0.9]">My <span className="text-primary italic">Dashboard</span></h1>
            </div>
            
-           <div className="flex flex-wrap gap-4 md:gap-6 w-full lg:w-auto">
-              <div className="flex-1 lg:flex-none p-6 md:p-8 citadel-card bg-primary/5 border-primary/10 min-w-[250px] md:min-w-[320px] relative overflow-hidden group">
-                 <div className="absolute right-0 top-0 w-32 h-32 bg-primary/10 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
-                 <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-3">Total Balance</span>
-                 <div className="flex items-baseline gap-4 relative z-10">
-                    <span className="text-3xl md:text-4xl font-black text-white tracking-tighter leading-none">{formatPrice(portfolioValue)}</span>
-                    <div className="flex items-center gap-1 text-success">
-                       <span className="material-symbols-outlined text-sm font-black">trending_up</span>
-                       <span className="text-sm font-black tracking-tighter">+8.42%</span>
-                    </div>
-                 </div>
-              </div>
+            <div className="flex flex-wrap gap-4 md:gap-6 w-full lg:w-auto">
+               <div className="flex-1 lg:flex-none p-6 md:p-8 citadel-card bg-white/[0.02] border border-white/5 min-w-[250px] md:min-w-[300px] relative overflow-hidden group">
+                  <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-3">Total Balance</span>
+                  <div className="flex items-baseline gap-4 relative z-10">
+                     <span className="text-3xl md:text-4xl font-bold text-white tracking-tighter leading-none">{formatPrice(portfolioValue)}</span>
+                     <div className="flex items-center gap-1 text-success">
+                        <span className="material-symbols-outlined text-sm font-bold">trending_up</span>
+                        <span className="text-sm font-bold tracking-tighter">+8.42%</span>
+                     </div>
+                  </div>
+               </div>
+
+               <div className="flex-1 lg:flex-none p-6 md:p-8 citadel-card bg-primary/5 border-primary/10 min-w-[250px] md:min-w-[300px] relative overflow-hidden group">
+                  <div className="absolute right-0 top-0 w-32 h-32 bg-primary/10 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
+                  <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest block mb-3">Profit Earnings</span>
+                  <div className="flex items-baseline gap-4 relative z-10">
+                     <span className="text-3xl md:text-4xl font-bold text-success tracking-tighter leading-none">+{formatPrice(calculateTotalProfit())}</span>
+                     <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></div>
+                        <span className="text-[10px] font-bold text-success uppercase tracking-widest">Live</span>
+                     </div>
+                  </div>
+               </div>
 
               <div className="flex gap-4">
                  <motion.button 

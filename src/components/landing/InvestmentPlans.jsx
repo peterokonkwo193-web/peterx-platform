@@ -64,7 +64,7 @@ const InvestmentPlans = ({ onSupport }) => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-[12px] font-black text-primary uppercase tracking-[0.5em] block"
+            className="text-[10px] font-bold text-primary uppercase tracking-[0.5em] block"
           >
             Live Investments
           </motion.span>
@@ -73,7 +73,7 @@ const InvestmentPlans = ({ onSupport }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-[84px] font-black text-white tracking-tighter leading-tight md:leading-[0.9] uppercase"
+            className="text-4xl md:text-[72px] font-bold text-white tracking-tighter leading-tight md:leading-[0.9] uppercase"
           >
             Investment <span className="text-primary italic">Yield</span> Strategies
           </motion.h2>
@@ -124,8 +124,8 @@ const InvestmentPlans = ({ onSupport }) => {
                 </button>
 
                 {plan.recommended && (
-                  <div className="absolute top-8 right-8 px-5 py-2 bg-primary rounded-xl z-20 shadow-[0_0_15px_rgba(252,213,53,0.3)]">
-                    <span className="text-[10px] font-black text-black uppercase tracking-widest">Recommended</span>
+                  <div className="absolute top-8 right-8 px-4 py-1.5 bg-primary rounded-xl z-20 shadow-[0_0_15px_rgba(252,213,53,0.3)]">
+                    <span className="text-[9px] font-bold text-black uppercase tracking-widest">Recommended</span>
                   </div>
                 )}
 
@@ -135,24 +135,24 @@ const InvestmentPlans = ({ onSupport }) => {
                   </span>
                 </div>
 
-                <h3 className="relative z-10 text-xl font-black text-white uppercase tracking-tight mb-3">
+                <h3 className="relative z-10 text-lg font-bold text-white uppercase tracking-tight mb-3">
                   {plan.name}
                 </h3>
                 
                 <div className="relative z-10 flex flex-col items-center mb-5 md:mb-8">
-                  <span className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-2">Projected Profit</span>
-                  <span className="text-3xl md:text-4xl font-black text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
+                  <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-[0.4em] mb-2">Projected Profit</span>
+                  <span className="text-2xl md:text-3xl font-bold text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
                 </div>
 
                 <div className="relative z-10 w-full p-4 md:p-5 bg-black/40 border border-white/5 rounded-xl md:rounded-[20px] mb-6 md:mb-8 space-y-3 md:space-y-4 backdrop-blur-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Duration</span>
-                    <span className="text-xs text-white font-black uppercase tracking-widest">{plan.duration} Days</span>
+                    <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Duration</span>
+                    <span className="text-xs text-white font-bold uppercase tracking-widest">{plan.duration} Days</span>
                   </div>
                   <div className="h-px bg-white/5 w-full"></div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Min Deposit</span>
-                    <span className="text-xs text-white font-black tracking-widest font-mono">{formatPrice(plan.range)}</span>
+                    <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Min Deposit</span>
+                    <span className="text-xs text-white font-bold tracking-widest font-mono">{formatPrice(plan.range)}</span>
                   </div>
                 </div>
 
@@ -167,7 +167,7 @@ const InvestmentPlans = ({ onSupport }) => {
 
                 <Link 
                   to="/deposit" 
-                  className="relative z-10 w-full py-6 bg-white/[0.03] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] text-white hover:bg-primary hover:text-black hover:border-primary transition-all shadow-2xl group-hover:scale-105"
+                  className="relative z-10 w-full py-5 bg-white/[0.03] border border-white/10 rounded-2xl text-[10px] font-bold uppercase tracking-[0.4em] text-white hover:bg-primary hover:text-black hover:border-primary transition-all shadow-2xl group-hover:scale-105 text-center"
                 >
                   Invest Now
                 </Link>

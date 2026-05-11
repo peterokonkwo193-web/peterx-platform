@@ -71,7 +71,7 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
               </span>
             </div>
             <div>
-              <h3 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase leading-[1.1] mb-2">{plan.name}</h3>
+              <h3 className="text-lg md:text-xl font-bold text-white tracking-tighter uppercase leading-[1.1] mb-2">{plan.name}</h3>
               <div className="flex items-center gap-3">
                  <div className="flex gap-1">
                     {[...Array(5)].map((_, i) => (
@@ -85,23 +85,23 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
 
           <div className="space-y-6 md:space-y-8">
             <div className="relative">
-              <span className="text-[9px] text-zinc-700 uppercase font-black tracking-[0.4em] block mb-2">Min Deposit</span>
+              <span className="text-[8px] text-zinc-700 uppercase font-bold tracking-[0.4em] block mb-2">Min Deposit</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl md:text-4xl font-black text-white tracking-tighter leading-none">
+                <span className="text-2xl md:text-3xl font-bold text-white tracking-tighter leading-none">
                   {formatPrice(plan.range)}
                 </span>
-                <span className="text-[9px] text-zinc-700 font-black uppercase tracking-[0.3em]">Min</span>
+                <span className="text-[8px] text-zinc-700 font-bold uppercase tracking-[0.3em]">Min</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 md:gap-3">
               <div className="p-3 md:p-4 bg-white/[0.02] border border-white/5 rounded-xl flex flex-col gap-1 shadow-inner group-hover:border-white/10 transition-all">
-                <span className="text-[8px] text-zinc-600 font-black uppercase tracking-[0.3em]">Duration</span>
-                <span className="text-xs font-black text-white uppercase tracking-tighter">{plan.duration} Days</span>
+                <span className="text-[8px] text-zinc-600 font-bold uppercase tracking-[0.3em]">Duration</span>
+                <span className="text-xs font-bold text-white uppercase tracking-tighter">{plan.duration} Days</span>
               </div>
               <div className="p-3 md:p-4 bg-success/5 border border-success/10 rounded-xl flex flex-col gap-1 shadow-inner group-hover:border-success/20 transition-all">
-                <span className="text-[8px] text-success/60 font-black uppercase tracking-[0.3em]">Profit</span>
-                <span className="text-xs font-black text-success uppercase tracking-tighter">+{plan.roi}%</span>
+                <span className="text-[8px] text-success/60 font-bold uppercase tracking-[0.3em]">Profit</span>
+                <span className="text-xs font-bold text-success uppercase tracking-tighter">+{plan.roi}%</span>
               </div>
             </div>
           </div>
@@ -109,9 +109,9 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
 
         {/* ROI FORECAST MATRIX */}
          <div className="mb-12 relative z-10">
-            <div className="flex justify-between items-end mb-4">
-               <span className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em]">Projected Profit</span>
-               <span className="text-xs font-black text-zinc-400 font-mono tracking-tighter">+{plan.roi}%</span>
+             <div className="flex justify-between items-end mb-4">
+               <span className="text-[9px] text-zinc-700 font-bold uppercase tracking-[0.4em]">Projected Profit</span>
+               <span className="text-xs font-bold text-zinc-400 font-mono tracking-tighter">+{plan.roi}%</span>
             </div>
            <div className="h-2 bg-black rounded-full overflow-hidden border border-white/5 p-[1px] shadow-inner">
               <motion.div 
@@ -131,28 +131,28 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
 
         <div className="mt-auto relative z-10 pt-10 border-t border-white/5 space-y-10">
           <ul className="space-y-4">
-            {plan.features.map((feature, index) => (
-              <li key={index} className="flex items-center gap-4 text-[11px] text-zinc-500 font-black uppercase tracking-widest group/li">
+               {plan.features?.map((feature, index) => (
+               <li key={index} className="flex items-center gap-4 text-[10px] text-zinc-500 font-bold uppercase tracking-widest group/li">
                 <div className={cn(
-                  "w-2 h-2 rounded-full transition-all duration-300",
+                  "w-1.5 h-1.5 rounded-full transition-all duration-300",
                   isRecommended ? "bg-primary shadow-[0_0_8px_rgba(252,213,53,0.5)]" : "bg-zinc-800 group-hover/li:bg-zinc-400"
                 )}></div>
                 {feature}
               </li>
-            ))}
+              ))}
           </ul>
 
           <div className="relative">
-             <Button 
-               variant={isRecommended ? "primary" : "outline"} 
-               className={cn(
-                 "w-full py-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.5em] transition-all duration-500 relative z-10 shadow-2xl",
-                 isRecommended ? "shadow-primary/30" : "bg-white/[0.02] border-white/10 hover:border-primary hover:text-primary hover:bg-primary/5"
-               )}
-               onClick={() => onInvest(plan)}
-             >
-               Invest Now
-             </Button>
+              <Button 
+                variant={isRecommended ? "primary" : "outline"} 
+                className={cn(
+                  "w-full py-5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.5em] transition-all duration-500 relative z-10 shadow-2xl",
+                  isRecommended ? "shadow-primary/30" : "bg-white/[0.02] border-white/10 hover:border-primary hover:text-primary hover:bg-primary/5"
+                )}
+                onClick={() => onInvest(plan)}
+              >
+                Invest Now
+              </Button>
              {isRecommended && (
                <motion.div 
                  animate={{ opacity: [0, 1, 0] }}
