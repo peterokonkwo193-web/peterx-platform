@@ -130,7 +130,7 @@ const Wallet = () => {
     <DashboardLayout>
       <div className="space-y-16 relative max-w-[1600px] mx-auto pb-32 pt-8">
         
-        {/* INSTITUTIONAL STATUS TICKER */}
+        {/* STATUS TICKER */}
         <div className="fixed top-[112px] left-0 w-full z-30 pointer-events-none">
           <div className="bg-[#0a0a0a]/80 backdrop-blur-3xl border-y border-white/[0.03] h-12 flex items-center overflow-hidden">
             <div className="flex gap-16 animate-marquee whitespace-nowrap px-12 items-center">
@@ -165,7 +165,7 @@ const Wallet = () => {
                     <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl w-fit">Wallet Overview</div>
                     <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9]">My <span className="text-primary italic">Assets</span></h1>
                  </div>
-                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Protocol v4.0</span>
+                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Platform v4.0</span>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -319,7 +319,7 @@ const Wallet = () => {
           </Card>
         </div>
 
-        {/* ACTION MODAL - FINALIZED FOR INSTITUTIONAL CLEARANCE */}
+        {/* ACTION MODAL */}
         <AnimatePresence>
           {actionModal && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
@@ -337,7 +337,7 @@ const Wallet = () => {
                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                         <span className="material-symbols-outlined">{actionModal === 'Withdraw' ? 'outbox' : 'sync_alt'}</span>
                      </div>
-                     <h2 className="text-xl font-black text-white uppercase tracking-tighter">Institutional {actionModal}</h2>
+                     <h2 className="text-xl font-black text-white uppercase tracking-tighter">{actionModal} Funds</h2>
                   </div>
                   <button onClick={() => setActionModal(null)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 hover:text-white transition-all">
                     <span className="material-symbols-outlined">close</span>
@@ -348,7 +348,7 @@ const Wallet = () => {
                   {step === 1 && (
                     <div className="space-y-8">
                        <div className="space-y-4">
-                          <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Strategy Asset</label>
+                          <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Select Asset</label>
                           <select 
                             value={selectedCoin} 
                             onChange={(e) => setSelectedCoin(e.target.value)}
@@ -359,19 +359,19 @@ const Wallet = () => {
                        </div>
 
                        <div className="space-y-4">
-                          <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Destination Reference</label>
+                          <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Destination Address</label>
                           <input 
                             type="text"
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
-                            placeholder={actionModal === 'Withdraw' ? "Enter Secure Vault Address" : "Enter Recipient UID"}
+                            placeholder={actionModal === 'Withdraw' ? "Enter Address" : "Enter Recipient UID"}
                             className="w-full bg-black border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all placeholder:text-zinc-800"
                           />
                        </div>
 
                        <div className="space-y-4">
                           <div className="flex justify-between items-center">
-                             <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">Quantum Allocation</label>
+                             <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">Amount to Transfer</label>
                              <span className="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Max: {parseFloat(profile?.usd_balance || 0).toLocaleString()}</span>
                           </div>
                           <div className="relative">
@@ -396,17 +396,17 @@ const Wallet = () => {
                           <span className="material-symbols-outlined text-5xl">verified_user</span>
                        </div>
                        <div className="space-y-4">
-                          <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Protocol Verification</h3>
-                          <p className="text-zinc-500 text-sm font-medium">Verify the quantum allocation before signing the clearance. This action is immutable once initiated.</p>
+                          <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Verify Transaction</h3>
+                          <p className="text-zinc-500 text-sm font-medium">Verify the amount before signing. This action is immutable once initiated.</p>
                        </div>
                        <div className="p-8 bg-black border border-white/5 rounded-[32px] space-y-4 text-left">
                           <div className="flex justify-between items-center">
-                             <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Asset Quantum</span>
+                             <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Amount</span>
                              <span className="text-sm font-black text-white uppercase tracking-widest">{amount} {selectedCoin}</span>
                           </div>
                           <div className="h-px bg-white/5 w-full"></div>
                           <div className="flex justify-between items-center">
-                             <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Target Vault</span>
+                             <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Target Address</span>
                              <span className="text-sm font-black text-white uppercase tracking-widest truncate ml-10">{address}</span>
                           </div>
                        </div>
@@ -423,10 +423,10 @@ const Wallet = () => {
                           <span className="material-symbols-outlined text-5xl">verified</span>
                        </div>
                        <div className="space-y-4">
-                          <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Execution <span className="text-primary italic">Cleared</span></h3>
-                          <p className="text-zinc-500 text-sm font-medium">Protocol settlement initiated. The transaction has been broadcast to the institutional nodes.</p>
+                          <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Transfer <span className="text-primary italic">Initiated</span></h3>
+                          <p className="text-zinc-500 text-sm font-medium">Transaction initiated. It will be processed shortly.</p>
                        </div>
-                       <button onClick={() => setActionModal(null)} className="w-full py-5 bg-white/[0.03] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest">Return to Command Center</button>
+                       <button onClick={() => setActionModal(null)} className="w-full py-5 bg-white/[0.03] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest">Return to Wallet</button>
                     </div>
                   )}
                 </div>

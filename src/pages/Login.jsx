@@ -82,10 +82,10 @@ const Login = ({ isSignUp = false }) => {
           
           <div className="space-y-6 max-w-lg">
             <h2 className="text-5xl font-black text-white leading-tight tracking-tighter">
-              The Sovereign <span className="text-primary">Standard</span> for Digital Asset Management.
+              The <span className="text-primary">Standard</span> for Modern Asset Management.
             </h2>
             <p className="text-lg text-zinc-400 leading-relaxed font-medium">
-              Access institutional-grade liquidity, secure multi-sig custody, and advanced trading protocols through our crystal-glass interface.
+              Access premium liquidity, secure custody, and advanced trading protocols through our crystal-glass interface.
             </p>
             
             <div className="flex items-center gap-8 pt-8">
@@ -112,10 +112,10 @@ const Login = ({ isSignUp = false }) => {
           <Card className="citadel-card w-full max-w-md p-10 relative overflow-hidden" glass>
             <div className="mb-10 text-center lg:text-left">
               <h3 className="text-2xl font-black text-white tracking-tight uppercase">
-                {isSignUp ? 'Initialize Protocol' : 'Access Terminal'}
+                {isSignUp ? 'Create Account' : 'Access Terminal'}
               </h3>
               <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-2">
-                {isSignUp ? 'Create your institutional account' : 'Verify credentials to enter environment'}
+                {isSignUp ? 'Create your professional account' : 'Verify credentials to enter environment'}
               </p>
             </div>
             
@@ -238,7 +238,7 @@ const Login = ({ isSignUp = false }) => {
                 <div className="w-full border-t border-white/5"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="px-4 bg-[#0a0a0a] text-zinc-600 font-black text-[9px] tracking-widest uppercase">Institutional Bridges</span>
+                <span className="px-4 bg-[#0a0a0a] text-zinc-600 font-black text-[9px] tracking-widest uppercase">Quick Connect</span>
               </div>
             </div>
 
@@ -257,7 +257,7 @@ const Login = ({ isSignUp = false }) => {
                 </button>
               ) : (
                 <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
-                  {isSignUp ? 'Already authenticated?' : "New Institutional Client?"}
+                  {isSignUp ? 'Already have an account?' : "New here?"}
                   <Link 
                     className="text-primary font-black hover:text-white transition-colors ml-2" 
                     to={isSignUp ? "/login" : "/signup"}

@@ -99,7 +99,7 @@ const TradingTerminal = () => {
       const marginRequiredUsd = tradingMode === 'futures' ? totalPositionValueUsd / leverage : totalPositionValueUsd;
       
       const usdBalance = parseFloat(profile?.usd_balance || 0);
-      if (marginRequiredUsd > usdBalance) throw new Error('Insufficient Institutional Liquidity');
+      if (marginRequiredUsd > usdBalance) throw new Error('Insufficient Account Balance');
 
       if (tradingMode === 'futures') {
         const liqPriceUsd = tradeType === 'buy' 
@@ -118,10 +118,10 @@ const TradingTerminal = () => {
         });
 
         await updateProfileBalance(user.id, usdBalance - marginRequiredUsd);
-        alert(`Institutional ${leverage}x ${tradeType === 'buy' ? 'Long' : 'Short'} opened successfully.`);
+        alert(`Professional ${leverage}x ${tradeType === 'buy' ? 'Long' : 'Short'} opened successfully.`);
       } else {
         // Spot Logic (simplified for this update)
-        alert('Spot execution protocol active.');
+        alert('Spot execution active.');
       }
       setAmount('');
     } catch (error) {
@@ -175,7 +175,7 @@ const TradingTerminal = () => {
         <main className="flex-1 grid grid-cols-12 -mx-12 overflow-hidden">
           {/* Order Book */}
           <section className="col-span-12 lg:col-span-2 border-r border-white/5 bg-zinc-950/30 flex flex-col p-4 overflow-hidden">
-             <h3 className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-4">Institutional Order Book</h3>
+             <h3 className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-4">Live Order Book</h3>
              <div className="flex-1 font-mono text-[9px] space-y-0.5">
                 <div className="text-error opacity-60 flex flex-col-reverse">
                    {[...Array(12)].map((_, i) => (
@@ -329,12 +329,12 @@ const TradingTerminal = () => {
                   onClick={handleTrade}
                   disabled={executing || !amount}
                 >
-                  {executing ? 'Securing Protocol...' : `Execute Institutional ${tradeType === 'buy' ? 'Long' : 'Short'}`}
+                  {executing ? 'Processing...' : `Execute ${tradeType === 'buy' ? 'Long' : 'Short'} Position`}
                 </Button>
              </div>
 
              <div className="text-[9px] text-zinc-600 font-black uppercase tracking-widest text-center leading-relaxed">
-                Equity Citadel Institutional Protocol Fee: <span className="text-zinc-400">0.01% Maker / 0.02% Taker</span>
+                 Equity Citadel Platform Fee: <span className="text-zinc-400">0.01% Maker / 0.02% Taker</span>
              </div>
           </section>
         </main>

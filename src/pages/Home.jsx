@@ -123,7 +123,7 @@ const Home = () => {
           >
             <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/[0.02] border border-white/10 backdrop-blur-xl mb-6 shadow-2xl">
                <span className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_15px_rgba(252,213,53,0.5)]"></span>
-               <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Institutional Clearance Level 4 Active</span>
+               <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Platform Security Level 4 Active</span>
             </div>
             
             <h1 className="text-[40px] sm:text-[60px] md:text-[110px] font-black leading-[0.95] tracking-tighter text-white">
@@ -149,7 +149,7 @@ const Home = () => {
             </div>
           </motion.div>
 
-          {/* Institutional Stats Board */}
+          {/* Platform Stats Board */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -172,7 +172,7 @@ const Home = () => {
            <div className="max-w-7xl mx-auto">
               <div className="text-center mb-32 space-y-4">
                  <span className="text-[11px] font-black text-primary uppercase tracking-[0.5em]">The Settlement Protocol</span>
-                 <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter">Onboarding Sovereign Capital</h2>
+                 <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter">Onboarding Your Assets</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-10 relative">
@@ -234,25 +234,22 @@ const Home = () => {
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent pointer-events-none"></div>
                     <div className="absolute bottom-12 left-12 p-8 bg-black/60 backdrop-blur-xl border border-white/5 rounded-3xl max-w-sm pointer-events-none shadow-2xl">
-                       <p className="text-sm font-medium text-zinc-400 mb-4 italic leading-relaxed">"The latency is unmatched. Equity Citadel is the only terminal we trust for our high-frequency institutional desk."</p>
-                       <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/20 flex items-center justify-center text-primary text-[10px] font-black">C</div>
-                          <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Head of Trading, Citadel Capital</p>
-                       </div>
-                    </div>
-                 </Card>
-              </div>
-           </div>
-        </section>
-
-        {/* NETWORK ACTIVITY */}
-        <section className="py-24 md:py-32 px-6 relative overflow-hidden">
-           <div className="max-w-7xl mx-auto">
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 md:mb-16 gap-6">
-                 <div>
-                    <h3 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase">Protocol Live Feed</h3>
-                    <p className="text-[9px] md:text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Real-time institutional activity logs</p>
-                 </div>
+                           <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Senior Portfolio Manager</p>
+                        </div>
+                     </div>
+                  </Card>
+               </div>
+            </div>
+         </section>
+ 
+         {/* NETWORK ACTIVITY */}
+         <section className="py-24 md:py-32 px-6 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto">
+               <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 md:mb-16 gap-6">
+                  <div>
+                     <h3 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase">Protocol Live Feed</h3>
+                     <p className="text-[9px] md:text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Real-time platform activity logs</p>
+                  </div>
                  <div className="flex items-center gap-2 px-4 py-2 bg-success/5 border border-success/20 rounded-full w-fit">
                     <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse shadow-[0_0_10px_var(--color-success)]"></span>
                     <span className="text-[9px] uppercase tracking-widest font-black text-success">Synchronized</span>
@@ -299,10 +296,10 @@ const Home = () => {
            <Card className="max-w-5xl mx-auto p-20 md:p-32 rounded-[60px] citadel-card relative overflow-hidden shadow-2xl" glass>
               <div className="relative z-10 space-y-10">
                  <h2 className="text-[56px] md:text-[84px] font-black text-white tracking-tighter leading-[0.9]">The Future of Finance is <span className="text-primary italic">Here.</span></h2>
-                 <p className="text-lg md:text-2xl text-zinc-400 font-medium max-w-3xl mx-auto leading-relaxed">Join 1,400+ elite institutions already leveraging the Equity Citadel infrastructure for sovereign capital growth.</p>
+                 <p className="text-lg md:text-2xl text-zinc-400 font-medium max-w-3xl mx-auto leading-relaxed">Join 1,400+ elite traders already leveraging the Equity Citadel infrastructure for capital growth.</p>
                  <div className="pt-10">
                     <Link to="/signup">
-                       <Button className="px-16 py-7 text-xs font-black uppercase tracking-[0.4em] shadow-2xl bg-primary text-black hover:scale-110 transition-all">Create Institutional Account</Button>
+                       <Button className="px-16 py-7 text-xs font-black uppercase tracking-[0.4em] shadow-2xl bg-primary text-black hover:scale-110 transition-all">Create Account Now</Button>
                     </Link>
                  </div>
                  <div className="flex justify-center items-center gap-8 pt-8">
@@ -324,7 +321,7 @@ const Home = () => {
                </div>
                <span className="text-2xl font-black tracking-tighter text-white uppercase">EQUITY CITADEL</span>
              </div>
-             <p className="text-sm text-zinc-500 font-medium leading-relaxed max-w-md">Redefining the architecture of sovereign capital. Our multi-layer infrastructure provides the security, speed, and liquidity required for the modern institutional era.</p>
+             <p className="text-sm text-zinc-500 font-medium leading-relaxed max-w-md">Redefining the architecture of digital wealth. Our multi-layer infrastructure provides the security, speed, and liquidity required for the modern trading era.</p>
           </div>
           
           <div className="grid grid-cols-2 gap-12 md:col-span-2">
@@ -339,7 +336,7 @@ const Home = () => {
             <a href="#" className="hover:text-primary transition-all">Privacy</a>
             <a href="#" className="hover:text-primary transition-all">Terms</a>
             <a href="#" className="hover:text-primary transition-all">Risk</a>
-            <Link to="/admin" className="text-primary hover:text-white transition-all border-l border-white/10 pl-10">Institutional Access</Link>
+            <Link to="/admin" className="text-primary hover:text-white transition-all border-l border-white/10 pl-10">Admin Access</Link>
           </div>
         </div>
       </footer>

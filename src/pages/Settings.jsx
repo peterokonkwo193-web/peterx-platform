@@ -184,16 +184,16 @@ const Settings = () => {
         
         <header className="mb-16">
           <div className="flex flex-wrap items-center gap-4 mb-6">
-             <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Institutional Control</div>
+             <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Advanced Settings</div>
              <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Protocol v4.0 Active</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">Management <span className="text-primary italic">Suite</span></h1>
-          <p className="text-zinc-500 mt-6 text-lg max-w-2xl font-medium leading-relaxed">Configure your high-security sovereign protocols and verify institutional identity parameters.</p>
+          <p className="text-zinc-500 mt-6 text-lg max-w-2xl font-medium leading-relaxed">Configure your high-security account protocols and verify identity parameters.</p>
         </header>
 
         <div className="flex flex-col lg:flex-row gap-16">
           
-          {/* Institutional Navigation Sidebar */}
+          {/* Settings Sidebar */}
           <div className="w-full lg:w-80 flex-shrink-0">
             <div className="sticky top-32 space-y-10">
               <nav className="space-y-2">
@@ -226,7 +226,7 @@ const Settings = () => {
                     <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                        <div className="h-full w-[85%] bg-primary shadow-[0_0_10px_rgba(252,213,53,0.3)]"></div>
                     </div>
-                    <p className="text-[10px] text-zinc-600 leading-relaxed font-bold uppercase tracking-widest">Enable 2FA to achieve Level 5 sovereign status.</p>
+                    <p className="text-[10px] text-zinc-600 leading-relaxed font-bold uppercase tracking-widest">Enable 2FA to achieve Level 5 security status.</p>
                  </div>
               </div>
             </div>
@@ -260,38 +260,38 @@ const Settings = () => {
                               <p className="text-sm text-zinc-600 font-mono mt-3 uppercase tracking-widest">{user?.email}</p>
                               <div className="flex gap-3 mt-6">
                                  <span className="px-4 py-1.5 bg-success/10 text-success text-[9px] font-black uppercase tracking-widest rounded-lg border border-success/10">Identity Verified</span>
-                                 <span className="px-4 py-1.5 bg-white/5 text-zinc-500 text-[9px] font-black uppercase tracking-widest rounded-lg border border-white/5">Tier 4 Sovereign</span>
+                                 <span className="px-4 py-1.5 bg-white/5 text-zinc-500 text-[9px] font-black uppercase tracking-widest rounded-lg border border-white/5">Tier 4 Account</span>
                               </div>
                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                           <div className="space-y-3">
-                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Legal Entity Name</label>
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Full Name</label>
                             <input className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all shadow-inner" defaultValue={profile?.full_name} />
                           </div>
                           <div className="space-y-3">
-                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Institutional Node Email</label>
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Account Email</label>
                             <input className="w-full bg-black/20 border border-white/5 rounded-2xl px-6 py-5 text-zinc-600 font-black uppercase tracking-widest outline-none cursor-not-allowed" readOnly value={user?.email} />
                           </div>
                           <div className="space-y-3">
-                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Encrypted Phone Protocol</label>
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Phone Number</label>
                             <input className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all shadow-inner" placeholder="+1 (555) 000-0000" />
                           </div>
                           <div className="space-y-3">
-                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Resident Sovereign Jurisdiction</label>
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Country / Region</label>
                             <input className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all shadow-inner" defaultValue="United States" />
                           </div>
                         </div>
 
                         <div className="mt-16 pt-12 border-t border-white/5 flex justify-end">
-                          <Button variant="primary" className="px-12 py-5 font-black uppercase tracking-[0.4em] text-[10px] shadow-2xl">Authorize Suite Update</Button>
+                          <Button variant="primary" className="px-12 py-5 font-black uppercase tracking-[0.4em] text-[10px] shadow-2xl">Save Changes</Button>
                         </div>
                       </Card>
 
                       <div className="md:col-span-4 space-y-8">
                         <Card className="p-10 citadel-card bg-primary/5 border-primary/10" glass>
-                           <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6">Protocol Telemetry</h3>
+                           <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6">Account Telemetry</h3>
                            <div className="space-y-6 font-mono text-[10px]">
                               <div className="flex justify-between py-3 border-b border-white/5">
                                  <span className="text-zinc-600 uppercase">System_ID</span>
@@ -313,7 +313,7 @@ const Settings = () => {
                               <span className="material-symbols-outlined text-3xl font-black">shield_person</span>
                            </div>
                            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Advanced Verification</h4>
-                           <p className="text-[10px] text-zinc-600 mt-3 leading-relaxed font-bold uppercase tracking-widest">Upgrade to Institutional Tier 5 to unlock unlimited capital ingress.</p>
+                           <p className="text-[10px] text-zinc-600 mt-3 leading-relaxed font-bold uppercase tracking-widest">Upgrade to Tier 5 to unlock unlimited features.</p>
                         </div>
                       </div>
                     </div>
@@ -324,14 +324,14 @@ const Settings = () => {
                   <Card className="p-12 citadel-card shadow-2xl" glass>
                     <div className="mb-12">
                        <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Security Configuration</h2>
-                       <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Multi-Sig & Sovereign Access Toggles</p>
+                       <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Account Security Toggles</p>
                     </div>
                     <div className="grid grid-cols-1 gap-6">
                       {[
-                        { title: 'Two-Factor Authentication (2FA)', desc: 'Encrypt all sovereign fund releases with mandatory TOTP verification.', status: 'Highly Recommended', action: 'Enable Protocol' },
-                        { title: 'Vault Whitelisting', desc: 'Restricts liquidity ingress to verified institutional wallet addresses only.', status: 'Tier 4 Active', action: 'Manage Vaults' },
-                        { title: 'Anti-Phishing Cipher', desc: 'Add a personal cryptographic code to all official protocol updates.', status: 'Protocol Inactive', action: 'Set Cipher' },
-                        { title: 'Master Access Password', desc: 'Institutional password updated within current epoch. Regular updates recommended.', status: 'Verified', action: 'Rotate Access' },
+                        { title: 'Two-Factor Authentication (2FA)', desc: 'Encrypt all fund releases with mandatory TOTP verification.', status: 'Highly Recommended', action: 'Enable Protocol' },
+                        { title: 'Vault Whitelisting', desc: 'Restricts liquidity ingress to verified wallet addresses only.', status: 'Tier 4 Active', action: 'Manage Vaults' },
+                        { title: 'Anti-Phishing Cipher', desc: 'Add a personal cryptographic code to all official updates.', status: 'Protocol Inactive', action: 'Set Cipher' },
+                        { title: 'Master Access Password', desc: 'Security password updated within current epoch. Regular updates recommended.', status: 'Verified', action: 'Rotate Access' },
                       ].map((item, i) => (
                         <div key={i} className="flex items-center justify-between p-8 bg-white/[0.02] rounded-[32px] border border-white/5 hover:border-white/10 transition-all group">
                            <div className="space-y-2">
@@ -354,8 +354,8 @@ const Settings = () => {
                 {activeTab === 'verifications' && (
                   <Card className="p-12 citadel-card shadow-2xl" glass>
                     <div className="mb-12">
-                       <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Institutional Verification</h2>
-                       <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Identity Parameters & Sovereign Status</p>
+                       <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Identity Verification</h2>
+                       <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Identity Parameters & Account Status</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                        <div className="p-10 bg-success/5 rounded-[40px] border border-success/10 relative overflow-hidden group">
@@ -371,7 +371,7 @@ const Settings = () => {
                           </div>
                           <div className="pt-6 border-t border-success/10 relative z-10">
                              <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-4">Tier 1 Verification Complete</span>
-                             <div className="w-full py-4 bg-success text-black rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-center shadow-2xl">Sovereign Active</div>
+                             <div className="w-full py-4 bg-success text-black rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-center shadow-2xl">Account Active</div>
                           </div>
                        </div>
 
