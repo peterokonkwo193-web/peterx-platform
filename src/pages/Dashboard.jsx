@@ -302,7 +302,7 @@ const Dashboard = () => {
                  </div>
                  <div className="flex-1 space-y-6 overflow-y-auto custom-scrollbar pr-2">
                     {transactions?.slice(0, 10).map((tx, i) => (
-                       <div key={i} className="flex items-center justify-between p-4 bg-white/[0.01] border border-white/5 rounded-2xl group hover:bg-white/[0.03] transition-all">
+                       <Link key={i} to="/wallet" className="flex items-center justify-between p-4 bg-white/[0.01] border border-white/5 rounded-2xl group hover:bg-white/[0.03] transition-all hover:border-primary/20 active:scale-95">
                           <div className="flex items-center gap-4">
                              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center border", tx.type === 'Deposit' ? 'bg-success/10 border-success/20 text-success' : 'bg-error/10 border-error/20 text-error')}>
                                 <span className="material-symbols-outlined text-lg">{tx.type === 'Deposit' ? 'south_west' : 'north_east'}</span>
@@ -313,10 +313,12 @@ const Dashboard = () => {
                              </div>
                           </div>
                           <div className="text-right">
-                             <span className="block text-[11px] font-black text-white font-mono">{formatPrice(tx.amount)}</span>
-                             <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">{tx.status}</span>
+                             <span className={cn("block text-[11px] font-black font-mono", tx.status === 'Pending Verification' ? 'text-primary' : 'text-white')}>
+                               {tx.status === 'Pending Verification' ? 'VERIFYING...' : formatPrice(tx.amount)}
+                             </span>
+                             <span className={cn("text-[8px] font-black uppercase tracking-widest", tx.status === 'Pending Verification' ? 'text-primary animate-pulse' : 'text-zinc-600')}>{tx.status}</span>
                           </div>
-                       </div>
+                       </Link>
                     ))}
                  </div>
               </Card>
