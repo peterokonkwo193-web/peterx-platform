@@ -35,6 +35,30 @@ const Admin = () => {
     }
   }, [profile, authLoading, navigate]);
 
+  useEffect(() => {
+    if (!profile?.is_admin) return;
+
+    const txSub = supabase
+      .channel('admin-tx-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
+        fetchPendingTransactions();
+        fetchPendingPayouts();
+      })
+      .subscribe();
+
+    const userSub = supabase
+      .channel('admin-user-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        fetchAllUsers();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(txSub);
+      supabase.removeChannel(userSub);
+    };
+  }, [profile?.is_admin]);
+
   const fetchData = async () => {
     setLoading(true);
     await Promise.all([
@@ -318,7 +342,7 @@ const Admin = () => {
                       </td>
                       <td className="px-6 py-4 text-zinc-600">{tx.client_tx_id || 'INTERNAL'}</td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-3">
+                        <div className="flex items-center justify-end gap-2">
                           <input 
                             type="number"
                             placeholder="Amt"
@@ -326,8 +350,19 @@ const Admin = () => {
                             value={verifyAmount[tx.id] || ''}
                             onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
                           />
-                          <button onClick={() => handleVerify(tx.id, 'Completed')} className="p-1.5 bg-success/10 text-success rounded-lg border border-success/20 hover:bg-success hover:text-black transition-all">
+                          <button 
+                            onClick={() => handleVerify(tx.id, 'Completed')} 
+                            className="p-2 bg-success/10 text-success rounded-lg border border-success/20 hover:bg-success hover:text-black transition-all flex items-center justify-center"
+                            title="Accept Payment"
+                          >
                              <span className="material-symbols-outlined text-sm">check</span>
+                          </button>
+                          <button 
+                            onClick={() => handleVerify(tx.id, 'Rejected')} 
+                            className="p-2 bg-error/10 text-error rounded-lg border border-error/20 hover:bg-error hover:text-black transition-all flex items-center justify-center"
+                            title="Decline Payment"
+                          >
+                             <span className="material-symbols-outlined text-sm">close</span>
                           </button>
                         </div>
                       </td>

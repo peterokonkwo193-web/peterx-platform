@@ -157,16 +157,23 @@ export const useSupabaseData = () => {
 
     const timestamp = Date.now();
     const adminSub = supabase
-      .channel(`admin-signup-notifications-${timestamp}`)
+      .channel(`admin-notifications-${timestamp}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, (payload) => {
         if (payload.new) {
           const msg = `🔔 NEW USER REGISTRATION: ${payload.new.full_name || 'Anonymous User'} just signed up!`;
-          
-          // Try native notification first
           if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            new Notification('Equity Citadel Admin Alert', { body: msg, icon: '/vite.svg' });
+            new Notification('Equity Citadel Admin Alert', { body: msg });
           } else {
-            // Fallback to browser alert
+            alert(msg);
+          }
+        }
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions', filter: 'status=eq.Pending Verification' }, (payload) => {
+        if (payload.new) {
+          const msg = `💰 NEW DEPOSIT ALERT: A user just clicked "I have sent the money" for ${payload.new.asset}. Please verify!`;
+          if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            new Notification('Equity Citadel Payment Alert', { body: msg });
+          } else {
             alert(msg);
           }
         }
