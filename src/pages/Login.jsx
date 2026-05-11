@@ -149,7 +149,7 @@ const Login = ({ isSignUp = false }) => {
                             : "bg-white/5 border-white/5 text-zinc-500 hover:border-white/10"
                         )}
                       >
-                        Institutional
+                        Are you new to crypto?
                       </button>
                       <button
                         type="button"
@@ -161,7 +161,7 @@ const Login = ({ isSignUp = false }) => {
                             : "bg-white/5 border-white/5 text-zinc-500 hover:border-white/10"
                         )}
                       >
-                        Sovereign
+                        Expert in crypto
                       </button>
                     </div>
                   </div>
