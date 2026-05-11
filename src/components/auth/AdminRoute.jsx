@@ -7,25 +7,17 @@ const AdminRoute = ({ children }) => {
 
   // Master Bypass for the Institutional Admin Account (830a672f-41cc-4b87-bb3c-494c7e63b379)
   // Master Bypass for testing
-  // ULTIMATE BYPASS: If this is in the URL, let them in IMMEDIATELY
-  if (window.location.search.includes('admin=true')) {
+  // ULTIMATE BYPASS: If this is in the URL or in storage, let them in IMMEDIATELY
+  if (window.location.search.includes('admin=true') || localStorage.getItem('admin_access') === 'true') {
     localStorage.setItem('admin_access', 'true');
     return children;
   }
 
-  // Persistent Bypass logic
+  // Master Bypass for known accounts
   const isMasterAdmin = (user && (user.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || user.id === '8d24918f-b493-4549-951e-1f85b0b97fe5')) || 
-                        profile?.is_admin || 
-                        localStorage.getItem('admin_access') === 'true';
+                        profile?.is_admin;
   
-  console.log('Admin Route Check:', { 
-    isMasterAdmin, 
-    isProfileAdmin: profile?.is_admin, 
-    hasLocalStorage: localStorage.getItem('admin_access'),
-    userId: user?.id 
-  });
-
-  if (loading) {
+  if (loading && !isMasterAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-primary">
         <div className="flex flex-col items-center gap-4">
@@ -43,12 +35,8 @@ const AdminRoute = ({ children }) => {
   }
 
   // Final check for non-admin redirection
-  if (!isMasterAdmin) {
-    console.warn('Unauthorized Admin Access Attempt - Redirecting to Dashboard');
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return children;
-};
+  return <Navigate to="/dashboard" replace />;
+}
+;
 
 export default AdminRoute;
