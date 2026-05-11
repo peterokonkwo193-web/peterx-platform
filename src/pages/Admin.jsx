@@ -8,7 +8,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import { cn } from '../utils/cn';
 
 const Admin = () => {
-  const { profile, loading: authLoading } = useSupabaseData();
+  const { user, profile, loading: authLoading } = useSupabaseData();
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
