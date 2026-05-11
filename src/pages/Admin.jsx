@@ -118,16 +118,37 @@ const Admin = () => {
 
   const fetchPendingTransactions = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch Pending Transactions with Fallback
+      const { data: txs, error: txError } = await supabase
         .from('transactions')
-        .select('*, profiles(full_name)')
+        .select('*, profiles!inner(full_name, email)') // Try with inner join first
         .eq('status', 'Pending Verification')
         .order('created_at', { ascending: false });
-        
-      if (error) throw error;
-      setPendingTransactions(data || []);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
+      
+      if (txError) {
+        console.warn('Inner join failed, falling back to simple select...', txError);
+        const { data: simpleTxs } = await supabase
+          .from('transactions')
+          .select('*')
+          .eq('status', 'Pending Verification')
+          .order('created_at', { ascending: false });
+        setPendingTransactions(simpleTxs || []);
+      } else {
+        setPendingTransactions(txs || []);
+      }
+
+      const { data: payouts } = await supabase
+        .from('transactions')
+        .select('*, profiles(full_name, email)')
+        .eq('type', 'Withdrawal')
+        .eq('status', 'Pending')
+        .order('created_at', { ascending: false });
+      setPendingPayouts(payouts || []);
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Critical Admin Sync Error:', err);
+      setLoading(false);
     }
   };
 
@@ -250,10 +271,19 @@ const Admin = () => {
            <div className="space-y-2">
               <div className="flex items-center gap-3">
                  <div className="px-2 py-0.5 bg-error/10 rounded text-[9px] font-black text-error uppercase tracking-[0.2em] border border-error/20">Level 4 Clearance</div>
-                 <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></div>
-                    <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">System Secure</span>
-                 </div>
+                 <div className="flex flex-col items-end gap-2">
+              <button 
+                onClick={fetchData}
+                className="flex items-center gap-2 px-6 py-2.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-[0_10px_20px_rgba(252,213,53,0.2)]"
+              >
+                <span className="material-symbols-outlined text-sm font-black">sync</span>
+                Force Sync Ledger
+              </button>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></div>
+                <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Real-time Node: Connected</span>
+              </div>
+            </div>
               </div>
               <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                 <h1 className="text-4xl font-black text-white tracking-tighter">Command Terminal</h1>
