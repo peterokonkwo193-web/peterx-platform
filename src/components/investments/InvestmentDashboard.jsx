@@ -108,10 +108,22 @@ const InvestmentDashboard = ({ investments }) => {
             <tbody className="divide-y divide-white/5">
               {activeInvestments.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-8 py-16 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                       <span className="material-symbols-outlined text-zinc-800 text-4xl">folder_off</span>
-                       <span className="text-[10px] text-zinc-600 font-black uppercase tracking-widest italic">No active strategies detected in current cluster</span>
+                  <td colSpan="5" className="px-8 py-24 text-center">
+                    <div className="flex flex-col items-center gap-6 max-w-sm mx-auto">
+                       <div className="w-16 h-16 rounded-full bg-primary/5 border border-primary/10 flex items-center justify-center relative">
+                          <div className="absolute inset-0 bg-primary/10 blur-xl rounded-full animate-pulse"></div>
+                          <span className="material-symbols-outlined text-primary text-3xl relative z-10">rocket_launch</span>
+                       </div>
+                       <div className="space-y-1">
+                          <h4 className="text-[11px] font-bold text-white uppercase tracking-widest">Protocol Idle</h4>
+                          <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest leading-relaxed">No active yield strategies detected in cluster.</p>
+                       </div>
+                       <button 
+                         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                         className="px-6 py-2 bg-white/[0.03] border border-white/10 rounded-xl text-[8px] font-bold text-white uppercase tracking-[0.3em] hover:bg-primary hover:text-black hover:border-primary transition-all shadow-2xl"
+                       >
+                         Initialize Strategy
+                       </button>
                     </div>
                   </td>
                 </tr>
