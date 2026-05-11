@@ -47,9 +47,9 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
         </button>
 
         {isRecommended && (
-          <div className="absolute top-8 left-10 z-20">
-            <div className="bg-primary/10 border border-primary/20 backdrop-blur-xl text-primary text-[8px] font-black uppercase tracking-[0.4em] px-4 py-1.5 rounded-xl shadow-2xl flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          <div className="absolute top-6 left-6 z-20">
+            <div className="bg-primary/10 border border-primary/20 backdrop-blur-xl text-primary text-[8px] font-bold uppercase tracking-[0.4em] px-3 py-1 rounded-lg shadow-2xl flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-primary animate-pulse"></span>
               Best Value
             </div>
           </div>
@@ -60,7 +60,7 @@ const PlanCard = ({ plan, onInvest, onSupport, isRecommended = false }) => {
             <div className={cn(
               "w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center border transition-all duration-700 shadow-[0_20px_50px_rgba(0,0,0,0.5)]",
               isRecommended 
-                ? "bg-primary/20 border-primary/40 shadow-primary/10 rotate-6 group-hover:rotate-0" 
+                ? "bg-primary/20 border-primary/40 shadow-primary/10 group-hover:scale-110" 
                 : "bg-zinc-900 border-white/5 group-hover:border-white/20"
             )}>
               <span className={cn(

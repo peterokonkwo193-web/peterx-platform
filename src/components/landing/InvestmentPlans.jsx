@@ -100,7 +100,7 @@ const InvestmentPlans = ({ onSupport }) => {
             >
               <Card 
                 className={cn(
-                  "h-full p-5 md:p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-700 hover:scale-[1.05] border shadow-2xl",
+                  "h-full p-5 md:p-8 flex flex-col items-center text-center relative overflow-hidden transition-all duration-700 border shadow-2xl",
                   plan.recommended ? "border-primary/40 bg-primary/5" : "border-white/5 bg-white/[0.02]"
                 )} 
                 glass
@@ -129,7 +129,7 @@ const InvestmentPlans = ({ onSupport }) => {
                   </div>
                 )}
 
-                <div className="relative z-10 w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white/[0.03] flex items-center justify-center mb-5 md:mb-8 border border-white/5 group-hover:border-primary/40 transition-all group-hover:bg-primary/5 group-hover:scale-110 group-hover:rotate-3">
+                <div className="relative z-10 w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white/[0.03] flex items-center justify-center mb-5 md:mb-8 border border-white/5 group-hover:border-primary/40 transition-all group-hover:bg-primary/5 group-hover:scale-110">
                   <span className="material-symbols-outlined text-2xl md:text-3xl text-zinc-600 group-hover:text-primary transition-colors">
                     {plan.icon}
                   </span>
