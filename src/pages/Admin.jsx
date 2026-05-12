@@ -423,7 +423,7 @@ const Admin = () => {
                       <tr>
                         <th className="px-6 py-4">Client Information</th>
                         <th className="px-6 py-4">Balance</th>
-                        <th className="px-6 py-4 text-center">Profit Injection</th>
+                        <th className="px-6 py-4 hidden md:table-cell text-center">Profit Injection</th>
                         <th className="px-6 py-4 text-right">Registered</th>
                       </tr>
                     </thead>
@@ -453,9 +453,32 @@ const Admin = () => {
                                </div>
                              </td>
                              <td className="px-6 py-4">
-                               <span className="text-white font-black text-sm tracking-tighter">{formatPrice(u.usd_balance || 0)}</span>
+                               <div className="flex flex-col gap-3">
+                                 <span className="text-white font-black text-sm tracking-tighter">{formatPrice(u.usd_balance || 0)}</span>
+                                 
+                                 {/* Mobile Profit Injection - Visible only on small screens */}
+                                 <div className="flex md:hidden items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                    <div className="relative">
+                                       <span className="absolute left-2 top-1/2 -translate-y-1/2 text-primary font-black text-[9px]">$</span>
+                                       <input 
+                                         type="number"
+                                         placeholder="Profit"
+                                         className="w-20 bg-black border border-white/10 rounded-lg pl-5 pr-2 py-1.5 text-[10px] text-white outline-none focus:border-primary transition-all shadow-inner"
+                                         value={profitAmount[u.id] || ''}
+                                         onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
+                                       />
+                                    </div>
+                                    <button 
+                                      onClick={() => handleAddProfit(u.id)}
+                                      disabled={processingId === u.id}
+                                      className="w-7 h-7 bg-primary text-black rounded-lg active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center"
+                                    >
+                                      <span className="material-symbols-outlined text-sm font-black">add</span>
+                                    </button>
+                                 </div>
+                               </div>
                              </td>
-                             <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                             <td className="px-6 py-4 hidden md:table-cell" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex items-center justify-center gap-3">
                                   <div className="relative">
                                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-black text-[9px]">$</span>
