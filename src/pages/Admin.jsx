@@ -188,17 +188,32 @@ const Admin = () => {
     }
   };
 
-  const handleVerify = async (txId, status) => {
+  const handleVerify = async (txId, status, userId) => {
     setProcessingId(txId);
     try {
       const amount = parseFloat(verifyAmount[txId] || 0);
-      const { error } = await supabase.rpc('verify_transaction', {
-        p_transaction_id: txId,
-        p_amount: amount,
-        p_status: status
-      });
-
-      if (error) throw error;
+      
+      // DIRECT DATABASE OVERRIDE (Bypasses old RPCs)
+      // 1. Update the transaction
+      const { error: txError } = await supabase
+        .from('transactions')
+        .update({ status: status, amount: amount, value: amount })
+        .eq('id', txId);
+        
+      if (txError) throw txError;
+      
+      // 2. If approved, update the user's balance
+      if (status === 'Completed' && userId) {
+        const { data: userProfile } = await supabase.from('profiles').select('usd_balance').eq('id', userId).single();
+        const newBalance = (parseFloat(userProfile?.usd_balance) || 0) + amount;
+        
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ usd_balance: newBalance })
+          .eq('id', userId);
+          
+        if (profileError) throw profileError;
+      }
       
       // Refresh data
       await fetchData();
@@ -238,12 +253,27 @@ const Admin = () => {
     
     setProcessingId(userId);
     try {
-      const { error } = await supabase.rpc('admin_add_profit', {
-        p_user_id: userId,
-        p_amount: amount
-      });
+      // DIRECT DATABASE OVERRIDE
+      const { data: userProfile } = await supabase.from('profiles').select('usd_balance').eq('id', userId).single();
+      const newBalance = (parseFloat(userProfile?.usd_balance) || 0) + amount;
+      
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ usd_balance: newBalance })
+        .eq('id', userId);
         
-      if (error) throw error;
+      if (profileError) throw profileError;
+      
+      // Log the profit
+      await supabase.from('transactions').insert({
+        user_id: userId,
+        asset: 'USD',
+        type: 'Profit',
+        amount: amount,
+        value: amount,
+        status: 'Completed',
+        client_tx_id: 'PROFIT_' + Date.now()
+      });
       
       await fetchAllUsers();
       setProfitAmount({ ...profitAmount, [userId]: '' });
