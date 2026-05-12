@@ -191,7 +191,10 @@ const Admin = () => {
   const handleVerify = async (txId, status, userId) => {
     setProcessingId(txId);
     try {
-      const amount = parseFloat(verifyAmount[txId] || 0);
+      // Default to the actual transaction amount if verifyAmount[txId] is not manually set
+      const tx = pendingTransactions.find(t => t.id === txId);
+      const defaultAmount = tx ? parseFloat(tx.amount) : 0;
+      const amount = parseFloat(verifyAmount[txId] !== undefined ? verifyAmount[txId] : defaultAmount);
       
       // DIRECT DATABASE OVERRIDE (Bypasses old RPCs)
       const { error: txError } = await supabase
@@ -568,7 +571,7 @@ const Admin = () => {
                               type="number"
                               placeholder="Amount Received"
                               className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-10 pr-4 text-white font-black text-lg focus:outline-none focus:border-primary/50 transition-all placeholder:text-zinc-700"
-                              value={verifyAmount[tx.id] || ''}
+                              value={verifyAmount[tx.id] !== undefined ? verifyAmount[tx.id] : tx.amount}
                               onChange={(e) => setVerifyAmount({ ...verifyAmount, [tx.id]: e.target.value })}
                             />
                           </div>
