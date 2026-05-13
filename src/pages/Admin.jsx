@@ -7,6 +7,7 @@ import { useSupabaseData } from '../hooks/useSupabaseData';
 import { useCurrency } from '../context/CurrencyContext';
 import { cn } from '../utils/cn';
 import { motion, AnimatePresence } from 'framer-motion';
+import Button from '../components/common/Button';
 
 const Admin = () => {
   const { user, profile, loading: authLoading } = useSupabaseData();
