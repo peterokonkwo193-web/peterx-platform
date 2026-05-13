@@ -275,10 +275,6 @@ const Settings = () => {
                             <input className="w-full bg-black/20 border border-white/5 rounded-2xl px-6 py-5 text-zinc-600 font-black uppercase tracking-widest outline-none cursor-not-allowed" readOnly value={user?.email} />
                           </div>
                           <div className="space-y-3">
-                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Phone Number</label>
-                            <input className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all shadow-inner" placeholder="+1 (555) 000-0000" />
-                          </div>
-                          <div className="space-y-3">
                             <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block">Country / Region</label>
                             <input className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white font-black uppercase tracking-widest focus:outline-none focus:border-primary transition-all shadow-inner" defaultValue="United States" />
                           </div>
