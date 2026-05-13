@@ -168,7 +168,7 @@ const InvestmentPlans = ({ onSupport }) => {
                 </ul>
 
                 <Link 
-                  to="/deposit" 
+                  to={`/deposit?amount=${plan.range}`} 
                   className="relative z-10 w-full py-5 bg-white/[0.03] border border-white/10 rounded-2xl text-[10px] font-bold uppercase tracking-[0.4em] text-white hover:bg-primary hover:text-black hover:border-primary transition-all shadow-2xl group-hover:scale-105 text-center"
                 >
                   Invest Now

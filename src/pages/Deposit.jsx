@@ -51,13 +51,18 @@ const Deposit = () => {
   const handleConfirm = async () => {
     if (!user) return;
     setLoading(true);
+    
+    // Capture amount from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = parseFloat(urlParams.get('amount') || 0);
+
     try {
       await createTransaction({
         user_id: user.id,
         asset: selectedCoin.symbol,
         type: 'Deposit',
-        amount: 0,
-        value: 0,
+        amount: amount,
+        value: amount, // Also set value to amount
         status: 'Pending Verification',
         client_tx_id: txRef
       });
@@ -182,8 +187,15 @@ const Deposit = () => {
                       />
                     </div>
 
-                    <div className="px-6 py-2.5 bg-primary/10 border border-primary/20 rounded-xl backdrop-blur-xl">
-                       <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Reference: {txRef}</span>
+                    <div className="flex flex-col gap-2">
+                       <div className="px-6 py-2.5 bg-primary/10 border border-primary/20 rounded-xl backdrop-blur-xl">
+                          <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Reference: {txRef}</span>
+                       </div>
+                       {new URLSearchParams(window.location.search).get('amount') && (
+                         <div className="px-6 py-2.5 bg-white/[0.05] border border-white/10 rounded-xl backdrop-blur-xl">
+                            <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Amount: ${new URLSearchParams(window.location.search).get('amount')}</span>
+                         </div>
+                       )}
                     </div>
 
                     <div className="w-full space-y-6">
