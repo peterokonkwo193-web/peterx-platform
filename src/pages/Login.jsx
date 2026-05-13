@@ -169,12 +169,12 @@ const Login = ({ isSignUp = false }) => {
               )}
 
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block">Digital Identifier</label>
+                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block">Email Address</label>
                 <div className="relative group bg-white/5 border border-white/10 rounded-xl focus-within:border-primary transition-all duration-300">
                   <input 
                     className="w-full bg-transparent border-none text-white text-sm py-4 px-5 focus:ring-0 placeholder:text-zinc-700 font-mono" 
-                    placeholder="Email or Mobile" 
-                    type="text" 
+                    placeholder="Enter your email" 
+                    type="email" 
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     required
