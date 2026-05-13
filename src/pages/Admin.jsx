@@ -197,11 +197,6 @@ const Admin = () => {
       const defaultAmount = tx ? parseFloat(tx.amount) : 0;
       const amount = parseFloat(verifyAmount[txId] !== undefined ? verifyAmount[txId] : defaultAmount);
       
-      // Force Master Admin privileges right before the RPC call
-      if (user?.id) {
-        await supabase.from('profiles').update({ is_admin: true }).eq('id', user.id);
-      }
-
       const { error } = await supabase.rpc('verify_transaction', {
         p_transaction_id: txId,
         p_amount: amount,
@@ -249,11 +244,6 @@ const Admin = () => {
     
     setProcessingId(userId);
     try {
-      // Force Master Admin privileges right before the RPC call
-      if (user?.id) {
-        await supabase.from('profiles').update({ is_admin: true }).eq('id', user.id);
-      }
-
       const { error } = await supabase.rpc('admin_add_profit', {
         p_user_id: userId,
         p_amount: amount
