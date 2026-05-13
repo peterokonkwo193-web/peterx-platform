@@ -99,7 +99,7 @@ const Wallet = () => {
         type: actionModal,
         amount: numAmount,
         value: 0,
-        status: actionModal === 'Deposit' ? 'Pending Verification' : 'Completed',
+        status: actionModal === 'Deposit' ? 'Pending Verification' : 'Pending Payout',
         client_tx_id: `${actionModal.toLowerCase()}_${user.id}_${Date.now()}`
       });
 
