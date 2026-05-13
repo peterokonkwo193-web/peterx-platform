@@ -1,11 +1,9 @@
 import { supabase } from './supabase';
 
-export const signUp = async (identifier, password, fullName, experienceLevel) => {
-  const isEmail = identifier.includes('@');
-  const credentials = isEmail ? { email: identifier, password } : { phone: identifier, password };
-  
+export const signUp = async (email, password, fullName, experienceLevel) => {
   const { data, error } = await supabase.auth.signUp({
-    ...credentials,
+    email,
+    password,
     options: {
       data: {
         full_name: fullName,
@@ -17,11 +15,11 @@ export const signUp = async (identifier, password, fullName, experienceLevel) =>
   return data;
 };
 
-export const signIn = async (identifier, password) => {
-  const isEmail = identifier.includes('@');
-  const credentials = isEmail ? { email: identifier, password } : { phone: identifier, password };
-  
-  const { data, error } = await supabase.auth.signInWithPassword(credentials);
+export const signIn = async (email, password) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
   if (error) throw error;
   return data;
 };
