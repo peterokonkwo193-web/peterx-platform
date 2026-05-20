@@ -10,14 +10,13 @@ import './App.css';
 // Lazy load pages for performance
 const Home = lazy(() => import('./pages/Home'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-const TradingTerminal = lazy(() => import('./pages/TradingTerminal'));
-const Markets = lazy(() => import('./pages/Markets'));
+
 const Wallet = lazy(() => import('./pages/Wallet'));
 const Settings = lazy(() => import('./pages/Settings'));
 const Login = lazy(() => import('./pages/Login'));
 const Staking = lazy(() => import('./pages/Staking'));
 const Admin = lazy(() => import('./pages/Admin'));
-const Debug = lazy(() => import('./pages/Debug'));
+
 const Investments = lazy(() => import('./pages/Investments'));
 const Deposit = lazy(() => import('./pages/Deposit'));
 const Liquidity = lazy(() => import('./pages/Liquidity'));
@@ -46,8 +45,7 @@ function App() {
                 
                 {/* Protected Dashboard Routes */}
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/trade" element={<ProtectedRoute><TradingTerminal /></ProtectedRoute>} />
-                <Route path="/markets" element={<ProtectedRoute><Markets /></ProtectedRoute>} />
+
                 <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 <Route path="/staking" element={<ProtectedRoute><Staking /></ProtectedRoute>} />
@@ -55,7 +53,7 @@ function App() {
                 <Route path="/deposit" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
                 <Route path="/liquidity" element={<ProtectedRoute><Liquidity /></ProtectedRoute>} />
                 <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-                <Route path="/debug" element={<Debug />} />
+
               </Routes>
             </Suspense>
           </Router>

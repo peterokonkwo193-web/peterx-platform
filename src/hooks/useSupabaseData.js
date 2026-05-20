@@ -106,7 +106,7 @@ export const useSupabaseData = () => {
     const timestamp = Date.now();
 
     const profileSub = supabase
-      .channel(`profile-changes-${user.id}-${timestamp}`)
+      .channel(`profile-changes-${user.id}-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, (payload) => {
         if (payload.new) {
           const updatedProfile = payload.new;
@@ -117,35 +117,35 @@ export const useSupabaseData = () => {
       .subscribe();
 
     const portfolioSub = supabase
-      .channel(`portfolio-changes-${user.id}-${timestamp}`)
+      .channel(`portfolio-changes-${user.id}-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'portfolios', filter: `user_id=eq.${user.id}` }, () => {
         getPortfolio(user.id).then(data => setPortfolio(data || [])).catch(() => setPortfolio([]));
       })
       .subscribe();
 
     const watchlistSub = supabase
-      .channel(`watchlist-changes-${user.id}-${timestamp}`)
+      .channel(`watchlist-changes-${user.id}-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'watchlist', filter: `user_id=eq.${user.id}` }, () => {
         getWatchlist(user.id).then(data => setWatchlist(data || [])).catch(() => setWatchlist([]));
       })
       .subscribe();
 
     const futuresSub = supabase
-      .channel(`futures-changes-${user.id}-${timestamp}`)
+      .channel(`futures-changes-${user.id}-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'futures_positions', filter: `user_id=eq.${user.id}` }, () => {
         supabase.from('futures_positions').select('*').eq('user_id', user.id).eq('is_open', true).then(res => setFuturesPositions(res.data || []));
       })
       .subscribe();
 
     const stakingSub = supabase
-      .channel(`staking-changes-${user.id}-${timestamp}`)
+      .channel(`staking-changes-${user.id}-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'staking_positions', filter: `user_id=eq.${user.id}` }, () => {
         supabase.from('staking_positions').select('*').eq('user_id', user.id).then(res => setStakingPositions(res.data || []));
       })
       .subscribe();
 
     const transactionsSub = supabase
-      .channel(`transactions-changes-${user.id}-${timestamp}`)
+      .channel(`transactions-changes-${user.id}-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: `user_id=eq.${user.id}` }, () => {
         supabase.from('transactions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50).then(res => setTransactions(res.data || []));
       })
@@ -173,7 +173,7 @@ export const useSupabaseData = () => {
 
     const timestamp = Date.now();
     const adminSub = supabase
-      .channel(`admin-notifications-${timestamp}`)
+      .channel(`admin-notifications-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, (payload) => {
         if (payload.new) {
           const msg = `🔔 NEW USER REGISTRATION: ${payload.new.full_name || 'Anonymous User'} just signed up!`;

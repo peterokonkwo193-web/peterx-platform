@@ -154,36 +154,35 @@ const Wallet = () => {
         </div>
 
         {/* HERO PORTFOLIO SECTION */}
-        <header className="relative mt-24 py-24 md:py-32 px-8 md:px-20 rounded-[48px] md:rounded-[64px] bg-[#0d0d0d] border border-white/[0.05] overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[200px] -z-10 animate-pulse"></div>
-          <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-success/5 blur-[150px] -z-10"></div>
-         {/* PORTFOLIO OVERVIEW */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 px-4 md:px-8">
-           <div className="md:col-span-12 xl:col-span-8 space-y-12">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-                 <div className="space-y-4">
-                    <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl w-fit">Wallet Overview</div>
-                    <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9]">My <span className="text-primary italic">Assets</span></h1>
+        <header className="relative mt-20 py-16 md:py-20 px-6 md:px-12 rounded-[32px] md:rounded-[40px] bg-[#0d0d0d] border border-white/[0.05] overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[150px] -z-10 animate-pulse"></div>
+          
+         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
+           <div className="md:col-span-12 xl:col-span-8 space-y-6">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                 <div className="space-y-3">
+                    <div className="px-4 py-1 bg-primary/10 rounded-lg text-[9px] font-black text-primary uppercase tracking-[0.2em] border border-primary/20 backdrop-blur-xl w-fit">Vault Protocol</div>
+                    <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none">Security <span className="text-primary italic">Vault</span></h1>
                  </div>
-                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Platform v4.0</span>
+                  <span className="text-[9px] text-zinc-700 font-bold uppercase tracking-widest opacity-50">Core v4.0.2 Stable</span>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                 <Card className="p-8 citadel-card bg-primary/5 border-primary/10 relative overflow-hidden group shadow-2xl" glass>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
-                    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-4">Account Balance</span>
-                    <div className="relative z-10 space-y-2">
-                       <span className="text-4xl font-black text-white tracking-tighter block leading-none">{formatPrice(profile?.usd_balance || 0)}</span>
-                       <span className="text-[10px] font-bold text-success uppercase tracking-widest">+12.4% vs Previous Cycle</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <Card className="p-6 md:p-8 citadel-card bg-primary/5 border-primary/10 relative overflow-hidden group shadow-xl" glass>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-[40px] group-hover:scale-150 transition-transform"></div>
+                    <span className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] block mb-3">Settlement Asset</span>
+                    <div className="relative z-10 space-y-1">
+                       <span className="text-3xl font-black text-white tracking-tighter block leading-none">{formatPrice(profile?.usd_balance || 0)}</span>
+                       <span className="text-[9px] font-bold text-success uppercase tracking-widest">Market Ready</span>
                     </div>
                  </Card>
 
-                 <Card className="p-8 citadel-card bg-white/[0.01] border-white/5 relative overflow-hidden group" glass>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
-                    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-4">Crypto Portfolio</span>
-                    <div className="relative z-10 space-y-2">
-                       <span className="text-4xl font-black text-white tracking-tighter block leading-none">{formatPrice((portfolio || []).reduce((acc, curr) => acc + (parseFloat(curr.amount) * (marketData?.find(m => m.symbol.toLowerCase() === curr.symbol.toLowerCase())?.current_price || 0)), 0))}</span>
-                       <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{portfolio?.length || 0} Assets Synchronized</span>
+                 <Card className="p-6 md:p-8 citadel-card bg-white/[0.01] border-white/5 relative overflow-hidden group" glass>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-[40px] group-hover:scale-150 transition-transform"></div>
+                    <span className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] block mb-3">Crypto Inventory</span>
+                    <div className="relative z-10 space-y-1">
+                       <span className="text-3xl font-black text-white tracking-tighter block leading-none">{formatPrice((portfolio || []).reduce((acc, curr) => acc + (parseFloat(curr.amount) * (marketData?.find(m => m.symbol.toLowerCase() === curr.symbol.toLowerCase())?.current_price || 0)), 0))}</span>
+                       <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">{portfolio?.length || 0} Protocols Active</span>
                     </div>
                  </Card>
               </div>
@@ -199,25 +198,26 @@ const Wallet = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {/* STABLECOIN VAULT */}
-            <Card className="p-10 citadel-card border-primary/20 bg-primary/5 relative group" glass glow>
-              <div className="flex justify-between items-start mb-12 relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center text-black shadow-2xl">
-                  <span className="material-symbols-outlined text-3xl font-black">account_balance_wallet</span>
+            <Card className="p-8 citadel-card border-primary/20 bg-primary/5 relative group shadow-lg" glass glow>
+              <div className="flex justify-between items-start mb-10 relative z-10">
+                <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-black shadow-xl">
+                  <span className="material-symbols-outlined text-2xl font-black">account_balance_wallet</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-black text-primary uppercase tracking-widest block mb-1">Balance</span>
-                  <span className="px-3 py-1 bg-primary/20 rounded-lg text-[9px] font-black text-primary uppercase tracking-widest border border-primary/20">Verified</span>
+                  <span className="text-[9px] font-black text-primary uppercase tracking-widest block mb-1">Status</span>
+                  <span className="px-2 py-0.5 bg-primary/20 rounded-md text-[8px] font-black text-primary uppercase tracking-widest border border-primary/20">Verified</span>
                 </div>
               </div>
               <div className="relative z-10 space-y-6">
                 <div>
-                  <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Total Settlement</h3>
-                  <p className="text-4xl font-black text-white tracking-tighter">{(profile?.usd_balance || 0).toLocaleString()}<span className="text-lg ml-2 text-zinc-700">USD</span></p>
+                  <h3 className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.2em] mb-1.5">Liquid Assets</h3>
+                  <p className="text-2xl font-black text-white tracking-tighter">{(profile?.usd_balance || 0).toLocaleString()}<span className="text-xs ml-1.5 text-zinc-700 font-bold uppercase tracking-widest">USD</span></p>
                 </div>
-                <div className="pt-6 border-t border-white/5">
-                   <button onClick={() => window.location.href = '/deposit'} className="w-full py-4 bg-white/[0.03] border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-white hover:bg-primary hover:text-black transition-all">Add Funds</button>
+                <div className="pt-4 border-t border-white/5 flex gap-2">
+                   <button onClick={() => window.location.href = '/deposit'} className="flex-1 py-3 bg-primary/10 border border-primary/20 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-black transition-all">Inject Capital</button>
+                   <button onClick={() => alert('This function is currently unavailable, contact admin for clarification.')} className="flex-1 py-3 bg-white/[0.03] border border-white/10 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] text-white hover:bg-white/10 transition-all">Withdrawal</button>
                 </div>
               </div>
             </Card>
@@ -225,23 +225,23 @@ const Wallet = () => {
             {portfolio.map((asset) => {
               const coin = dynamicCoins.find(c => c.symbol === asset.symbol);
               return (
-                <Card key={asset.id} className="p-10 citadel-card hover:scale-[1.02] transition-all group" glass>
-                  <div className="flex justify-between items-start mb-12">
-                    <img src={coin?.image} alt={asset.symbol} className="w-14 h-14 rounded-2xl border border-white/10 p-1 bg-zinc-950 shadow-2xl" />
+                <Card key={asset.id} className="p-8 citadel-card hover:scale-[1.02] transition-all group" glass>
+                  <div className="flex justify-between items-start mb-10">
+                    <img src={coin?.image} alt={asset.symbol} className="w-12 h-12 rounded-xl border border-white/10 p-1 bg-zinc-950 shadow-xl" />
                     <div className="text-right">
-                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">{asset.symbol}</span>
-                      <span className="text-[10px] font-black text-success uppercase tracking-widest">Active</span>
+                      <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block mb-1">{asset.symbol}</span>
+                      <span className="text-[8px] font-black text-success uppercase tracking-widest">Secured</span>
                     </div>
                   </div>
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Quantity</h3>
-                      <p className="text-4xl font-black text-white tracking-tighter">{parseFloat(asset.amount).toFixed(4)}</p>
+                      <h3 className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.2em] mb-1.5">Quantity</h3>
+                      <p className="text-2xl font-black text-white tracking-tighter">{parseFloat(asset.amount).toFixed(4)}</p>
                     </div>
-                    <div className="flex gap-3">
-                      <button onClick={() => { setSelectedCoin(asset.symbol); setActionModal('Withdraw'); }} className="flex-1 py-4 bg-white/[0.03] border border-white/5 rounded-xl text-[9px] font-black uppercase tracking-[0.3em] hover:bg-white/10 transition-all">Withdraw</button>
-                      <button onClick={() => window.location.href = '/deposit'} className="px-5 py-4 bg-white/[0.03] border border-white/5 rounded-xl text-zinc-500 hover:text-primary transition-all">
-                        <span className="material-symbols-outlined text-lg font-black">add</span>
+                    <div className="flex gap-2">
+                      <button onClick={() => alert('This function is currently unavailable, contact admin for clarification.')} className="flex-1 py-3 bg-white/[0.03] border border-white/5 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all text-white">Withdrawal</button>
+                      <button onClick={() => window.location.href = '/deposit'} className="px-4 py-3 bg-white/[0.03] border border-white/5 rounded-lg text-zinc-600 hover:text-primary transition-all">
+                        <span className="material-symbols-outlined text-base font-black">add</span>
                       </button>
                     </div>
                   </div>
@@ -249,11 +249,11 @@ const Wallet = () => {
               );
             })}
 
-            <div className="group cursor-pointer border-2 border-dashed border-white/5 rounded-[48px] p-10 flex flex-col items-center justify-center text-center hover:border-primary/40 hover:bg-primary/5 transition-all min-h-[300px]">
-              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-black transition-all border border-white/5">
-                <span className="material-symbols-outlined text-2xl font-black">account_balance</span>
+            <div className="group cursor-pointer border-2 border-dashed border-white/5 rounded-[32px] p-8 flex flex-col items-center justify-center text-center hover:border-primary/40 hover:bg-primary/5 transition-all min-h-[250px]">
+              <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-black transition-all border border-white/5">
+                <span className="material-symbols-outlined text-xl font-black">account_balance</span>
               </div>
-              <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.4em] group-hover:text-white transition-colors">Add New Asset</h3>
+              <h3 className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.4em] group-hover:text-white transition-colors">Expand Ledger</h3>
             </div>
           </div>
         </div>
@@ -262,54 +262,54 @@ const Wallet = () => {
         <div className="space-y-10">
           <div className="flex justify-between items-end px-4">
              <div className="space-y-2">
-                <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">History</h2>
+                <h2 className="text-2xl font-black text-white tracking-tighter uppercase leading-none">History</h2>
                 <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">Transaction log</p>
              </div>
           </div>
 
-          <Card className="p-0 overflow-hidden citadel-card border-white/5" glass>
+           <Card className="p-0 overflow-hidden citadel-card border-white/5 shadow-xl" glass>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-black/40 text-[10px] text-zinc-600 uppercase tracking-[0.4em] border-b border-white/5">
+                <thead className="bg-black/40 text-[9px] text-zinc-600 font-black uppercase tracking-[0.4em] border-b border-white/5">
                   <tr>
-                    <th className="px-12 py-8">Event</th>
-                    <th className="px-12 py-8">Amount</th>
-                    <th className="px-12 py-8">Status</th>
-                    <th className="px-12 py-8 text-right">Date</th>
+                    <th className="px-8 py-6">Operation</th>
+                    <th className="px-8 py-6">Amount</th>
+                    <th className="px-8 py-6">Status</th>
+                    <th className="px-8 py-6 text-right">Timestamp</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 font-mono text-[11px]">
+                <tbody className="divide-y divide-white/5 font-mono text-[10px]">
                   {(txData || []).map((tx) => (
                     <tr key={tx.id} className="hover:bg-white/[0.01] transition-colors group">
-                      <td className="px-12 py-8 flex items-center gap-6">
+                      <td className="px-8 py-5 flex items-center gap-4">
                         <div className={cn(
-                          "w-10 h-10 rounded-xl flex items-center justify-center border shadow-2xl transition-transform group-hover:scale-110",
+                          "w-8 h-8 rounded-lg flex items-center justify-center border transition-transform group-hover:scale-110",
                           tx.type === 'Deposit' ? "bg-success/10 text-success border-success/20" : 
                           tx.type === 'Transfer' ? "bg-primary/10 text-primary border-primary/20" : 
                           "bg-zinc-800 text-zinc-500 border-white/10"
                         )}>
-                          <span className="material-symbols-outlined text-lg font-black">
+                          <span className="material-symbols-outlined text-base font-black">
                             {tx.type === 'Deposit' ? 'input' : tx.type === 'Transfer' ? 'sync_alt' : 'output'}
                           </span>
                         </div>
                         <span className="font-black text-white uppercase tracking-widest">{tx.type}</span>
                       </td>
-                      <td className="px-12 py-8">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-base font-black text-white">{parseFloat(tx.amount).toFixed(4)}</span>
-                          <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">{tx.asset}</span>
+                      <td className="px-8 py-5">
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="text-sm font-black text-white tracking-tighter">{parseFloat(tx.amount).toFixed(4)}</span>
+                          <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{tx.asset}</span>
                         </div>
                       </td>
-                      <td className="px-12 py-8">
+                      <td className="px-8 py-5">
                         <span className={cn(
-                          "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] border",
+                          "px-3 py-1 rounded-md text-[8px] font-black uppercase tracking-widest border",
                           tx.status === 'Completed' ? "bg-success/10 text-success border-success/20" : "bg-primary/10 text-primary border-primary/20 animate-pulse"
                         )}>
                           {tx.status}
                         </span>
                       </td>
-                      <td className="px-12 py-8 text-right text-zinc-600 font-bold uppercase tracking-widest">
-                        {new Date(tx.created_at).toLocaleString()}
+                      <td className="px-8 py-5 text-right text-zinc-700 font-bold uppercase tracking-widest">
+                        {new Date(tx.created_at).toLocaleDateString()}
                       </td>
                     </tr>
                   ))}

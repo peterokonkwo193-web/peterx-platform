@@ -4,59 +4,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
-import CandlestickChart from '../components/CandlestickChart';
 import WidgetErrorBoundary from '../components/common/WidgetErrorBoundary';
 import IdentityVerification from '../components/dashboard/IdentityVerification';
 import TransferModal from '../components/dashboard/TransferModal';
 import OnboardingTour from '../components/common/OnboardingTour';
 import { useSupabaseData } from '../hooks/useSupabaseData';
 import { useLivePrices } from '../hooks/useLivePrices';
-import { useMarketData } from '../hooks/useMarketData';
 import { useCurrency } from '../context/CurrencyContext';
 import { getInvestments } from '../lib/db';
 import { cn } from '../utils/cn';
 
-// Helper functions and sub-components
-const generateMockOHLC = (basePrice) => {
-  const data = [];
-  let currentPrice = basePrice;
-  const now = Math.floor(Date.now() / 1000);
-  for (let i = 100; i >= 0; i--) {
-    const open = currentPrice + (Math.random() - 0.5) * 50;
-    const close = open + (Math.random() - 0.5) * 100;
-    const high = Math.max(open, close) + Math.random() * 20;
-    const low = Math.min(open, close) - Math.random() * 20;
-    data.push({ time: now - i * 3600, open, high, low, close });
-    currentPrice = close;
-  }
-  return data;
-};
-
-const StatItem = ({ label, val, sub, color = "text-white" }) => (
-  <div className="space-y-2 p-2">
-    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">{label}</span>
-    <div className="flex items-baseline gap-2">
-      <span className={cn("text-2xl font-black tracking-tighter", color)}>{val}</span>
-      {sub && <span className="text-[10px] font-bold text-zinc-700 uppercase">{sub}</span>}
-    </div>
-  </div>
-);
-
 const Dashboard = () => {
   const { user, profile, portfolio, transactions, loading: dataLoading, error: supabaseError } = useSupabaseData();
   const { prices } = useLivePrices();
-  const { marketData, loading: marketLoading } = useMarketData();
   const { currency, formatPrice } = useCurrency();
-  const [selectedChartCoin, setSelectedChartCoin] = useState(null);
   const [investments, setInvestments] = useState([]);
   const [isTransferOpen, setIsTransferOpen] = useState(false);
   const [isTourActive, setIsTourActive] = useState(false);
-
-  useEffect(() => {
-    if (marketData && marketData.length > 0 && !selectedChartCoin) {
-      setSelectedChartCoin(marketData[0]);
-    }
-  }, [marketData, selectedChartCoin]);
 
   useEffect(() => {
     const fetchInvestments = async () => {
@@ -94,11 +58,7 @@ const Dashboard = () => {
     }, 0);
   };
 
-  const chartData = useMemo(() => {
-    return generateMockOHLC(selectedChartCoin?.current_price || 50000);
-  }, [selectedChartCoin]);
-
-  if (dataLoading || marketLoading) {
+  if (dataLoading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[60vh]">
@@ -128,201 +88,207 @@ const Dashboard = () => {
       <div className="max-w-[1600px] mx-auto py-8 md:py-20 px-4 md:px-8 space-y-8 md:space-y-12">
         
         {/* DASHBOARD HEADER */}
-        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 md:gap-10">
-           <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                 <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Live Status</div>
+        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 md:gap-8">
+           <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                 <div className="px-4 py-1 bg-primary/10 rounded-lg text-[9px] font-black text-primary uppercase tracking-[0.2em] border border-primary/20 backdrop-blur-xl">System Status</div>
                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-success shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
-                    <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Global: Online</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-success shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+                    <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Master Node: Active</span>
                  </div>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter uppercase leading-[0.9]">My <span className="text-primary italic">Dashboard</span></h1>
+              <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none">My <span className="text-primary italic">Portfolio</span></h1>
            </div>
            
-            <div className="flex flex-wrap gap-4 md:gap-6 w-full lg:w-auto">
-               <div className="flex-1 lg:flex-none p-6 md:p-8 citadel-card bg-white/[0.02] border border-white/5 min-w-[250px] md:min-w-[300px] relative overflow-hidden group">
-                  <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-3">Total Balance</span>
-                  <div className="flex items-baseline gap-4 relative z-10">
-                     <span className="text-3xl md:text-4xl font-bold text-white tracking-tighter leading-none">{formatPrice(portfolioValue)}</span>
+            <div className="flex flex-wrap gap-4 w-full lg:w-auto">
+               <div className="flex-1 lg:flex-none p-6 md:p-7 citadel-card bg-white/[0.02] border border-white/5 min-w-[200px] md:min-w-[260px] relative overflow-hidden group shadow-xl">
+                  <div className="absolute right-0 top-0 w-24 h-24 bg-primary/5 rounded-full blur-[40px] group-hover:scale-150 transition-transform"></div>
+                  <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em] block mb-2">Total Balance</span>
+                  <div className="flex items-baseline gap-3 relative z-10">
+                     <span className="text-2xl md:text-3xl font-black text-white tracking-tighter leading-none">{formatPrice(portfolioValue)}</span>
                      <div className="flex items-center gap-1 text-success">
-                        <span className="material-symbols-outlined text-sm font-bold">trending_up</span>
-                        <span className="text-sm font-bold tracking-tighter">+8.42%</span>
+                        <span className="text-[10px] font-black tracking-tighter">+12.4%</span>
                      </div>
                   </div>
                </div>
 
-               <div className="flex-1 lg:flex-none p-6 md:p-8 citadel-card bg-primary/5 border-primary/10 min-w-[250px] md:min-w-[300px] relative overflow-hidden group">
-                  <div className="absolute right-0 top-0 w-32 h-32 bg-primary/10 rounded-full blur-[60px] group-hover:scale-150 transition-transform"></div>
-                  <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest block mb-3">Profit Earnings</span>
-                  <div className="flex items-baseline gap-4 relative z-10">
-                     <span className="text-3xl md:text-4xl font-bold text-success tracking-tighter leading-none">+{formatPrice(calculateTotalProfit())}</span>
-                     <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></div>
-                        <span className="text-[10px] font-bold text-success uppercase tracking-widest">Live</span>
-                     </div>
-                  </div>
+               <div className="flex gap-4">
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    onClick={() => window.location.href = '/deposit'}
+                    className="p-6 md:p-7 citadel-card bg-primary text-black flex items-center justify-center shadow-2xl transition-all group"
+                  >
+                     <span className="material-symbols-outlined text-2xl font-black group-hover:rotate-90 transition-transform">add_circle</span>
+                  </motion.button>
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    onClick={() => setIsTransferOpen(true)}
+                    className="p-6 md:p-7 citadel-card bg-white/[0.03] border border-white/5 hover:border-white/20 text-white flex items-center justify-center transition-all group"
+                  >
+                     <span className="material-symbols-outlined text-2xl font-black group-hover:scale-110 transition-transform">payments</span>
+                  </motion.button>
                </div>
-
-              <div className="flex gap-4">
-                 <motion.button 
-                   whileHover={{ scale: 1.05 }}
-                   onClick={() => window.location.href = '/deposit'}
-                   className="p-6 md:p-8 citadel-card bg-primary text-black flex items-center justify-center shadow-[0_20px_50px_rgba(252,213,53,0.3)] transition-all group"
-                 >
-                    <span className="material-symbols-outlined text-3xl font-black group-hover:rotate-90 transition-transform">add</span>
-                 </motion.button>
-                 <motion.button 
-                   whileHover={{ scale: 1.05 }}
-                   onClick={() => setIsTransferOpen(true)}
-                   className="p-6 md:p-8 citadel-card bg-white/[0.03] border border-white/5 hover:border-white/20 text-white flex items-center justify-center transition-all group"
-                 >
-                    <span className="material-symbols-outlined text-3xl font-black group-hover:scale-110 transition-transform">sync_alt</span>
-                 </motion.button>
-              </div>
-           </div>
+            </div>
         </header>
 
-        {/* MARKET DATA */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10">
+        {/* CORE ANALYTICS */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
            
-           {/* MARKET CHARTS */}
-           <div className="md:col-span-12 xl:col-span-9 space-y-8 md:space-y-10">
-              <Card className="p-5 md:p-10 h-auto md:h-[650px] citadel-card flex flex-col relative overflow-hidden" glass glow>
-                 <div className="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-10 relative z-10 gap-6">
-                    <div className="flex items-center gap-4 md:gap-6">
-                       <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-zinc-900 border border-white/10 p-2 shadow-2xl">
-                          <img src={selectedChartCoin?.image} alt="" className="w-full h-full object-contain" />
-                       </div>
-                       <div>
-                          <h2 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase leading-none">{selectedChartCoin?.symbol.toUpperCase()}<span className="text-zinc-700 ml-1">/USDT</span></h2>
-                          <div className="flex items-center gap-2 mt-2">
-                             <span className="text-[10px] text-zinc-600 font-black uppercase tracking-widest">{selectedChartCoin?.name}</span>
-                             <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
-                             <span className="text-[10px] text-primary font-black uppercase tracking-widest">Active</span>
-                          </div>
-                       </div>
-                    </div>
-                    <div className="text-center md:text-right w-full md:w-auto">
-                       <p className="text-3xl md:text-4xl font-black text-white tracking-tighter leading-none mb-2">{formatPrice(selectedChartCoin?.current_price)}</p>
-                       <div className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border", selectedChartCoin?.price_change_percentage_24h < 0 ? "bg-error/10 text-error border-error/10" : "bg-success/10 text-success border-success/10")}>
-                          {selectedChartCoin?.price_change_percentage_24h > 0 ? '+' : ''}{selectedChartCoin?.price_change_percentage_24h?.toFixed(2)}% <span className="text-zinc-600 ml-1">24H</span>
-                       </div>
-                    </div>
-                 </div>
-                 
-                 <div className="flex-1 min-h-[300px] bg-black/60 rounded-[32px] overflow-hidden border border-white/5 relative group shadow-inner">
-                    <CandlestickChart data={chartData} />
-                 </div>
-              </Card>
+            {/* INVESTMENT OVERVIEW */}
+            <div className="lg:col-span-8 space-y-8">
+               <Card className="p-8 md:p-12 citadel-card bg-white/[0.01] border-white/5 relative overflow-hidden" glass glow>
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+                  
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 relative z-10">
+                     <div>
+                        <h2 className="text-2xl font-black text-white tracking-tighter uppercase mb-2">Investment Mix</h2>
+                        <p className="text-[10px] text-zinc-600 font-black uppercase tracking-widest">Performance Analysis & Yield Distribution</p>
+                     </div>
+                     <Link to="/investments">
+                        <Button variant="outline" className="text-[9px] font-black uppercase tracking-widest py-3 px-8 border-white/10 hover:bg-white/5">Manage Plans</Button>
+                     </Link>
+                  </div>
 
-              {/* ASSET REGISTRY */}
-              <Card className="p-0 citadel-card overflow-hidden shadow-2xl" glass>
-                 <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-left border-collapse min-w-[800px]">
-                       <thead className="bg-white/[0.02] text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] border-b border-white/5">
-                          <tr>
-                             <th className="px-10 py-6">Asset</th>
-                             <th className="px-10 py-6">Price</th>
-                             <th className="px-10 py-6">24h Change</th>
-                             <th className="px-10 py-6">Market Cap</th>
-                             <th className="px-10 py-6 text-right">Action</th>
-                          </tr>
-                       </thead>
-                       <tbody className="divide-y divide-white/5">
-                          {marketData?.slice(0, 8).map((coin) => (
-                             <tr key={coin.id} className="hover:bg-white/[0.01] transition-colors group">
-                                <td className="px-10 py-5">
-                                   <div className="flex items-center gap-4">
-                                      <img src={coin.image} alt="" className="w-8 h-8 rounded-lg grayscale group-hover:grayscale-0 transition-all" />
-                                      <div>
-                                         <span className="block font-black text-white text-sm uppercase tracking-tight">{coin.symbol}</span>
-                                         <span className="text-[9px] text-zinc-600 font-bold uppercase">{coin.name}</span>
-                                      </div>
-                                   </div>
-                                </td>
-                                <td className="px-10 py-5 text-white font-black text-base tracking-tighter">{formatPrice(coin.current_price)}</td>
-                                <td className="px-10 py-5">
-                                   <span className={cn("text-xs font-black uppercase tracking-widest", coin.price_change_percentage_24h < 0 ? "text-error" : "text-success")}>
-                                      {coin.price_change_percentage_24h > 0 ? '+' : ''}{coin.price_change_percentage_24h?.toFixed(2)}%
-                                   </span>
-                                </td>
-                                <td className="px-10 py-5 text-zinc-500 font-black">{formatPrice(coin.market_cap / 1e9)}B</td>
-                                <td className="px-10 py-5 text-right">
-                                   <button 
-                                     onClick={() => setSelectedChartCoin(coin)}
-                                     className="px-6 py-2 bg-white/[0.03] border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-zinc-400 hover:text-primary hover:border-primary/40 transition-all"
-                                   >
-                                      Analyze
-                                   </button>
-                                </td>
-                             </tr>
-                          ))}
-                       </tbody>
-                    </table>
-                 </div>
-              </Card>
-           </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative z-10">
+                     <div className="p-6 bg-black/40 rounded-3xl border border-white/5 space-y-4">
+                        <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block">Active Plans</span>
+                        <div className="flex items-end justify-between">
+                           <span className="text-3xl font-black text-white tracking-tighter leading-none">{investments.filter(i => i.status === 'Active').length}</span>
+                           <span className="text-[10px] font-black text-primary uppercase">Tier 4</span>
+                        </div>
+                     </div>
+                     <div className="p-6 bg-black/40 rounded-3xl border border-white/5 space-y-4">
+                        <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block">Yield Efficiency</span>
+                        <div className="flex items-end justify-between">
+                           <span className="text-3xl font-black text-success tracking-tighter leading-none">98.4%</span>
+                           <span className="material-symbols-outlined text-success text-sm">trending_up</span>
+                        </div>
+                     </div>
+                     <div className="p-6 bg-black/40 rounded-3xl border border-white/5 space-y-4">
+                        <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block">System Safety</span>
+                        <div className="flex items-end justify-between">
+                           <span className="text-3xl font-black text-white tracking-tighter leading-none">Minimal</span>
+                           <span className="material-symbols-outlined text-zinc-500 text-sm">shield</span>
+                        </div>
+                     </div>
+                  </div>
 
-           {/* SIDEBAR WIDGETS */}
-           <div className="md:col-span-12 xl:col-span-3 space-y-10">
-              {/* ASSET DISTRIBUTION */}
-              <Card className="h-auto md:h-[480px] p-6 citadel-card overflow-hidden flex flex-col" glass glow>
-                 <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Allocation</h3>
-                    <span className="material-symbols-outlined text-zinc-700 text-sm">pie_chart</span>
-                 </div>
-                 <div className="flex-1 flex flex-col justify-center items-center relative py-8">
-                    <div className="w-48 h-48 rounded-full border-[12px] border-white/5 relative flex items-center justify-center">
-                       <div className="absolute inset-0 rounded-full border-t-[12px] border-primary shadow-[0_0_30px_rgba(252,213,53,0.2)]"></div>
-                       <div className="text-center">
-                          <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Mark Price</span>
-                          <span className="text-2xl font-black text-white tracking-tighter relative z-10">{formatPrice(selectedChartCoin?.current_price || 0)}</span>
-                       </div>
-                    </div>
-                    <div className="mt-10 grid grid-cols-2 gap-6 w-full">
-                       <div className="space-y-1">
-                          <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block">Primary Asset</span>
-                          <span className="text-xs font-black text-white uppercase tracking-tight">BTC Ledger</span>
-                       </div>
-                       <div className="space-y-1 text-right">
-                          <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block">Secondary</span>
-                          <span className="text-xs font-black text-white uppercase tracking-tight">USDT Vault</span>
-                       </div>
-                    </div>
-                 </div>
-              </Card>
+                  <div className="mt-12 p-8 bg-primary/5 rounded-[32px] border border-primary/10">
+                     <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center text-primary border border-primary/20 shadow-2xl">
+                           <span className="material-symbols-outlined">analytics</span>
+                        </div>
+                        <div>
+                           <h3 className="text-sm font-black text-white uppercase tracking-widest">Protocol Intelligence</h3>
+                           <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-tight">AI-driven liquidity optimization active across all vaults.</p>
+                        </div>
+                     </div>
+                     <div className="space-y-4">
+                        <div className="flex justify-between items-center text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">
+                           <span>Settlement Progress</span>
+                           <span className="text-primary">84%</span>
+                        </div>
+                        <div className="h-2 bg-black rounded-full overflow-hidden p-[1px] border border-white/5 shadow-inner">
+                           <div className="h-full w-4/5 bg-primary rounded-full shadow-[0_0_15px_rgba(252,213,53,0.4)]"></div>
+                        </div>
+                     </div>
+                  </div>
+               </Card>
 
-              {/* RECENT ACTIVITY */}
-              <Card className="h-auto md:h-[464px] p-6 citadel-card overflow-hidden flex flex-col" glass>
-                 <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Ledger Activity</h3>
-                    <span className="material-symbols-outlined text-zinc-700 text-sm">history</span>
-                 </div>
-                 <div className="flex-1 space-y-6 overflow-y-auto custom-scrollbar pr-2">
-                    {transactions?.slice(0, 10).map((tx, i) => (
-                       <Link key={i} to="/wallet" className="flex items-center justify-between p-4 bg-white/[0.01] border border-white/5 rounded-2xl group hover:bg-white/[0.03] transition-all hover:border-primary/20 active:scale-95">
-                          <div className="flex items-center gap-4">
-                             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center border", tx.type === 'Deposit' ? 'bg-success/10 border-success/20 text-success' : 'bg-error/10 border-error/20 text-error')}>
-                                <span className="material-symbols-outlined text-lg">{tx.type === 'Deposit' ? 'south_west' : 'north_east'}</span>
-                             </div>
-                             <div>
-                                <span className="block text-[11px] font-black text-white uppercase tracking-tight">{tx.type}</span>
-                                <span className="text-[9px] text-zinc-600 font-bold uppercase">{new Date(tx.created_at).toLocaleDateString()}</span>
-                             </div>
-                          </div>
-                          <div className="text-right">
-                             <span className={cn("block text-[11px] font-black font-mono", tx.status === 'Pending Verification' ? 'text-primary' : 'text-white')}>
-                               {tx.status === 'Pending Verification' ? 'VERIFYING...' : formatPrice(tx.amount)}
-                             </span>
-                             <span className={cn("text-[8px] font-black uppercase tracking-widest", tx.status === 'Pending Verification' ? 'text-primary animate-pulse' : 'text-zinc-600')}>{tx.status}</span>
-                          </div>
-                       </Link>
-                    ))}
-                 </div>
-              </Card>
-           </div>
+               <Card className="p-0 citadel-card overflow-hidden shadow-xl" glass>
+                  <div className="p-8 border-b border-white/5 flex justify-between items-center">
+                     <h2 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em]">Active Investment Plans</h2>
+                     <Link to="/investments" className="text-[9px] font-black text-primary hover:underline uppercase tracking-widest">View All</Link>
+                  </div>
+                  <div className="overflow-x-auto custom-scrollbar">
+                     <table className="w-full text-left border-collapse min-w-[600px]">
+                        <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] border-b border-white/5">
+                           <tr>
+                              <th className="px-8 py-5">Strategy</th>
+                              <th className="px-8 py-5">Principal</th>
+                              <th className="px-8 py-5">Expected ROI</th>
+                              <th className="px-8 py-5 text-right">Status</th>
+                           </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                           {investments.slice(0, 5).map((inv) => (
+                              <tr key={inv.id} className="hover:bg-white/[0.01] transition-colors group">
+                                 <td className="px-8 py-6">
+                                    <div className="flex items-center gap-4">
+                                       <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10 group-hover:border-primary/40 transition-all shadow-xl">
+                                          <span className="material-symbols-outlined text-xl">token</span>
+                                       </div>
+                                       <div>
+                                          <span className="block font-black text-white text-[12px] uppercase tracking-tight">{inv.plan_id} Protocol</span>
+                                          <span className="text-[8px] text-zinc-600 font-bold uppercase">Ends: {new Date(inv.end_date).toLocaleDateString()}</span>
+                                       </div>
+                                    </div>
+                                 </td>
+                                 <td className="px-8 py-6 text-white font-black text-sm tracking-tighter">{formatPrice(inv.amount)}</td>
+                                 <td className="px-8 py-6 text-success font-black text-sm tracking-tighter">+{formatPrice(inv.expected_profit)}</td>
+                                 <td className="px-8 py-6 text-right">
+                                    <span className={cn("px-4 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border", inv.status === 'Active' ? 'bg-success/10 text-success border-success/20' : 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20')}>
+                                       {inv.status}
+                                    </span>
+                                 </td>
+                              </tr>
+                           ))}
+                           {investments.length === 0 && (
+                              <tr>
+                                 <td colSpan="4" className="px-8 py-12 text-center">
+                                    <p className="text-[10px] text-zinc-700 font-black uppercase tracking-widest">No Active Strategies Detected</p>
+                                 </td>
+                              </tr>
+                           )}
+                        </tbody>
+                     </table>
+                  </div>
+               </Card>
+            </div>
+
+            {/* SIDEBAR ANALYTICS */}
+            <div className="lg:col-span-4 space-y-10">
+               {/* RECENT SETTLEMENTS */}
+               <Card className="p-8 citadel-card overflow-hidden flex flex-col min-h-[400px]" glass glow>
+                  <div className="flex items-center justify-between mb-10">
+                     <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Transaction History</h3>
+                     <span className="material-symbols-outlined text-zinc-700 text-sm">history</span>
+                  </div>
+                  <div className="flex-1 space-y-6 overflow-y-auto custom-scrollbar pr-2">
+                     {transactions?.slice(0, 8).map((tx, i) => (
+                        <Link key={i} to="/wallet" className="flex items-center justify-between p-5 bg-white/[0.01] border border-white/5 rounded-3xl group hover:bg-white/[0.03] transition-all hover:border-primary/20 active:scale-95 shadow-xl">
+                           <div className="flex items-center gap-5">
+                              <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110", tx.type === 'Deposit' ? 'bg-success/10 border-success/20 text-success' : 'bg-error/10 border-error/20 text-error')}>
+                                 <span className="material-symbols-outlined text-xl">{tx.type === 'Deposit' ? 'south_west' : 'north_east'}</span>
+                              </div>
+                              <div>
+                                 <span className="block text-[11px] font-black text-white uppercase tracking-tight">{tx.type}</span>
+                                 <span className="text-[8px] text-zinc-600 font-bold uppercase">{new Date(tx.created_at).toLocaleDateString()}</span>
+                              </div>
+                           </div>
+                           <div className="text-right">
+                              <span className={cn("block text-[12px] font-black font-mono", tx.status === 'Pending Verification' ? 'text-primary' : 'text-white')}>
+                                {tx.status === 'Pending Verification' ? 'PENDING' : formatPrice(tx.amount)}
+                              </span>
+                              <span className={cn("text-[8px] font-black uppercase tracking-widest", tx.status === 'Pending Verification' ? 'text-primary animate-pulse' : 'text-zinc-700')}>{tx.status}</span>
+                           </div>
+                        </Link>
+                     ))}
+                  </div>
+               </Card>
+
+               <Card className="p-8 citadel-card bg-primary/5 border-primary/10 relative overflow-hidden group shadow-2xl" glass>
+                  <div className="absolute -bottom-12 -right-12 text-[140px] font-black text-white/[0.02] pointer-events-none select-none tracking-tighter">SEC</div>
+                  <div className="relative z-10 space-y-6">
+                     <div className="w-14 h-14 rounded-2xl bg-black border border-primary/20 flex items-center justify-center text-primary mb-8 shadow-2xl">
+                        <span className="material-symbols-outlined text-3xl">verified_user</span>
+                     </div>
+                     <h3 className="text-xl font-black text-white uppercase tracking-tight">Top-Level Security</h3>
+                     <p className="text-[11px] text-zinc-600 font-bold leading-relaxed uppercase tracking-widest">Your capital is protected by Multi-Sig custody and Tier-4 protocol encryption. 100% of reserves are verified on-chain.</p>
+                     <Button variant="primary" className="w-full py-4 text-[9px] font-black uppercase tracking-widest mt-6 shadow-[0_0_30px_rgba(252,213,53,0.2)]">Audit Report</Button>
+                  </div>
+               </Card>
+            </div>
         </div>
 
         {/* Identity Verification Prompt */}

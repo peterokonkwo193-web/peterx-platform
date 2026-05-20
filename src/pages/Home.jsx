@@ -126,13 +126,13 @@ const Home = () => {
                <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Platform Security Level 4 Active</span>
             </div>
             
-            <h1 className="text-[40px] sm:text-[60px] md:text-[110px] font-black leading-[0.95] tracking-tighter text-white">
-               Trade with the <span className="text-primary">Best.</span><br/>
-               Profit with <span className="text-zinc-600">Ease.</span>
+            <h1 className="text-[36px] sm:text-[50px] md:text-[80px] font-black leading-[0.9] tracking-tighter text-white uppercase">
+               Smart <span className="text-primary italic">Investing.</span><br/>
+               Easy <span className="text-zinc-600">Access.</span>
             </h1>
             
             <p className="text-base md:text-2xl text-zinc-400 max-w-4xl mx-auto font-medium leading-relaxed">
-              Equity Citadel is the leading platform for digital asset trading. Secure, fast, and built for your growth.
+              Equity Citadel is the best place to grow your money. Secure, fast, and easy to use.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-12">
@@ -157,11 +157,11 @@ const Home = () => {
             className="mt-32 w-full max-w-7xl"
           >
              <Card className="p-1 citadel-card rounded-[40px] shadow-2xl relative overflow-hidden" glass>
-                <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5 p-8 md:p-12">
-                   <StatItem label="Liquidity" val="$14.2B+" sub="Global Pool" />
-                   <StatItem label="Fast Execution" val="0.02ms" sub="Ultra-Fast" />
-                   <StatItem label="Uptime" val="99.99%" sub="Always Online" />
-                   <StatItem label="Lowest Fees" val="0.005%" sub="Minimal" />
+                <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5 p-10 md:p-16">
+                   <StatItem label="Managed Funds" val="Profit+" sub="Top Quality" />
+                   <StatItem label="Total Cash" val="$14.2B+" sub="Global Pool" />
+                   <StatItem label="Always Online" val="99.99%" sub="Safe" />
+                   <StatItem label="Top Security" val="Lvl 4" sub="Fully Protected" />
                 </div>
              </Card>
           </motion.div>
@@ -170,10 +170,10 @@ const Home = () => {
         {/* PROTOCOL JOURNEY */}
         <section className="py-48 px-6 relative">
            <div className="max-w-7xl mx-auto">
-              <div className="text-center mb-32 space-y-4">
-                 <span className="text-[11px] font-black text-primary uppercase tracking-[0.5em]">The Settlement Protocol</span>
-                 <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter">Onboarding Your Assets</h2>
-              </div>
+               <div className="text-center mb-24 space-y-3">
+                  <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Simple Process</span>
+                  <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase">How It Works</h2>
+               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-10 relative">
                  <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent hidden md:block -z-10"></div>
@@ -208,19 +208,19 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="space-y-12"
               >
-                 <div className="space-y-6">
-                    <span className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.5em]">High-DPI Infrastructure</span>
-                    <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-[0.9]">Built for <span className="text-primary italic">Yield.</span></h2>
-                 </div>
+                  <div className="space-y-4">
+                     <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">Profit System</span>
+                     <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] uppercase">Grow Your <span className="text-primary italic">Wealth.</span></h2>
+                  </div>
                  
                  <div className="space-y-10">
-                     <BenefitItem icon="monitoring" title="Yield Optimization" desc="Invest with our advanced portfolio management engine." />
-                     <BenefitItem icon="token" title="Passive Income" desc="Earn up to 15.4% APR on your assets through staking." />
-                     <BenefitItem icon="hub" title="Easy Transfers" desc="Move funds across global networks instantly with zero risk." />
+                     <BenefitItem icon="monitoring" title="Smart Investing" desc="Invest with our simple management tools." />
+                     <BenefitItem icon="token" title="Daily Profit" desc="Earn more money on your funds every day." />
+                     <BenefitItem icon="hub" title="Instant Transfers" desc="Move money anywhere in the world safely." />
                   </div>
  
                   <Link to="/signup" className="inline-block pt-8">
-                     <Button size="lg" className="px-14 py-6 text-xs font-black uppercase tracking-[0.3em] shadow-2xl bg-primary text-black hover:scale-105 transition-all">
+                     <Button size="lg" className="px-14 py-6 text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl bg-primary text-black hover:scale-105 transition-all">
                         Get Started
                      </Button>
                   </Link>
@@ -294,8 +294,8 @@ const Home = () => {
            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/5 blur-[150px] -z-10 rounded-full"></div>
            <Card className="max-w-5xl mx-auto p-20 md:p-32 rounded-[60px] citadel-card relative overflow-hidden shadow-2xl" glass>
               <div className="relative z-10 space-y-10">
-                 <h2 className="text-[56px] md:text-[84px] font-black text-white tracking-tighter leading-[0.9]">The Future of Finance is <span className="text-primary italic">Here.</span></h2>
-                 <p className="text-lg md:text-2xl text-zinc-400 font-medium max-w-3xl mx-auto leading-relaxed">Join 1,400+ elite traders already leveraging the Equity Citadel infrastructure for capital growth.</p>
+                  <h2 className="text-[48px] md:text-[72px] font-black text-white tracking-tighter leading-[0.9] uppercase">Institutional <span className="text-primary italic">Excellence.</span></h2>
+                  <p className="text-base md:text-xl text-zinc-500 font-medium max-w-2xl mx-auto leading-relaxed uppercase tracking-tight">Join the elite network leveraging Equity Citadel's infrastructure for strategic capital growth.</p>
                  <div className="pt-10">
                     <Link to="/signup">
                        <Button className="px-16 py-7 text-xs font-black uppercase tracking-[0.4em] shadow-2xl bg-primary text-black hover:scale-110 transition-all">Create Account Now</Button>
@@ -344,10 +344,10 @@ const Home = () => {
 };
 
 const StatItem = ({ label, val, sub }) => (
-  <div className="flex flex-col items-center text-center px-6">
-     <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] mb-4">{label}</span>
-     <p className="text-5xl font-black text-white tracking-tighter mb-2">{val}</p>
-     <p className="text-[10px] font-black text-primary uppercase tracking-widest">{sub}</p>
+  <div className="flex flex-col items-center text-center px-6 py-4">
+     <span className="text-[8px] font-black text-zinc-700 uppercase tracking-[0.4em] mb-4">{label}</span>
+     <p className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-2 uppercase">{val}</p>
+     <p className="text-[9px] font-black text-primary/80 uppercase tracking-widest">{sub}</p>
   </div>
 );
 

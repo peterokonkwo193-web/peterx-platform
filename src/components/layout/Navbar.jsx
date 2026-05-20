@@ -45,7 +45,7 @@ const Navbar = ({ className }) => {
         <Link to="/" className="flex flex-col group">
           <span className="text-2xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-primary transition-colors">Equity Citadel</span>
           <div className="hidden md:flex items-center gap-2 mt-1">
-             <span className="text-[8px] text-primary font-black tracking-[0.6em] uppercase">Trading Platform</span>
+             <span className="text-[8px] text-primary font-black tracking-[0.6em] uppercase">Institutional Platform</span>
              <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
              <span className="text-[8px] text-zinc-600 font-black tracking-[0.2em] uppercase">Live</span>
           </div>
@@ -56,7 +56,7 @@ const Navbar = ({ className }) => {
               <div className="w-2 h-2 rounded-full bg-success"></div>
               <div className="absolute inset-0 w-2 h-2 rounded-full bg-success animate-ping"></div>
            </div>
-           <span className="text-[10px] font-black text-success uppercase tracking-[0.3em]">Mainnet Gateway Active</span>
+           <span className="text-[10px] font-black text-success uppercase tracking-[0.3em]">System Secure & Online</span>
         </div>
       </div>
 
@@ -65,70 +65,65 @@ const Navbar = ({ className }) => {
 
       {/* Right: User & Actions */}
       <div className="flex items-center gap-8">
-        <div className="hidden sm:flex items-center gap-6 border-r border-white/5 pr-8">
-           <div className="text-right space-y-1">
-              <span className="text-[9px] text-zinc-700 block font-black uppercase tracking-[0.4em]">Balance</span>
+        <div className="hidden sm:flex items-center gap-5 border-r border-white/5 pr-6">
+           <div className="text-right space-y-0.5">
+              <span className="text-[8px] text-zinc-700 block font-black uppercase tracking-[0.3em]">Vault</span>
               <div className="flex items-center gap-2 justify-end">
-                 <span className="text-base font-black text-white tracking-tighter leading-none">{formatPrice(profile?.usd_balance || 0)}</span>
-                 <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
+                 <span className="text-sm font-black text-white tracking-tighter leading-none">{formatPrice(profile?.usd_balance || 0)}</span>
               </div>
            </div>
            
            <button 
              onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
-             className="flex items-center gap-3 px-5 py-2.5 bg-white/[0.02] rounded-2xl border border-white/5 hover:border-primary/30 transition-all group shadow-inner"
+             className="flex items-center gap-2 px-4 py-2 bg-white/[0.02] border border-white/5 rounded-xl hover:border-primary/30 transition-all group shadow-inner"
            >
-              <span className="text-[11px] font-black text-primary uppercase tracking-widest">{currency.code}</span>
-              <span className="material-symbols-outlined text-lg text-zinc-700 group-hover:text-white transition-all group-hover:rotate-180">expand_more</span>
+              <span className="text-[10px] font-black text-primary uppercase tracking-widest">{currency.code}</span>
+              <span className="material-symbols-outlined text-sm text-zinc-700 group-hover:text-white transition-all group-hover:rotate-180">expand_more</span>
            </button>
         </div>
 
         {!user ? (
-          <div className="flex items-center gap-8">
-            <Link to="/login" className="text-[11px] font-black text-zinc-600 hover:text-white uppercase tracking-[0.4em] transition-all">Login</Link>
+          <div className="flex items-center gap-6">
+            <Link to="/login" className="text-[10px] font-black text-zinc-600 hover:text-white uppercase tracking-[0.3em] transition-all">Login</Link>
             <Link to="/signup">
-              <Button variant="primary" className="py-3 px-8 text-[11px] font-black uppercase tracking-[0.4em] shadow-2xl transition-all hover:scale-105">Sign Up</Button>
+              <Button variant="primary" className="py-2.5 px-6 text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl transition-all hover:scale-105">Join</Button>
             </Link>
           </div>
         ) : (
-          <div className="flex items-center gap-5 relative group">
+          <div className="flex items-center gap-4 relative group">
              <div className="text-right hidden md:block space-y-0.5">
-                <span className="text-sm font-black text-white block tracking-tighter truncate max-w-[140px] uppercase">{profile?.full_name || 'Trader_Alpha'}</span>
-                <div className="flex items-center gap-2 justify-end">
+                <span className="text-xs font-black text-white block tracking-tighter truncate max-w-[120px] uppercase">{profile?.full_name || 'Trader_Alpha'}</span>
+                <div className="flex items-center gap-1.5 justify-end">
                    <div className="w-1 h-1 rounded-full bg-success"></div>
-                   <span className="text-[9px] text-primary font-black uppercase tracking-[0.4em] opacity-80">Member</span>
+                   <span className="text-[8px] text-primary font-black uppercase tracking-[0.3em] opacity-80">Verified</span>
                 </div>
              </div>
              
              <div 
-                className="w-12 h-12 rounded-[20px] bg-zinc-950 border border-white/10 p-0.5 cursor-pointer hover:border-primary transition-all overflow-hidden shadow-2xl relative group/avatar"
+                className="w-10 h-10 rounded-xl bg-zinc-950 border border-white/10 p-0.5 cursor-pointer hover:border-primary transition-all overflow-hidden shadow-2xl relative group/avatar"
                 onClick={() => setIsAvatarSelectorOpen(true)}
              >
                 <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover/avatar:opacity-100 transition-opacity z-10"></div>
                 <img 
                   src={profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} 
                   alt="" 
-                  className="w-full h-full rounded-[18px] object-cover relative z-0 transition-transform group-hover/avatar:scale-110"
+                  className="w-full h-full rounded-[10px] object-cover relative z-0 transition-transform group-hover/avatar:scale-110"
                 />
              </div>
 
              {/* Profile Menu Dropdown */}
              <div className="absolute top-full right-0 mt-6 w-64 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[32px] py-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-[0_40px_100px_rgba(0,0,0,0.8)] z-[100] translate-y-4 group-hover:translate-y-0">
                 <div className="px-8 py-4 border-b border-white/5 mb-4">
-                   <p className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em] mb-2">Protocol Identity</p>
+                   <p className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em] mb-2">My Account</p>
                    <p className="text-[11px] font-black text-white truncate lowercase tracking-tighter">{user.email}</p>
                 </div>
                 <div className="px-3 space-y-1">
                    <Link to="/dashboard" className="flex items-center gap-4 px-5 py-3.5 text-[11px] font-black text-zinc-500 hover:text-white hover:bg-white/5 transition-all rounded-2xl uppercase tracking-widest group/item">
                       <span className="material-symbols-outlined text-xl transition-transform group-hover/item:scale-110">grid_view</span> Dashboard
                    </Link>
-                   {(profile?.is_admin || user?.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || user?.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') && (
-                     <Link to="/admin" className="flex items-center gap-4 px-5 py-3.5 text-[11px] text-primary font-black hover:bg-primary/5 transition-all rounded-2xl uppercase tracking-widest group/item">
-                        <span className="material-symbols-outlined text-xl transition-transform group-hover/item:scale-110">shield_person</span> Admin Control
-                     </Link>
-                   )}
+
                    <Link to="/settings" className="flex items-center gap-4 px-5 py-3.5 text-[11px] font-black text-zinc-500 hover:text-white hover:bg-white/5 transition-all rounded-2xl uppercase tracking-widest group/item">
-                      <span className="material-symbols-outlined text-xl transition-transform group-hover/item:scale-110">settings_suggest</span> Management
+                      <span className="material-symbols-outlined text-xl transition-transform group-hover/item:scale-110">settings_suggest</span> Settings
                    </Link>
                    <div className="h-px bg-white/5 mx-5 my-4"></div>
                    <button onClick={handleLogout} className="flex items-center gap-4 w-full text-left px-5 py-3.5 text-[11px] font-black text-error hover:bg-error/5 transition-all rounded-2xl uppercase tracking-widest group/item">
@@ -203,11 +198,7 @@ const Navbar = ({ className }) => {
                   <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-4 px-4 text-xs font-bold text-zinc-200 bg-white/5 rounded-xl flex items-center gap-3">
                     <span className="material-symbols-outlined text-sm">dashboard</span> Dashboard
                   </Link>
-                  {(profile?.is_admin || user?.id === '830a672f-41cc-4b87-bb3c-494c7e63b379' || user?.id === '8d24918f-b493-4549-951e-1f85b0b97fe5') && (
-                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-4 px-4 text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">
-                      <span className="material-symbols-outlined text-sm">admin_panel_settings</span> Admin Terminal
-                    </Link>
-                  )}
+
                   <Link to="/wallet" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-4 px-4 text-xs font-bold text-zinc-200 bg-white/5 rounded-xl flex items-center gap-3">
                     <span className="material-symbols-outlined text-sm">account_balance_wallet</span> Vault
                   </Link>

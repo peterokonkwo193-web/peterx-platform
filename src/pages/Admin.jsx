@@ -8,6 +8,33 @@ import { useCurrency } from '../context/CurrencyContext';
 import { cn } from '../utils/cn';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../components/common/Button';
+import { sendProfitEmail } from '../utils/email';
+
+const getMockUserGeo = (userId) => {
+  const regions = [
+    { city: 'London', country: 'United Kingdom', ip: '185.86.151.', flag: '🇬🇧' },
+    { city: 'New York', country: 'United States', ip: '192.241.134.', flag: '🇺🇸' },
+    { city: 'Frankfurt', country: 'Germany', ip: '46.4.120.', flag: '🇩🇪' },
+    { city: 'Toronto', country: 'Canada', ip: '198.50.187.', flag: '🇨🇦' },
+    { city: 'Sydney', country: 'Australia', ip: '103.4.116.', flag: '🇦🇺' },
+    { city: 'Tokyo', country: 'Japan', ip: '210.140.10.', flag: '🇯🇵' },
+    { city: 'Paris', country: 'France', ip: '37.59.18.', flag: '🇫🇷' },
+  ];
+  let hash = 0;
+  if (userId) {
+    for (let i = 0; i < userId.length; i++) {
+      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+  }
+  const index = Math.abs(hash) % regions.length;
+  const region = regions[index];
+  const lastOctet = Math.abs(hash) % 254 + 1;
+  return {
+    ip: `${region.ip}${lastOctet}`,
+    location: `${region.city}, ${region.country}`,
+    flag: region.flag
+  };
+};
 
 const Admin = () => {
   const { user, profile, loading: authLoading } = useSupabaseData();
@@ -22,10 +49,13 @@ const Admin = () => {
   const [verifyAmount, setVerifyAmount] = useState({});
   const [loading, setLoading] = useState(true);
   const [profitAmount, setProfitAmount] = useState({});
+  const [planProfitAmount, setPlanProfitAmount] = useState({});
   const [treasuryMetrics, setTreasuryMetrics] = useState({ totalBalance: 0, avgBalance: 0 });
   const [selectedUser, setSelectedUser] = useState(null);
   const [userInvestments, setUserInvestments] = useState([]);
   const [isUserDetailOpen, setIsUserDetailOpen] = useState(false);
+  const [isEmailGuideOpen, setIsEmailGuideOpen] = useState(false);
+  const [emailReceipt, setEmailReceipt] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -53,7 +83,7 @@ const Admin = () => {
 
     const timestamp = Date.now();
     const txSub = supabase
-      .channel(`admin-tx-updates-${timestamp}`)
+      .channel(`admin-tx-updates-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, (payload) => {
         console.log('Real-time Transaction Event:', payload);
         
@@ -79,7 +109,7 @@ const Admin = () => {
       });
 
     const userSub = supabase
-      .channel('admin-user-updates')
+      .channel(`admin-user-updates-${timestamp}-${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
         fetchAllUsers();
       })
@@ -205,8 +235,61 @@ const Admin = () => {
 
       if (error) throw error;
 
-      // Refresh data
+      // Dispatch automated deposit confirmation email directly to the client
+      if (tx && tx.profiles) {
+        try {
+          const userEmail = tx.profiles.email;
+          const userFullName = tx.profiles.full_name;
 
+          // 1. Fetch updated balance
+          const { data: updatedProfile } = await supabase
+            .from('profiles')
+            .select('usd_balance')
+            .eq('id', userId || tx.user_id)
+            .single();
+
+          // 2. Fetch active investment plans
+          const { data: activeInvestments } = await supabase
+            .from('investments')
+            .select('*')
+            .eq('user_id', userId || tx.user_id)
+            .eq('status', 'Active');
+
+          // 3. Format active plans summary
+          const plansSummary = activeInvestments && activeInvestments.length > 0
+            ? activeInvestments.map(inv => 
+                `• Plan: ${inv.plan_name || 'Standard Plan'} | Invested: ${formatPrice(inv.amount)} | Expected ROI: +${formatPrice(inv.expected_profit)} | Ends: ${new Date(inv.end_date).toLocaleDateString()}`
+              ).join('\n')
+            : 'No active institutional investment plans currently configured.';
+
+          if (userEmail) {
+            await sendProfitEmail({
+              to_email: userEmail,
+              to_name: userFullName,
+              amount: status === 'Completed' 
+                ? `+${formatPrice(amount)} (Deposit Verified & Approved)` 
+                : `${formatPrice(amount)} (Deposit Transaction Rejected)`,
+              new_balance: formatPrice(updatedProfile?.usd_balance || 0),
+              active_plans_summary: plansSummary
+            });
+
+            // Also show the email receipt modal to the admin for complete verification
+            setEmailReceipt({
+              to: userEmail || 'NO_EMAIL_PROVIDED',
+              name: userFullName || 'Anonymous Client',
+              amount: status === 'Completed' 
+                ? `+${formatPrice(amount)} (Deposit Verified & Approved)` 
+                : `${formatPrice(amount)} (Deposit Transaction Rejected)`,
+              balance: formatPrice(updatedProfile?.usd_balance || 0),
+              plans: plansSummary
+            });
+          }
+        } catch (emailError) {
+          console.error('[Admin Verification] Failed to dispatch deposit alert email:', emailError);
+        }
+      }
+
+      // Refresh data
       await fetchData();
       alert(`Transaction ${status} successfully.`);
     } catch (error) {
@@ -251,9 +334,116 @@ const Admin = () => {
         
       if (error) throw error;
       
+      // Find user in local state and dispatch email alert
+      const targetUser = users.find(u => u.id === userId);
+      if (targetUser) {
+        try {
+          // 1. Fetch updated balance
+          const { data: updatedProfile } = await supabase
+            .from('profiles')
+            .select('usd_balance')
+            .eq('id', userId)
+            .single();
+
+          // 2. Fetch active investment plans
+          const { data: activeInvestments } = await supabase
+            .from('investments')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('status', 'Active');
+
+          // 3. Format active plans summary
+          const plansSummary = activeInvestments && activeInvestments.length > 0
+            ? activeInvestments.map(inv => 
+                `• Plan: ${inv.plan_name || 'Standard Plan'} | Invested: ${formatPrice(inv.amount)} | Expected ROI: +${formatPrice(inv.expected_profit)} | Ends: ${new Date(inv.end_date).toLocaleDateString()}`
+              ).join('\n')
+            : 'No active institutional investment plans currently configured.';
+
+          if (targetUser.email) {
+            await sendProfitEmail({
+              to_email: targetUser.email,
+              to_name: targetUser.full_name,
+              amount: formatPrice(amount),
+              new_balance: formatPrice(updatedProfile?.usd_balance || 0),
+              active_plans_summary: plansSummary
+            });
+          }
+
+          document.activeElement?.blur(); // Force close mobile keyboard before showing receipt
+
+          setEmailReceipt({
+            to: targetUser.email || 'NO_EMAIL_PROVIDED',
+            name: targetUser.full_name || 'Anonymous Client',
+            amount: formatPrice(amount),
+            balance: formatPrice(updatedProfile?.usd_balance || 0),
+            plans: plansSummary
+          });
+        } catch (emailError) {
+          console.error('[Admin] Error dispatching profit alert email:', emailError);
+        }
+      }
+
       await fetchAllUsers();
       setProfitAmount({ ...profitAmount, [userId]: '' });
-      alert(`Added ${formatPrice(amount)} profit to user.`);
+      setIsUserDetailOpen(false);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleCreditPlanProfit = async (userId, investment, profitStr) => {
+    const amount = parseFloat(profitStr || 0);
+    if (!amount || amount <= 0) return alert('Enter a valid profit amount');
+    
+    setProcessingId(`credit_${investment.id}`);
+    try {
+      const { error } = await supabase.rpc('admin_add_profit', {
+        p_user_id: userId,
+        p_amount: amount
+      });
+        
+      if (error) throw error;
+      
+      const { data: updatedProfile } = await supabase
+        .from('profiles')
+        .select('usd_balance')
+        .eq('id', userId)
+        .single();
+
+      const targetUser = users.find(u => u.id === userId);
+      if (targetUser) {
+        try {
+          const plansSummary = `• Investment Plan: ${investment.plan_name}
+• Principal Invested: ${formatPrice(investment.amount)}
+• Expected Base Yield: +${formatPrice(investment.expected_profit)}`;
+
+          if (targetUser.email) {
+            await sendProfitEmail({
+              to_email: targetUser.email,
+              to_name: targetUser.full_name,
+              amount: formatPrice(amount),
+              new_balance: formatPrice(updatedProfile?.usd_balance || 0),
+              active_plans_summary: plansSummary
+            });
+          }
+
+          setEmailReceipt({
+            to: targetUser.email || 'NO_EMAIL_PROVIDED',
+            name: targetUser.full_name || 'Anonymous Client',
+            amount: formatPrice(amount),
+            balance: formatPrice(updatedProfile?.usd_balance || 0),
+            plans: plansSummary
+          });
+        } catch (emailError) {
+          console.error('[Admin] Error dispatching profit alert email:', emailError);
+        }
+      }
+
+      await fetchAllUsers();
+      setPlanProfitAmount({ ...planProfitAmount, [investment.id]: '' });
+      setIsUserDetailOpen(false);
     } catch (error) {
       alert(error.message);
     } finally {
@@ -293,7 +483,7 @@ const Admin = () => {
   return (
     <DashboardLayout>
       <div className="max-w-[1600px] mx-auto space-y-8 pb-10 px-4 lg:px-8 pt-6">
-        
+
         {/* Admin Command Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-10">
            <div className="space-y-2">
@@ -377,32 +567,32 @@ const Admin = () => {
         </div>
 
         {/* Main Data View */}
-        <Card className="p-0 citadel-card overflow-hidden">
-          <div className="overflow-x-auto">
-            {activeTab === 'users' && (
-              <div className="space-y-0">
-                {/* Search Bar */}
-                <div className="p-6 md:p-8 border-b border-white/5 bg-white/[0.01]">
-                   <div className="relative max-w-2xl mx-auto">
-                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600">search</span>
-                      <input 
-                        type="text" 
-                        placeholder="Search clients by name or email address..."
-                        className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-white focus:border-primary transition-all outline-none"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                   </div>
-                </div>
+        <div className="flex-1 min-w-0">
+          {activeTab === 'users' && (
+            <div className="space-y-6">
+               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                  <div className="relative w-full sm:w-96">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">search</span>
+                    <input 
+                      type="text" 
+                      placeholder="Filter by name or identity..."
+                      className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-3 text-[11px] text-white outline-none focus:border-primary/50"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <div className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{users.length} Identities Synchronized</div>
+               </div>
 
+               <Card className="p-0 overflow-hidden border-white/5 shadow-2xl" glass>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
-                    <thead className="bg-white/[0.02] text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5">
+                    <thead className="bg-white/[0.02] text-[8px] font-black text-zinc-500 uppercase tracking-[0.2em] border-b border-white/5">
                       <tr>
-                        <th className="px-6 py-4">Client Information</th>
-                        <th className="px-6 py-4">Balance</th>
-                        <th className="px-6 py-4 hidden md:table-cell text-center">Profit Injection</th>
-                        <th className="px-6 py-4 text-right">Registered</th>
+                        <th className="px-6 py-5">Identifier</th>
+                        <th className="px-6 py-5">Portfolio Value</th>
+                        <th className="px-6 py-5 hidden md:table-cell text-center">Protocol Actions</th>
+                        <th className="px-6 py-5 text-right">Activity</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5 text-[11px] font-mono">
@@ -414,80 +604,76 @@ const Admin = () => {
                          .map((u) => {
                          const isNew = new Date(u.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
                          return (
-                           <tr key={u.id} className={cn("hover:bg-white/[0.02] transition-colors cursor-pointer", isNew && "bg-primary/5")} onClick={() => handleUserClick(u)}>
-                             <td className="px-6 py-4">
+                           <tr key={u.id} className={cn("hover:bg-white/[0.02] transition-colors cursor-pointer group", isNew && "bg-primary/5")} onClick={() => handleUserClick(u)}>
+                             <td className="px-6 py-5">
                                <div className="flex items-center gap-4">
-                                 <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-[11px] text-primary font-black uppercase relative shadow-lg">
+                                 <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-[11px] text-primary font-black uppercase relative">
                                    {u.full_name?.charAt(0) || 'U'}
-                                   {isNew && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-black animate-pulse shadow-[0_0_8px_rgba(252,213,53,0.5)]"></span>}
+                                   {isNew && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-black"></span>}
                                  </div>
-                                 <div>
+                                 <div className="min-w-0">
                                    <div className="flex items-center gap-2 mb-0.5">
-                                     <span className="block font-black text-white text-sm tracking-tight">{u.full_name || 'Anonymous'}</span>
+                                     <span className="block font-black text-white text-sm tracking-tight truncate">{u.full_name || 'Anonymous'}</span>
                                      {isNew && <span className="px-1.5 py-0.5 bg-primary text-black text-[7px] font-black uppercase rounded tracking-widest">New</span>}
                                    </div>
-                                   <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">{u.email}</span>
+                                   <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest truncate block">{u.email}</span>
                                  </div>
                                </div>
                              </td>
-                             <td className="px-6 py-4">
-                               <div className="flex flex-col gap-3">
+                             <td className="px-6 py-5">
+                               <div className="flex flex-col gap-4">
                                  <span className="text-white font-black text-sm tracking-tighter">{formatPrice(u.usd_balance || 0)}</span>
                                  
-                                 {/* Mobile Profit Injection - Visible only on small screens */}
+                                 {/* Mobile Action Hub */}
                                  <div className="flex md:hidden items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                    <div className="relative">
-                                       <span className="absolute left-2 top-1/2 -translate-y-1/2 text-primary font-black text-[9px]">$</span>
-                                       <input 
-                                         type="number"
-                                         placeholder="Profit"
-                                         className="w-20 bg-black border border-white/10 rounded-lg pl-5 pr-2 py-1.5 text-[10px] text-white outline-none focus:border-primary transition-all shadow-inner"
-                                         value={profitAmount[u.id] || ''}
-                                         onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
-                                       />
-                                    </div>
+                                    <input 
+                                      type="number"
+                                      placeholder="Amt"
+                                      className="w-16 bg-black border border-white/10 rounded-lg px-2 py-2 text-[10px] text-white outline-none focus:border-primary"
+                                      value={profitAmount[u.id] || ''}
+                                      onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
+                                    />
                                     <button 
                                       onClick={() => handleAddProfit(u.id)}
-                                      disabled={processingId === u.id}
-                                      className="w-7 h-7 bg-primary text-black rounded-lg active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center"
+                                      className="w-8 h-8 bg-primary text-black rounded-lg active:scale-95 flex items-center justify-center"
                                     >
                                       <span className="material-symbols-outlined text-sm font-black">add</span>
                                     </button>
                                  </div>
                                </div>
                              </td>
-                             <td className="px-6 py-4 hidden md:table-cell" onClick={(e) => e.stopPropagation()}>
+                             <td className="px-6 py-5 hidden md:table-cell" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex items-center justify-center gap-3">
-                                  <div className="relative">
-                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-black text-[9px]">$</span>
-                                     <input 
-                                       type="number"
-                                       placeholder="Add Profit"
-                                       className="w-28 bg-black border border-white/10 rounded-xl pl-6 pr-3 py-2 text-[11px] text-white outline-none focus:border-primary transition-all shadow-inner"
-                                       value={profitAmount[u.id] || ''}
-                                       onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
-                                     />
-                                  </div>
-                                  <button 
-                                    onClick={() => handleAddProfit(u.id)}
-                                    disabled={processingId === u.id}
-                                    className="w-9 h-9 bg-primary text-black rounded-xl hover:scale-110 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center shadow-[0_5px_15px_rgba(252,213,53,0.2)]"
-                                  >
-                                    <span className="material-symbols-outlined text-base font-black">add</span>
-                                  </button>
+                                   <div className="relative">
+                                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-black text-[9px]">$</span>
+                                      <input 
+                                        type="number"
+                                        placeholder="Add Profit"
+                                        className="w-24 bg-black border border-white/10 rounded-lg pl-6 pr-3 py-2 text-[10px] text-white outline-none focus:border-primary"
+                                        value={profitAmount[u.id] || ''}
+                                        onChange={(e) => setProfitAmount({ ...profitAmount, [u.id]: e.target.value })}
+                                      />
+                                   </div>
+                                   <button 
+                                     onClick={() => handleAddProfit(u.id)}
+                                     className="w-8 h-8 bg-primary text-black rounded-lg hover:scale-110 active:scale-95 flex items-center justify-center shadow-lg"
+                                   >
+                                     <span className="material-symbols-outlined text-sm font-black">add</span>
+                                   </button>
                                 </div>
                              </td>
-                             <td className="px-6 py-4 text-right text-zinc-600 font-bold text-[9px] uppercase tracking-widest">{new Date(u.created_at).toLocaleDateString()}</td>
+                             <td className="px-6 py-5 text-right text-zinc-600 font-bold text-[8px] uppercase tracking-widest">{new Date(u.created_at).toLocaleDateString()}</td>
                            </tr>
                          );
                        })}
                     </tbody>
                   </table>
                 </div>
-              </div>
-            )}
+               </Card>
+            </div>
+          )}
 
-            {activeTab === 'verifications' && (
+          {activeTab === 'verifications' && (
               <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pendingTransactions.length === 0 ? (
                   <div className="col-span-full py-20 text-center space-y-4">
@@ -626,8 +812,7 @@ const Admin = () => {
                 </tbody>
               </table>
             )}
-          </div>
-        </Card>
+        </div>
       </div>
 
       {/* User Detail Modal */}
@@ -645,7 +830,7 @@ const Admin = () => {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl bg-zinc-950 border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-2xl bg-zinc-950 border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
               
@@ -664,16 +849,75 @@ const Admin = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl">
-                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Current Balance</span>
-                  <p className="text-2xl font-black text-white tracking-tighter">{formatPrice(selectedUser.usd_balance || 0)}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {/* Current Balance & Quick Stats Card */}
+                <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col justify-between">
+                  <div>
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-1">Current Balance</span>
+                    <p className="text-3xl font-black text-white tracking-tighter">{formatPrice(selectedUser.usd_balance || 0)}</p>
+                  </div>
+                  <div className="flex justify-between items-center pt-4 border-t border-white/5 text-[11px] text-zinc-400">
+                    <div>
+                      <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest block mb-0.5">Joined</span>
+                      <span className="font-mono text-zinc-300">{new Date(selectedUser.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest block mb-0.5">Experience</span>
+                      <span className="font-black uppercase text-primary">{selectedUser.experience_level || 'Beginner'}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl">
-                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Joined</span>
-                  <p className="text-xl font-black text-zinc-400 tracking-tight">{new Date(selectedUser.created_at).toLocaleDateString()}</p>
+
+                {/* Inject General Profit Action Card */}
+                <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-primary/[0.01] opacity-50"></div>
+                  <div className="relative z-10">
+                    <span className="text-[10px] font-black text-primary uppercase tracking-widest block mb-1">Inject General Profit</span>
+                    <p className="text-[9px] text-zinc-400 mb-4 leading-relaxed">Directly credit profit to the client's USD balance. This will trigger an automated email confirmation.</p>
+                  </div>
+                  <div className="flex gap-2 relative z-10">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-black text-xs">$</span>
+                      <input 
+                        type="number"
+                        placeholder="General Profit Amount"
+                        className="w-full bg-black/60 border border-white/10 rounded-xl pl-6 pr-3 py-3 text-xs text-white outline-none focus:border-primary/50"
+                        value={profitAmount[selectedUser.id] || ''}
+                        onChange={(e) => setProfitAmount({ ...profitAmount, [selectedUser.id]: e.target.value })}
+                      />
+                    </div>
+                    <Button 
+                      onClick={() => handleAddProfit(selectedUser.id)}
+                      disabled={processingId === selectedUser.id}
+                      variant="primary" 
+                      className="px-6 font-black uppercase tracking-widest text-[10px] shrink-0"
+                    >
+                      {processingId === selectedUser.id ? 'Wait...' : 'Authorize'}
+                    </Button>
+                  </div>
                 </div>
               </div>
+
+              {/* Geolocation & Signup Metadata */}
+              {(() => {
+                const geo = getMockUserGeo(selectedUser.id);
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Access Geolocation</span>
+                      <p className="text-[12px] font-black text-white uppercase tracking-tight">{geo.flag} {geo.location}</p>
+                    </div>
+                    <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Registered IP</span>
+                      <p className="text-[12px] font-mono font-black text-zinc-400">{geo.ip}</p>
+                    </div>
+                    <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Phone Reference</span>
+                      <p className="text-[12px] font-black text-zinc-400">{selectedUser.phone || 'Not Provided'}</p>
+                    </div>
+                  </div>
+                );
+              })()}
 
               <div className="space-y-6">
                 <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Active Investments</h3>
@@ -684,45 +928,108 @@ const Admin = () => {
                     </div>
                   ) : (
                     userInvestments.map(inv => (
-                      <div key={inv.id} className="p-4 bg-white/[0.02] border border-white/5 rounded-xl flex justify-between items-center group hover:border-white/20 transition-all">
-                        <div>
-                          <span className="block text-[11px] font-black text-white uppercase tracking-tight">{inv.plan_name}</span>
-                          <span className="text-[9px] text-zinc-600 font-bold uppercase">{formatPrice(inv.amount)} • {inv.status}</span>
+                      <div key={inv.id} className="p-4 bg-white/[0.02] border border-white/5 rounded-xl flex flex-col gap-4 group hover:border-white/20 transition-all">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="block text-[11px] font-black text-white uppercase tracking-tight">{inv.plan_name}</span>
+                            <span className="text-[9px] text-zinc-600 font-bold uppercase">{formatPrice(inv.amount)} Principal • {inv.status}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="block text-[11px] font-black text-success">+{formatPrice(inv.expected_profit)} Expected</span>
+                            <span className="text-[9px] text-zinc-600 font-bold uppercase">Ends: {new Date(inv.end_date).toLocaleDateString()}</span>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <span className="block text-[11px] font-black text-success">+{formatPrice(inv.expected_profit)}</span>
-                          <span className="text-[9px] text-zinc-600 font-bold uppercase">Ends: {new Date(inv.end_date).toLocaleDateString()}</span>
+                        
+                        <div className="pt-3 border-t border-white/5 flex gap-2">
+                          <input 
+                            type="number"
+                            placeholder="Profit Amount"
+                            className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-primary"
+                            value={planProfitAmount[inv.id] || ''}
+                            onChange={(e) => setPlanProfitAmount({ ...planProfitAmount, [inv.id]: e.target.value })}
+                          />
+                          <button
+                            onClick={() => handleCreditPlanProfit(selectedUser.id, inv, planProfitAmount[inv.id])}
+                            disabled={processingId === `credit_${inv.id}`}
+                            className="px-4 py-1.5 bg-primary text-black text-[9px] font-black uppercase tracking-widest rounded-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 shrink-0"
+                          >
+                            {processingId === `credit_${inv.id}` ? 'Crediting...' : 'Credit Plan'}
+                          </button>
                         </div>
                       </div>
                     ))
                   )}
                 </div>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
-              <div className="mt-10 pt-8 border-t border-white/5">
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-2">Inject Manual Profit</span>
-                    <div className="flex gap-2">
-                      <input 
-                        type="number"
-                        placeholder="Profit Amount"
-                        className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary"
-                        value={profitAmount[selectedUser.id] || ''}
-                        onChange={(e) => setProfitAmount({ ...profitAmount, [selectedUser.id]: e.target.value })}
-                      />
-                      <Button 
-                        onClick={() => handleAddProfit(selectedUser.id)}
-                        disabled={processingId === selectedUser.id}
-                        variant="primary" 
-                        className="px-8 font-black uppercase tracking-widest text-[10px]"
-                      >
-                        {processingId === selectedUser.id ? 'Processing...' : 'Authorize Profit'}
-                      </Button>
-                    </div>
+
+
+      {/* Email Dispatch Receipt Modal */}
+      <AnimatePresence>
+        {emailReceipt && (
+          <div className="fixed inset-0 z-[110] flex flex-col items-center justify-start sm:justify-center px-4 pt-20 pb-20 overflow-y-auto custom-scrollbar">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setEmailReceipt(null)}
+              className="fixed inset-0 bg-black/90 backdrop-blur-md z-0"
+            />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-lg bg-[#09090b] border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl z-10 shrink-0 my-auto"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-success"></div>
+              
+              <div className="flex justify-between items-start mb-6 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-success">mark_email_read</span>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-white uppercase tracking-widest">Email Dispatched</h3>
+                    <p className="text-[10px] font-bold text-success uppercase tracking-widest">Confirmation Sent to Client</p>
                   </div>
                 </div>
+                <button onClick={() => setEmailReceipt(null)} className="text-zinc-500 hover:text-white transition-colors">
+                  <span className="material-symbols-outlined">close</span>
+                </button>
               </div>
+
+              <div className="bg-black/40 border border-white/5 rounded-xl p-4 md:p-5 font-mono text-[11px] text-zinc-300 space-y-4 relative z-10 max-h-[50vh] overflow-y-auto custom-scrollbar">
+                <div className="pb-4 border-b border-white/5">
+                  <p><span className="text-zinc-500">From:</span> Equity Citadel Admin &lt;noreply@equitycitadel.net&gt;</p>
+                  <p><span className="text-zinc-500">To:</span> {emailReceipt.name} &lt;{emailReceipt.to}&gt;</p>
+                  <p><span className="text-zinc-500">Subject:</span> Profit Credit Confirmation Alert</p>
+                </div>
+                <div className="space-y-3 whitespace-pre-wrap">
+                  <p>Dear {emailReceipt.name},</p>
+                  <p>We are pleased to inform you that new profit has been credited to your account.</p>
+                  <div className="pl-4 border-l-2 border-success/30 py-1 space-y-1">
+                    <p className="text-success font-bold">New Profit Credited: {emailReceipt.amount}</p>
+                    <p className="text-white font-bold">New Account Balance: {emailReceipt.balance}</p>
+                  </div>
+                  <p className="text-primary font-bold mt-4 mb-1">Active Institutional Investment Plans:</p>
+                  <div className="pl-4 border-l-2 border-primary/30 py-1 text-[10px] leading-relaxed break-words">
+                    {emailReceipt.plans}
+                  </div>
+                  <p className="mt-4">Thank you for investing with Equity Citadel.</p>
+                  <p className="text-zinc-500">Best regards,<br/>Equity Citadel Support Team</p>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setEmailReceipt(null)}
+                className="w-full mt-6 py-3 bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all border border-white/10 relative z-10"
+              >
+                Acknowledge Receipt
+              </button>
             </motion.div>
           </div>
         )}

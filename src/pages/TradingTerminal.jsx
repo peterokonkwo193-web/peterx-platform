@@ -1,135 +1,33 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Card from '../components/common/Card';
-import Button from '../components/common/Button';
-import CandlestickChart from '../components/CandlestickChart';
 import { useSupabaseData } from '../hooks/useSupabaseData';
 import { useLivePrices } from '../hooks/useLivePrices';
 import { useMarketData } from '../hooks/useMarketData';
 import { useCurrency } from '../context/CurrencyContext';
-import { openFuturesPosition, closeFuturesPosition, updateProfileBalance } from '../lib/db';
 import { cn } from '../utils/cn';
 
 const TradingTerminal = () => {
-  const { user, profile, futuresPositions, loading: dataLoading } = useSupabaseData();
-  const { prices, loading: pricesLoading } = useLivePrices();
   const { marketData, loading: marketLoading } = useMarketData();
-  const { currency, formatPrice } = useCurrency();
-  
-  const [selectedAsset, setSelectedAsset] = useState(null);
-  const [tradingMode, setTradingMode] = useState('spot'); // 'spot' or 'futures'
-  const [tradeType, setTradeType] = useState('buy'); // buy/long, sell/short
-  const [leverage, setLeverage] = useState(1);
-  const [amount, setAmount] = useState('');
-  const [executing, setExecuting] = useState(false);
-  const [chartData, setChartData] = useState([]);
+  const { prices, loading: pricesLoading } = useLivePrices();
+  const { formatPrice } = useCurrency();
   const [assetSearch, setAssetSearch] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState(null);
 
-  const loading = dataLoading || pricesLoading || marketLoading;
+  const loading = marketLoading || pricesLoading;
 
   // Set default asset
   useEffect(() => {
     if (marketData && marketData.length > 0 && !selectedAsset) {
-      const btc = marketData.find(c => c.symbol.toLowerCase() === 'btc') || marketData[0];
-      setSelectedAsset(btc);
+      setSelectedAsset(marketData[0]);
     }
   }, [marketData, selectedAsset]);
 
-  // Generate Mock Chart Data
-  useEffect(() => {
-    if (selectedAsset) {
-      const basePrice = selectedAsset.current_price;
-      const data = [];
-      let time = Math.floor(Date.now() / 1000) - (50 * 60);
-
-      for (let i = 0; i < 50; i++) {
-        const open = basePrice + (Math.random() * (basePrice * 0.01) - (basePrice * 0.005));
-        const close = open + (Math.random() * (basePrice * 0.01) - (basePrice * 0.005));
-        const high = Math.max(open, close) + Math.random() * (basePrice * 0.002);
-        const low = Math.min(open, close) - Math.random() * (basePrice * 0.002);
-
-        data.push({ time, open, high, low, close });
-        time += 60;
-      }
-      setChartData(data);
-    }
-  }, [selectedAsset]);
-
-  // Live Ticking
-  useEffect(() => {
-    if (chartData.length === 0) return;
-    const interval = setInterval(() => {
-      setChartData(prev => {
-        const newData = [...prev];
-        const last = { ...newData[newData.length - 1] };
-        const change = last.close * (Math.random() * 0.001 - 0.0005);
-        last.close += change;
-        if (last.close > last.high) last.high = last.close;
-        if (last.close < last.low) last.low = last.close;
-        newData[newData.length - 1] = last;
-        return newData;
-      });
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [chartData.length]);
-
-  const currentPrice = selectedAsset?.current_price || 0;
-  
-  const calculateLiquidation = () => {
-    if (tradingMode !== 'futures') return 0;
-    const price = currentPrice;
-    if (tradeType === 'buy') { // Long
-      return price * (1 - (1 / leverage) + 0.05); // 5% maintenance margin
-    } else { // Short
-      return price * (1 + (1 / leverage) - 0.05);
-    }
-  };
-
-  const liqPrice = calculateLiquidation();
-
-  const handleTrade = async () => {
-    if (!user || !amount || !selectedAsset) return;
-    setExecuting(true);
-    
-    try {
-      const numAmount = parseFloat(amount);
-      const entryPriceUsd = selectedAsset.current_price;
-      const totalPositionValueUsd = numAmount * entryPriceUsd;
-      const marginRequiredUsd = tradingMode === 'futures' ? totalPositionValueUsd / leverage : totalPositionValueUsd;
-      
-      const usdBalance = parseFloat(profile?.usd_balance || 0);
-      if (marginRequiredUsd > usdBalance) throw new Error('Insufficient Account Balance');
-
-      if (tradingMode === 'futures') {
-        const liqPriceUsd = tradeType === 'buy' 
-          ? entryPriceUsd * (1 - (1 / leverage) + 0.05)
-          : entryPriceUsd * (1 + (1 / leverage) - 0.05);
-
-        await openFuturesPosition({
-          user_id: user.id,
-          symbol: selectedAsset.symbol.toUpperCase(),
-          type: tradeType === 'buy' ? 'Long' : 'Short',
-          leverage: leverage,
-          entry_price: entryPriceUsd,
-          amount: numAmount,
-          margin: marginRequiredUsd,
-          liquidation_price: liqPriceUsd
-        });
-
-        await updateProfileBalance(user.id, usdBalance - marginRequiredUsd);
-        alert(`Professional ${leverage}x ${tradeType === 'buy' ? 'Long' : 'Short'} opened successfully.`);
-      } else {
-        // Spot Logic (simplified for this update)
-        alert('Spot execution active.');
-      }
-      setAmount('');
-    } catch (error) {
-      alert('Execution Error: ' + error.message);
-    } finally {
-      setExecuting(false);
-    }
-  };
+  const filteredAssets = marketData?.filter(asset => 
+    asset.name.toLowerCase().includes(assetSearch.toLowerCase()) || 
+    asset.symbol.toLowerCase().includes(assetSearch.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -143,201 +41,104 @@ const TradingTerminal = () => {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col h-[calc(100vh-100px)] -mt-6">
+      <div className="max-w-[1600px] mx-auto space-y-8 pb-10">
+        
         {/* Terminal Header */}
-        <header className="h-auto md:h-16 py-4 md:py-0 px-4 md:px-12 border-b border-white/5 flex flex-col md:flex-row items-center justify-between bg-zinc-950/80 backdrop-blur-xl md:-mx-12 z-20 gap-4 md:gap-0">
-          <div className="flex items-center justify-between w-full md:w-auto gap-4 md:gap-8">
-            <div className="flex items-center gap-3">
-              <img src={selectedAsset?.image} className="w-6 h-6 rounded-full" alt="" />
-              <h2 className="text-sm md:text-lg font-black text-white tracking-tighter uppercase">{selectedAsset?.symbol}/USDT</h2>
-            </div>
-            <div className="flex gap-4 md:gap-6 text-[9px] md:text-[10px] font-black uppercase tracking-widest border-l border-white/10 pl-4 md:pl-8">
-               <button onClick={() => setTradingMode('spot')} className={cn("pb-1 border-b-2 transition-all", tradingMode === 'spot' ? "border-primary text-primary" : "border-transparent text-zinc-500")}>Spot</button>
-               <button onClick={() => setTradingMode('futures')} className={cn("pb-1 border-b-2 transition-all", tradingMode === 'futures' ? "border-primary text-primary" : "border-transparent text-zinc-500")}>Futures</button>
-            </div>
-          </div>
-          <div className="flex justify-between w-full md:w-auto gap-6 md:gap-10 items-center">
-             <div className="text-right">
-                <span className="text-[8px] md:text-[9px] text-zinc-600 font-black uppercase block">Mark Price</span>
-                <span className={cn("text-sm md:text-lg font-black font-mono", selectedAsset?.price_change_percentage_24h >= 0 ? "text-success" : "text-error")}>
-                  {formatPrice(currentPrice)}
-                </span>
-             </div>
-             <div className="text-right border-l border-white/10 pl-6 md:pl-10">
-                <span className="text-[8px] md:text-[9px] text-zinc-600 font-black uppercase block">24h Change</span>
-                <span className={cn("text-xs md:text-sm font-black font-mono", selectedAsset?.price_change_percentage_24h >= 0 ? "text-success" : "text-error")}>
-                  {selectedAsset?.price_change_percentage_24h?.toFixed(2)}%
-                </span>
-             </div>
-          </div>
-        </header>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+           <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                 <div className="px-3 py-1 bg-primary/10 rounded-lg text-[9px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl shadow-inner">Market Data Node</div>
+                 <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-success shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+                    <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Feed: Live</span>
+                 </div>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none">Global <span className="text-primary italic">Market</span> Registry</h1>
+           </div>
 
-        <main className="flex-1 grid grid-cols-12 -mx-12 overflow-hidden">
-          {/* Order Book */}
-          <section className="col-span-12 lg:col-span-2 border-r border-white/5 bg-zinc-950/30 flex flex-col p-4 overflow-hidden">
-             <h3 className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-4">Live Order Book</h3>
-             <div className="flex-1 font-mono text-[9px] space-y-0.5">
-                <div className="text-error opacity-60 flex flex-col-reverse">
-                   {[...Array(12)].map((_, i) => (
-                      <div key={i} className="flex justify-between py-1 px-1 hover:bg-error/5 transition-colors">
-                        <span>{(currentPrice + (i * 0.2)).toFixed(2)}</span>
-                        <span className="text-zinc-500">{(Math.random() * 2).toFixed(4)}</span>
-                      </div>
-                   ))}
-                </div>
-                <div className="py-4 text-center border-y border-white/5 my-2">
-                   <span className="text-base font-black text-white">{formatPrice(currentPrice)}</span>
-                </div>
-                <div className="text-success opacity-60">
-                   {[...Array(12)].map((_, i) => (
-                      <div key={i} className="flex justify-between py-1 px-1 hover:bg-success/5 transition-colors">
-                        <span>{(currentPrice - (i * 0.2)).toFixed(2)}</span>
-                        <span className="text-zinc-500">{(Math.random() * 2).toFixed(4)}</span>
-                      </div>
-                   ))}
-                </div>
-             </div>
-          </section>
+           <div className="relative w-full md:w-96 group">
+              <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 text-lg group-focus-within:text-primary transition-colors">search</span>
+              <input 
+                type="text" 
+                placeholder="SEARCH ASSET CLASS..."
+                value={assetSearch}
+                onChange={(e) => setAssetSearch(e.target.value)}
+                className="w-full bg-white/[0.02] border border-white/5 rounded-2xl py-5 pl-14 pr-6 text-[11px] font-black uppercase tracking-widest text-white placeholder:text-zinc-700 focus:outline-none focus:border-primary/40 focus:bg-white/[0.04] transition-all shadow-2xl"
+              />
+           </div>
+        </div>
 
-          {/* Chart & Positions */}
-          <section className="col-span-12 lg:col-span-7 flex flex-col bg-background">
-             <div className="flex-1 p-4 relative">
-                <Card className="w-full h-full p-0 overflow-hidden border border-white/5 shadow-2xl" glass>
-                   <CandlestickChart data={chartData} />
-                </Card>
-             </div>
-             {/* Positions Panel */}
-             <div className="h-64 border-t border-white/5 bg-zinc-950/50 p-6 overflow-hidden flex flex-col">
-                <div className="flex gap-6 border-b border-white/10 mb-4 pb-2">
-                   <h3 className="text-[10px] font-black text-primary uppercase tracking-widest border-b-2 border-primary pb-2">Open Positions ({futuresPositions?.length || 0})</h3>
-                   <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest pb-2">Order History</h3>
-                </div>
-                <div className="flex-1 overflow-y-auto">
-                   <table className="w-full text-left text-[11px] font-mono">
-                      <thead className="text-zinc-600 font-black uppercase tracking-widest sticky top-0 bg-zinc-950 z-10">
-                         <tr>
-                            <th className="pb-3">Market</th>
-                            <th className="pb-3 text-center">Type</th>
-                            <th className="pb-3 text-center">Leverage</th>
-                            <th className="pb-3 text-right">Entry</th>
-                            <th className="pb-3 text-right">Mark</th>
-                            <th className="pb-3 text-right">Liq. Price</th>
-                            <th className="pb-3 text-right">Unrealized PNL</th>
-                            <th className="pb-3 text-right">Action</th>
-                         </tr>
-                      </thead>
-                      <tbody>
-                         {futuresPositions?.map(pos => {
-                            const pnlUsd = pos.type === 'Long' 
-                              ? (selectedAsset?.current_price - pos.entry_price) * pos.amount * pos.leverage
-                              : (pos.entry_price - selectedAsset?.current_price) * pos.amount * pos.leverage;
-                            const pnlPercent = (pnlUsd / pos.margin) * 100;
-                            
-                            return (
-                               <tr key={pos.id} className="border-b border-white/5 hover:bg-white/[0.02]">
-                                  <td className="py-4 font-black text-white">{pos.symbol}</td>
-                                  <td className="py-4 text-center">
-                                     <span className={cn("px-2 py-0.5 rounded text-[9px] font-black uppercase", pos.type === 'Long' ? "bg-success/20 text-success" : "bg-error/20 text-error")}>{pos.type}</span>
-                                  </td>
-                                  <td className="py-4 text-center text-zinc-400 font-black">{pos.leverage}x</td>
-                                  <td className="py-4 text-right text-zinc-300">{formatPrice(pos.entry_price)}</td>
-                                  <td className="py-4 text-right text-zinc-300">{formatPrice(currentPrice)}</td>
-                                  <td className="py-4 text-right text-error font-bold">{formatPrice(pos.liquidation_price)}</td>
-                                  <td className={cn("py-4 text-right font-black", pnlUsd >= 0 ? "text-success" : "text-error")}>
-                                     {pnlUsd >= 0 ? '+' : ''}{formatPrice(pnlUsd)} ({pnlPercent.toFixed(2)}%)
-                                  </td>
-                                  <td className="py-4 text-right">
-                                     <button className="text-[10px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">Close</button>
-                                  </td>
-                               </tr>
-                            );
-                         })}
-                      </tbody>
-                   </table>
-                </div>
-             </div>
-          </section>
-
-          {/* Trade Execution */}
-          <section className="col-span-12 lg:col-span-3 border-l border-white/5 bg-zinc-950/40 p-6 space-y-6">
-             <div className="flex p-1 bg-white/5 rounded-xl border border-white/5">
-                <button 
-                  onClick={() => setTradeType('buy')}
-                  className={cn("flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all", tradeType === 'buy' ? "bg-primary text-black" : "text-zinc-600")}
+        {/* Assets Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+           <AnimatePresence mode="popLayout">
+              {filteredAssets?.map((asset, idx) => (
+                <motion.div
+                  key={asset.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  layout
                 >
-                  {tradingMode === 'futures' ? 'Long' : 'Buy'}
-                </button>
-                <button 
-                  onClick={() => setTradeType('sell')}
-                  className={cn("flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all", tradeType === 'sell' ? "bg-error text-white" : "text-zinc-600")}
-                >
-                  {tradingMode === 'futures' ? 'Short' : 'Sell'}
-                </button>
-             </div>
-
-             {tradingMode === 'futures' && (
-               <div className="space-y-4">
-                  <div className="flex justify-between items-center px-1">
-                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Cross Leverage</span>
-                     <span className="text-sm font-black text-primary font-mono">{leverage}x</span>
-                  </div>
-                  <input 
-                    type="range" min="1" max="100" step="1" 
-                    value={leverage} 
-                    onChange={(e) => setLeverage(parseInt(e.target.value))}
-                    className="w-full accent-primary h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="grid grid-cols-5 gap-1">
-                     {[1, 10, 25, 50, 100].map(l => (
-                        <button key={l} onClick={() => setLeverage(l)} className="py-1 rounded bg-white/5 text-[9px] font-black text-zinc-600 hover:text-primary transition-all">{l}x</button>
-                     ))}
-                  </div>
-               </div>
-             )}
-
-             <div className="space-y-4">
-                <div className="space-y-2">
-                   <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Size Amount ({selectedAsset?.symbol})</label>
-                   <div className="relative">
-                      <input 
-                        type="number" 
-                        value={amount} 
-                        onChange={(e) => setAmount(e.target.value)}
-                        className="w-full bg-zinc-950 border border-white/10 rounded-2xl px-5 py-4 text-sm font-mono text-white outline-none focus:border-primary transition-all"
-                        placeholder="0.00"
-                      />
-                      <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black text-zinc-600 uppercase">{selectedAsset?.symbol}</span>
-                   </div>
-                </div>
-
-                {tradingMode === 'futures' && (
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-3 text-[10px] font-bold">
-                     <div className="flex justify-between items-center">
-                        <span className="text-zinc-600 uppercase">Est. Liquidation Price</span>
-                        <span className="text-error font-mono">{formatPrice(liqPrice)}</span>
+                  <Card 
+                    className={cn(
+                      "group p-8 citadel-card border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary/20 transition-all relative overflow-hidden cursor-pointer",
+                      selectedAsset?.id === asset.id && "border-primary/40 bg-primary/5"
+                    )}
+                    glass
+                    onClick={() => setSelectedAsset(asset)}
+                  >
+                     <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="material-symbols-outlined text-primary text-sm">trending_up</span>
                      </div>
-                     <div className="flex justify-between items-center">
-                        <span className="text-zinc-600 uppercase">Margin Required</span>
-                        <span className="text-zinc-300 font-mono">{formatPrice((parseFloat(amount || 0) * currentPrice) / leverage)}</span>
+
+                     <div className="flex items-center gap-6 mb-8">
+                        <div className="w-14 h-14 rounded-2xl bg-zinc-900/50 border border-white/10 p-2.5 shadow-2xl group-hover:scale-110 transition-transform">
+                           <img src={asset.image} alt={asset.name} className="w-full h-full object-contain" />
+                        </div>
+                        <div>
+                           <h3 className="text-lg font-black text-white tracking-tighter uppercase leading-none">{asset.symbol}<span className="text-zinc-700 ml-0.5">/USDT</span></h3>
+                           <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-2">{asset.name}</p>
+                        </div>
                      </div>
-                  </div>
-                )}
 
-                <Button 
-                  variant={tradeType === 'buy' ? 'primary' : 'outline'} 
-                  className={cn("w-full py-5 text-xs font-black uppercase tracking-[0.3em] shadow-2xl", tradeType === 'sell' && "border-error text-error hover:bg-error hover:text-white")}
-                  onClick={handleTrade}
-                  disabled={executing || !amount}
-                >
-                  {executing ? 'Processing...' : `Execute ${tradeType === 'buy' ? 'Long' : 'Short'} Position`}
-                </Button>
-             </div>
+                     <div className="space-y-6">
+                        <div className="flex justify-between items-end">
+                           <div className="space-y-1">
+                              <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest block">Live Exchange Price</span>
+                              <span className="text-2xl font-black text-white tracking-tighter font-mono">{formatPrice(asset.current_price)}</span>
+                           </div>
+                           <div className={cn(
+                             "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border mb-1",
+                             asset.price_change_percentage_24h >= 0 ? "bg-success/10 text-success border-success/20" : "bg-error/10 text-error border-error/20"
+                           )}>
+                              {asset.price_change_percentage_24h > 0 ? '+' : ''}{asset.price_change_percentage_24h?.toFixed(2)}%
+                           </div>
+                        </div>
 
-             <div className="text-[9px] text-zinc-600 font-black uppercase tracking-widest text-center leading-relaxed">
-                 Equity Citadel Platform Fee: <span className="text-zinc-400">0.01% Maker / 0.02% Taker</span>
-             </div>
-          </section>
-        </main>
+                        <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/5">
+                           <div>
+                              <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Market Cap</span>
+                              <span className="text-[11px] font-black text-zinc-400 uppercase tracking-tight">{formatPrice(asset.market_cap / 1e9)}B</span>
+                           </div>
+                           <div className="text-right">
+                              <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Volume 24H</span>
+                              <span className="text-[11px] font-black text-zinc-400 uppercase tracking-tight">{formatPrice(asset.total_volume / 1e6)}M</span>
+                           </div>
+                        </div>
+                     </div>
+                  </Card>
+                </motion.div>
+              ))}
+           </AnimatePresence>
+        </div>
+
+        {filteredAssets?.length === 0 && (
+          <div className="py-32 text-center space-y-4">
+             <span className="material-symbols-outlined text-zinc-800 text-6xl">search_off</span>
+             <p className="text-zinc-600 font-black uppercase tracking-[0.4em] text-[10px]">No Asset Matching Protocol Query</p>
+          </div>
+        )}
+
       </div>
     </DashboardLayout>
   );

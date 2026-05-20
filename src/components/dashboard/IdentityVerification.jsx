@@ -81,9 +81,9 @@ const IdentityVerification = ({ profile, isOpen, onClose, onComplete }) => {
              </button>
           </div>
 
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Identity Verification</h2>
-            <p className="text-sm text-secondary">Please upload a valid document (ID Card, Passport, or License) to verify your institutional account.</p>
+          <div className="mb-6">
+            <h2 className="text-lg font-black text-white mb-2 uppercase tracking-tight">Identity <span className="text-primary italic">Verification</span></h2>
+            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">Please upload a valid protocol document (ID, Passport, or License) to authorize your institutional access.</p>
           </div>
 
           {status === 'success' ? (

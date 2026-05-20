@@ -5,6 +5,8 @@ import Button from '../common/Button';
 import Card from '../common/Card';
 import { executeInvestment } from '../../lib/db';
 import { useCurrency } from '../../context/CurrencyContext';
+import { supabase } from '../../lib/supabase';
+import { sendProfitEmail } from '../../utils/email';
 
 const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete, refreshData }) => {
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,42 @@ const InvestmentModal = ({ isOpen, onClose, plan, profile, onComplete, refreshDa
       // 1. Execute Investment Transactionally via RPC
       await executeInvestment(investmentData);
 
-      // 2. Refresh data immediately to sync UI
+      // 2. Dispatch automated confirmation email directly to the user
+      if (profile.email) {
+        try {
+          // Fetch updated profile balance after investment execution
+          const { data: updatedProfile } = await supabase
+            .from('profiles')
+            .select('usd_balance')
+            .eq('id', profile.id)
+            .single();
+
+          // Fetch all current active investments to include a comprehensive plans summary
+          const { data: activeInvestments } = await supabase
+            .from('investments')
+            .select('*')
+            .eq('user_id', profile.id)
+            .eq('status', 'Active');
+
+          const plansSummary = activeInvestments && activeInvestments.length > 0
+            ? activeInvestments.map(inv => 
+                `• Strategy: ${inv.plan_name || 'Standard Plan'} | Capital: ${formatPrice(inv.amount)} | Expected Return: +${formatPrice(inv.expected_profit)} | Horizon: ${new Date(inv.end_date).toLocaleDateString()}`
+              ).join('\n')
+            : `• Strategy: ${plan.name} | Capital: ${formatPrice(plan.range)} | Expected Return: +${formatPrice((plan.range * plan.roi) / 100)} | Horizon: ${endDate.toLocaleDateString()}`;
+
+          await sendProfitEmail({
+            to_email: profile.email,
+            to_name: profile.full_name,
+            amount: `-${formatPrice(plan.range)} (Institutional Strategy Allocation)`,
+            new_balance: formatPrice(updatedProfile?.usd_balance || 0),
+            active_plans_summary: plansSummary
+          });
+        } catch (emailErr) {
+          console.error('[Investment Modal] Failed to dispatch investment confirmation email:', emailErr);
+        }
+      }
+
+      // 3. Refresh data immediately to sync UI
       if (refreshData) await refreshData();
 
       onComplete();

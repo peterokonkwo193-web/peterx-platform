@@ -3,15 +3,16 @@ import { useSupabaseData } from '../../hooks/useSupabaseData';
 import { cn } from '../../utils/cn';
 
 const MobileNav = () => {
-  const { pendingAdminCount } = useSupabaseData();
+  const { user, profile, pendingAdminCount } = useSupabaseData();
   const location = useLocation();
+
+  const isMasterAdmin = user?.email === 'equitycitadelassociates@gmail.com';
 
   const navItems = [
     { name: 'Home', path: '/dashboard', icon: 'dashboard' },
-    { name: 'Trade', path: '/trade', icon: 'terminal' },
     { name: 'Invest', path: '/investments', icon: 'monitoring' },
     { name: 'Vault', path: '/wallet', icon: 'account_balance_wallet' },
-    { name: 'Admin', path: '/admin', icon: 'admin_panel_settings', adminOnly: true }
+    ...(isMasterAdmin ? [{ name: 'Admin', path: '/admin', icon: 'admin_panel_settings', adminOnly: true }] : [])
   ];
 
   return (

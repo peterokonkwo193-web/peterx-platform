@@ -8,7 +8,7 @@ import { useCurrency } from '../../context/CurrencyContext';
 const PLANS = [
   {
     id: 'starter',
-    name: 'Starter Protocol',
+    name: 'Basic Plan',
     range: 1000,
     duration: 7,
     roi: 12,
@@ -18,7 +18,7 @@ const PLANS = [
   },
   {
     id: 'silver',
-    name: 'Silver Strategic',
+    name: 'Silver Plan',
     range: 5000,
     duration: 14,
     roi: 25,
@@ -28,7 +28,7 @@ const PLANS = [
   },
   {
     id: 'gold',
-    name: 'Gold Institutional',
+    name: 'Gold Plan',
     range: 10000,
     duration: 21,
     roi: 45,
@@ -39,7 +39,7 @@ const PLANS = [
   },
   {
     id: 'platinum',
-    name: 'Platinum Elite',
+    name: 'Platinum Plan',
     range: 15000,
     duration: 30,
     roi: 75,
@@ -59,32 +59,32 @@ const InvestmentPlans = ({ onSupport }) => {
       <div className="hidden md:block absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 blur-[120px] -z-10 rounded-full"></div>
 
       <div className="max-w-[1400px] mx-auto">
-        <div className="text-center mb-16 md:mb-32 space-y-4 md:space-y-6">
+        <div className="text-center mb-16 md:mb-24 space-y-3">
           <motion.span 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-[10px] font-bold text-primary uppercase tracking-[0.5em] block"
+            className="text-[9px] font-black text-primary uppercase tracking-[0.4em] block"
           >
-            Live Investments
+            Investment Plans
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-[72px] font-bold text-white tracking-tighter leading-tight md:leading-[0.9] uppercase"
+            className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-none uppercase"
           >
-            Investment <span className="text-primary italic">Yield</span> Strategies
+            Best <span className="text-primary italic">Profit</span> Plans
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-zinc-500 max-w-3xl mx-auto font-medium text-base md:text-xl leading-relaxed"
+            className="text-zinc-600 max-w-2xl mx-auto font-medium text-sm md:text-base leading-relaxed uppercase tracking-tight"
           >
-            Invest your funds into expert-managed strategies with guaranteed security and fast payouts.
+            Top quality plans built for your success and security.
           </motion.p>
         </div>
 
@@ -137,13 +137,13 @@ const InvestmentPlans = ({ onSupport }) => {
                   </span>
                 </div>
 
-                <h3 className="relative z-10 text-lg font-bold text-white uppercase tracking-tight mb-3">
+                <h3 className="relative z-10 text-base font-black text-white uppercase tracking-tight mb-2">
                   {plan.name}
                 </h3>
                 
-                <div className="relative z-10 flex flex-col items-center mb-5 md:mb-8">
-                  <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-[0.4em] mb-2">Projected Profit</span>
-                  <span className="text-2xl md:text-3xl font-bold text-primary tracking-tighter shadow-primary/20 drop-shadow-2xl">+{plan.roi}%</span>
+                <div className="relative z-10 flex flex-col items-center mb-4 md:mb-6">
+                   <span className="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em] mb-1">Total Profit</span>
+                   <span className="text-xl md:text-2xl font-black text-primary tracking-tighter leading-none">+{plan.roi}%</span>
                 </div>
 
                 <div className="relative z-10 w-full p-4 bg-black/40 border border-white/5 rounded-xl mb-6 md:mb-8 space-y-3 backdrop-blur-xl">
@@ -158,10 +158,10 @@ const InvestmentPlans = ({ onSupport }) => {
                   </div>
                 </div>
 
-                <ul className="relative z-10 space-y-5 mb-12 text-left w-full px-2">
+                <ul className="relative z-10 space-y-4 mb-8 text-left w-full px-2">
                   {plan.features.map((f, i) => (
-                    <li key={i} className="flex items-start gap-4 text-[11px] font-bold text-zinc-500 group-hover:text-zinc-300 transition-colors leading-tight">
-                      <span className="material-symbols-outlined text-primary text-sm mt-0.5">verified</span>
+                    <li key={i} className="flex items-start gap-3 text-[10px] font-bold text-zinc-600 group-hover:text-zinc-300 transition-colors leading-tight">
+                      <span className="material-symbols-outlined text-primary text-xs mt-0.5">verified</span>
                       <span className="uppercase tracking-widest">{f}</span>
                     </li>
                   ))}

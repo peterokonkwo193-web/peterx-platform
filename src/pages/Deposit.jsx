@@ -77,13 +77,13 @@ const Deposit = () => {
   return (
     <DashboardLayout>
       <div className="max-w-5xl mx-auto py-12 md:py-20 px-4 md:px-8">
-        <header className="mb-16">
-          <div className="flex flex-wrap items-center gap-4 mb-6">
-             <div className="px-5 py-1.5 bg-primary/10 rounded-xl text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/20 backdrop-blur-xl">Deposit Funds</div>
-             <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Live Status: Active</span>
+        <header className="mb-10">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+             <div className="px-4 py-1 bg-primary/10 rounded-lg text-[9px] font-black text-primary uppercase tracking-[0.2em] border border-primary/20 backdrop-blur-xl">Deposit Flow</div>
+             <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Protocol v4.0.2 Active</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">Deposit <span className="text-primary">Funds</span></h1>
-          <p className="text-zinc-500 mt-6 text-lg max-w-2xl font-medium leading-relaxed uppercase tracking-tight">Deposit your funds into the secure wallets below to start trading.</p>
+          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none">Funding <span className="text-primary">Gateway</span></h1>
+          <p className="text-zinc-600 mt-4 text-sm max-w-xl font-medium leading-relaxed uppercase tracking-tight opacity-80">Securely deposit capital into the institutional vaults below.</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">

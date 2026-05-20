@@ -7,6 +7,8 @@ import { useSupabaseData } from '../hooks/useSupabaseData';
 import { useCurrency } from '../context/CurrencyContext';
 import { stakeAssets, claimStakingRewards, updateProfileBalance } from '../lib/db';
 import { cn } from '../utils/cn';
+import { supabase } from '../lib/supabase';
+import { sendProfitEmail } from '../utils/email';
 
 const STAKING_POOLS = [
   { asset: 'BTC', name: 'Bitcoin Institutional', icon: 'currency_bitcoin', apr: 6.5, color: 'text-primary', min: 0.1 },
@@ -50,6 +52,54 @@ const Staking = () => {
       });
 
       await updateProfileBalance(user.id, usdBalance - numAmount);
+
+      // Dispatch automated staking confirmation email directly to the client
+      if (profile?.email) {
+        try {
+          const { data: updatedProfile } = await supabase
+            .from('profiles')
+            .select('usd_balance')
+            .eq('id', user.id)
+            .single();
+
+          // Fetch other active plans to keep the summary complete
+          const { data: activeInvestments } = await supabase
+            .from('investments')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('status', 'Active');
+
+          const { data: activeStaking } = await supabase
+            .from('staking_positions')
+            .select('*')
+            .eq('user_id', user.id);
+
+          const investmentSummary = activeInvestments && activeInvestments.length > 0
+            ? activeInvestments.map(inv => 
+                `• Strategy: ${inv.plan_name || 'Standard Plan'} | Capital: ${formatPrice(inv.amount)} | Expected Return: +${formatPrice(inv.expected_profit)} | Horizon: ${new Date(inv.end_date).toLocaleDateString()}`
+              ).join('\n')
+            : 'No active institutional investment plans configured.';
+
+          const stakingSummary = activeStaking && activeStaking.length > 0
+            ? activeStaking.map(st => 
+                `• Staked Pool: ${st.asset} Pool | Staked Settlement: ${st.amount} ${st.asset} | Epoch APR: ${st.apr}% | Unlock: ${new Date(st.unlock_at).toLocaleDateString()}`
+              ).join('\n')
+            : `• Staked Pool: ${selectedPool.asset} Pool | Staked Settlement: ${numAmount} ${selectedPool.asset} | Epoch APR: ${selectedPool.apr}% | Unlock: ${unlockAt.toLocaleDateString()}`;
+
+          const fullActivePlansSummary = `${investmentSummary}\n\nStaking Ledger Position:\n${stakingSummary}`;
+
+          await sendProfitEmail({
+            to_email: profile.email,
+            to_name: profile.full_name,
+            amount: `-${formatPrice(numAmount)} (Sovereign Yield Stake Allocation)`,
+            new_balance: formatPrice(updatedProfile?.usd_balance || 0),
+            active_plans_summary: fullActivePlansSummary
+          });
+        } catch (emailErr) {
+          console.error('[Staking] Failed to dispatch staking confirmation email:', emailErr);
+        }
+      }
+
       alert(`${selectedPool.asset} staked successfully for ${lockPeriod} days.`);
       setAmount('');
       setSelectedPool(null);

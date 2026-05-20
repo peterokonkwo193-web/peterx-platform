@@ -21,13 +21,6 @@ const Sidebar = () => {
 
   const sections = [
     {
-      title: 'Exchange',
-      items: [
-        { name: 'Terminal', path: '/trade', icon: 'terminal' },
-        { name: 'Markets', path: '/markets', icon: 'monitoring' },
-      ]
-    },
-    {
       title: 'Institutional',
       items: [
         { name: 'Vault', path: '/wallet', icon: 'account_balance_wallet' },
@@ -46,7 +39,7 @@ const Sidebar = () => {
     }
   ];
 
-  if (profile?.is_admin) {
+  if (profile?.email === 'equitycitadelassociates@gmail.com') {
     sections.push({
       title: 'Admin Control',
       items: [
