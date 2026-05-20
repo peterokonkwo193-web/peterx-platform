@@ -32,6 +32,13 @@ export const useSupabaseData = () => {
       if (user.email === 'equitycitadelassociates@gmail.com' && profileData) {
         profileData.is_admin = true;
       }
+      if (profileData && (!profileData.email || profileData.email !== user.email)) {
+        await supabase
+          .from('profiles')
+          .update({ email: user.email })
+          .eq('id', user.id);
+        profileData.email = user.email;
+      }
       setProfile(profileData);
       setPortfolio(port || []);
       setWatchlist(watch || []);
@@ -62,6 +69,13 @@ export const useSupabaseData = () => {
           const profileData = p;
           if (currentUser.email === 'equitycitadelassociates@gmail.com' && profileData) {
             profileData.is_admin = true;
+          }
+          if (profileData && (!profileData.email || profileData.email !== currentUser.email)) {
+            await supabase
+              .from('profiles')
+              .update({ email: currentUser.email })
+              .eq('id', currentUser.id);
+            profileData.email = currentUser.email;
           }
           setProfile(profileData);
           setPortfolio(port || []);

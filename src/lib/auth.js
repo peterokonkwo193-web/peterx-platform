@@ -12,6 +12,18 @@ export const signUp = async (email, password, fullName, experienceLevel) => {
     }
   });
   if (error) throw error;
+  
+  if (data?.user) {
+    try {
+      await supabase
+        .from('profiles')
+        .update({ email: email })
+        .eq('id', data.user.id);
+    } catch (err) {
+      console.warn('[SignUp Auth] Client-side profile email sync deferred:', err);
+    }
+  }
+
   return data;
 };
 
